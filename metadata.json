@@ -1,0 +1,7 @@
+{
+  "name": "BoliEnglish - English Learning & Practice",
+  "description": "An AI-powered English learning platform for Bengali speakers with vocabulary, sentence structures, grammar, pronunciation, interactive practice, and AI conversation partner.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
