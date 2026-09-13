@@ -13,6 +13,9 @@ import { ProgressSection } from './components/ProgressSection';
 import { SavedContentSection } from './components/SavedContentSection';
 import { ProfileSection } from './components/ProfileSection';
 import { AdminPanelSection } from './components/AdminPanelSection';
+import { ReadingSection } from './components/ReadingSection';
+import { DailyHabitSection } from './components/DailyHabitSection';
+import { Sidebar } from './components/Sidebar';
 
 import {
   NavigationTab,
@@ -60,6 +63,7 @@ export function App() {
   const [activeLearnSubTab, setActiveLearnSubTab] = useState<LearnSubTab>('vocabulary');
   const [learnDrawerOpen, setLearnDrawerOpen] = useState(false);
   const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Theme - persists to localStorage
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -301,27 +305,38 @@ export function App() {
 
   // Centralized Navigation Handler
   const handleNavigate = (t: NavigationTab) => {
-    const learnTabsMap: Record<string, LearnSubTab> = {
-      patterns: 'patterns',
-      builder: 'builder',
-      transformation: 'transformation',
-      'word-family': 'word-family',
-      'context-vocab': 'context-vocab',
-      translation: 'translation',
-      mistakes: 'mistakes',
-      vocabulary: 'vocabulary',
-      sentences: 'sentences',
-      'sentence-structure': 'structures',
-      structures: 'structures',
-      grammar: 'grammar',
-      pronunciation: 'pronunciation',
-    };
-
-    if (learnTabsMap[t]) {
-      setActiveLearnSubTab(learnTabsMap[t]);
-      setActiveTab('learn');
+    if (t === 'reading') {
+      setActiveTab('reading');
+    } else if (t === 'habit' || t === 'settings') {
+      setActiveTab('habit');
+    } else if (t === 'word-bank') {
+      setActiveTab('saved');
+    } else if (t === 'conversation') {
+      setActiveTab('ai-tutor');
     } else {
-      setActiveTab(t);
+      const learnTabsMap: Record<string, LearnSubTab> = {
+        patterns: 'patterns',
+        builder: 'builder',
+        'sentence-builder': 'builder',
+        transformation: 'transformation',
+        'word-family': 'word-family',
+        'context-vocab': 'context-vocab',
+        translation: 'translation',
+        mistakes: 'mistakes',
+        vocabulary: 'vocabulary',
+        sentences: 'sentences',
+        'sentence-structure': 'structures',
+        structures: 'structures',
+        grammar: 'grammar',
+        pronunciation: 'pronunciation',
+      };
+
+      if (learnTabsMap[t]) {
+        setActiveLearnSubTab(learnTabsMap[t]);
+        setActiveTab('learn');
+      } else {
+        setActiveTab(t);
+      }
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -356,7 +371,14 @@ export function App() {
   ].includes(activeTab);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-[#f8fafc] to-slate-100/80 font-sans text-slate-900 transition-colors dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-white relative">
+      {/* Soft, Eye-Friendly Ambient Background on Page Sides */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden opacity-30 dark:opacity-15" aria-hidden="true">
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-emerald-400/20 blur-3xl" />
+        <div className="absolute top-1/4 -right-32 w-96 h-96 rounded-full bg-teal-400/15 blur-3xl" />
+        <div className="absolute bottom-20 left-10 w-80 h-80 rounded-full bg-emerald-300/10 blur-3xl" />
+      </div>
+
       {/* 1. Desktop & Mobile Sticky Navbar */}
       <Navbar
         activeTab={activeTab}
@@ -367,112 +389,161 @@ export function App() {
         onToggleTheme={() => setIsDarkMode((prev) => !prev)}
         streak={progress.currentStreak || 3}
         profile={profile}
+        onOpenMobileMenu={() => setMobileMenuOpen(true)}
       />
 
-      {/* 2. Main Workspace Container */}
-      <main
-        id="main-app-content"
-        className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 md:pb-12"
-      >
-        {activeTab === 'home' && (
-          <HomeDashboard
-            progress={progress}
-            profile={profile}
-            onNavigate={handleNavigate}
-            onSelectLearnSubTab={handleSelectLearnSubTab}
-            onAwardXP={handleAwardXP}
-          />
-        )}
+      {/* 2. Main Workspace Layout: Desktop Sidebar + Content */}
+      <div className="flex-1 flex max-w-7xl w-full mx-auto">
+        <Sidebar
+          activeTab={activeTab}
+          onSelectTab={handleNavigate}
+          mobileMenuOpen={mobileMenuOpen}
+          onCloseMobileMenu={() => setMobileMenuOpen(false)}
+        />
 
-        {isLearnModule && (
-          <LearnMainSection
-            key={activeLearnSubTab}
-            initialSubTab={activeLearnSubTab}
-            vocabulary={vocabulary}
-            sentences={sentences}
-            sentenceStructures={structures}
-            grammarLessons={grammar}
-            onToggleFavoriteVocab={handleToggleFavoriteVocab}
-            onToggleLearnedVocab={handleToggleLearnedVocab}
-            onPracticeVocabWord={() => {}}
-            onToggleSaveSentence={handleToggleSaveSentence}
-            onPracticeSentence={handlePracticeSentence}
-            onAIGenerateSimilar={() => setActiveTab('ai-tutor')}
-            onToggleCompleteGrammar={handleToggleCompleteLesson}
-            onAskAIGrammar={() => setActiveTab('ai-tutor')}
-            onAskAIStructure={() => setActiveTab('ai-tutor')}
-            onIncrementSpeakingMinutes={handleIncrementSpeakingMinutes}
-            onNavigate={handleNavigate}
-            onAwardXP={handleAwardXP}
-          />
-        )}
+        <main
+          id="main-app-content"
+          className="flex-1 w-full min-w-0 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 md:pb-12"
+        >
+          {activeTab === 'home' && (
+            <HomeDashboard
+              progress={progress}
+              profile={profile}
+              onNavigate={handleNavigate}
+              onSelectLearnSubTab={handleSelectLearnSubTab}
+              onAwardXP={handleAwardXP}
+            />
+          )}
 
-        {activeTab === 'practice' && (
-          <PracticeSection
-            questions={practice}
-            onCompletePractice={handleCompletePractice}
-            onAwardXP={handleAwardXP}
-          />
-        )}
+          {activeTab === 'reading' && (
+            <ReadingSection
+              onAwardXP={handleAwardXP}
+              onSaveWord={(word, meaning) => {
+                const existing = vocabulary.find((v) => v.word.toLowerCase() === word.toLowerCase());
+                if (existing) {
+                  if (!existing.isFavorite) handleToggleFavoriteVocab(existing.id);
+                } else {
+                  handleAddVocab({
+                    id: `word-${Date.now()}`,
+                    word,
+                    banglaMeaning: meaning,
+                    pronunciation: '',
+                    ipa: '',
+                    partOfSpeech: 'noun',
+                    category: 'Reading',
+                    example: `I encountered "${word}" while reading English.`,
+                    exampleBangla: `ইংরেজি পড়ার সময় আমি "${word}" শব্দটি পেয়েছি।`,
+                    difficulty: 'Beginner',
+                    synonyms: [],
+                    antonyms: [],
+                    relatedWords: [],
+                    isFavorite: true,
+                    isLearned: false,
+                  });
+                }
+              }}
+            />
+          )}
 
-        {isAITutorModule && (
-          <AITutorMainSection
-            userLevel={profile.level}
-            onIncrementSpeakingMinutes={handleIncrementSpeakingMinutes}
-            onAwardXP={handleAwardXP}
-          />
-        )}
+          {activeTab === 'habit' && (
+            <DailyHabitSection
+              progress={progress}
+              profile={profile}
+              onUpdateProfile={(updated) => setProfile((p) => ({ ...p, ...updated }))}
+              onAwardXP={handleAwardXP}
+            />
+          )}
 
-        {activeTab === 'progress' && (
-          <ProgressSection
-            progress={progress}
-            profile={profile}
-            onResetProgress={() => {
-              if (confirm('Reset your daily streak and progress counters?')) {
-                setProgress(INITIAL_USER_PROGRESS);
-              }
-            }}
-          />
-        )}
+          {isLearnModule && (
+            <LearnMainSection
+              key={activeLearnSubTab}
+              initialSubTab={activeLearnSubTab}
+              vocabulary={vocabulary}
+              sentences={sentences}
+              sentenceStructures={structures}
+              grammarLessons={grammar}
+              onToggleFavoriteVocab={handleToggleFavoriteVocab}
+              onToggleLearnedVocab={handleToggleLearnedVocab}
+              onPracticeVocabWord={() => {}}
+              onToggleSaveSentence={handleToggleSaveSentence}
+              onPracticeSentence={handlePracticeSentence}
+              onAIGenerateSimilar={() => setActiveTab('ai-tutor')}
+              onToggleCompleteGrammar={handleToggleCompleteLesson}
+              onAskAIGrammar={() => setActiveTab('ai-tutor')}
+              onAskAIStructure={() => setActiveTab('ai-tutor')}
+              onIncrementSpeakingMinutes={handleIncrementSpeakingMinutes}
+              onNavigate={handleNavigate}
+              onAwardXP={handleAwardXP}
+            />
+          )}
 
-        {activeTab === 'saved' && (
-          <SavedContentSection
-            vocabulary={vocabulary}
-            sentences={sentences}
-            grammarLessons={grammar}
-            onToggleFavoriteVocab={handleToggleFavoriteVocab}
-            onToggleSaveSentence={handleToggleSaveSentence}
-            onToggleSaveGrammar={handleToggleSaveGrammar}
-            onNavigate={(t) => setActiveTab(t)}
-          />
-        )}
+          {activeTab === 'practice' && (
+            <PracticeSection
+              questions={practice}
+              onCompletePractice={handleCompletePractice}
+              onAwardXP={handleAwardXP}
+            />
+          )}
 
-        {activeTab === 'profile' && (
-          <ProfileSection
-            profile={profile}
-            vocabulary={vocabulary}
-            sentences={sentences}
-            onUpdateProfile={(updated) => setProfile((p) => ({ ...p, ...updated }))}
-            onSelectWord={() => handleSelectLearnSubTab('vocabulary')}
-            onSelectSentence={() => handleSelectLearnSubTab('sentences')}
-          />
-        )}
+          {isAITutorModule && (
+            <AITutorMainSection
+              userLevel={profile.level}
+              onIncrementSpeakingMinutes={handleIncrementSpeakingMinutes}
+              onAwardXP={handleAwardXP}
+            />
+          )}
 
-        {activeTab === 'admin' && (
-          <AdminPanelSection
-            vocabulary={vocabulary}
-            sentences={sentences}
-            structures={structures}
-            grammar={grammar}
-            practice={practice}
-            onAddVocab={handleAddVocab}
-            onDeleteVocab={onDeleteVocab}
-            onAddSentence={handleAddSentence}
-            onDeleteSentence={onDeleteSentence}
-            onResetAllData={handleResetAllData}
-          />
-        )}
-      </main>
+          {activeTab === 'progress' && (
+            <ProgressSection
+              progress={progress}
+              profile={profile}
+              onResetProgress={() => {
+                if (confirm('Reset your daily streak and progress counters?')) {
+                  setProgress(INITIAL_USER_PROGRESS);
+                }
+              }}
+            />
+          )}
+
+          {activeTab === 'saved' && (
+            <SavedContentSection
+              vocabulary={vocabulary}
+              sentences={sentences}
+              grammarLessons={grammar}
+              onToggleFavoriteVocab={handleToggleFavoriteVocab}
+              onToggleSaveSentence={handleToggleSaveSentence}
+              onToggleSaveGrammar={handleToggleSaveGrammar}
+              onNavigate={(t) => setActiveTab(t)}
+            />
+          )}
+
+          {activeTab === 'profile' && (
+            <ProfileSection
+              profile={profile}
+              vocabulary={vocabulary}
+              sentences={sentences}
+              onUpdateProfile={(updated) => setProfile((p) => ({ ...p, ...updated }))}
+              onSelectWord={() => handleSelectLearnSubTab('vocabulary')}
+              onSelectSentence={() => handleSelectLearnSubTab('sentences')}
+            />
+          )}
+
+          {activeTab === 'admin' && (
+            <AdminPanelSection
+              vocabulary={vocabulary}
+              sentences={sentences}
+              structures={structures}
+              grammar={grammar}
+              practice={practice}
+              onAddVocab={handleAddVocab}
+              onDeleteVocab={onDeleteVocab}
+              onAddSentence={handleAddSentence}
+              onDeleteSentence={onDeleteSentence}
+              onResetAllData={handleResetAllData}
+            />
+          )}
+        </main>
+      </div>
 
       {/* 3. Mobile Bottom Navigation (Ergonomic 5-item touch bar for mobile) */}
       <MobileBottomNav

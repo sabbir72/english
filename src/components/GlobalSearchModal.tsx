@@ -41,6 +41,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         (v) =>
           v.word.toLowerCase().includes(q) ||
           v.banglaMeaning.toLowerCase().includes(q) ||
+          v.pronunciation?.toLowerCase().includes(q) ||
           v.synonyms.some((s) => s.toLowerCase().includes(q))
       ),
       sentences: sentences.filter(
@@ -146,8 +147,8 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                             <span className="font-bold text-sm text-slate-900 dark:text-white">
                               {item.word}
                             </span>
-                            <span className="text-[10px] rounded bg-slate-200/70 px-1 py-0.2 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
-                              {item.partOfSpeech}
+                            <span className="text-[10px] rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 px-1.5 py-0.2 font-bangla font-semibold border border-emerald-200/50 dark:border-emerald-800/40">
+                              উচ্চারণ: {item.pronunciation}
                             </span>
                           </div>
                           <p className="truncate text-xs text-slate-600 dark:text-slate-400">

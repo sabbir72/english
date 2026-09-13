@@ -10,6 +10,19 @@ export type PartOfSpeech =
   | 'conjunction'
   | 'interjection';
 
+export interface OxfordWordItem {
+  id: string;
+  rank: number;
+  word: string;
+  pos: 'noun' | 'verb' | 'adjective' | 'adverb' | 'preposition' | 'conjunction' | 'pronoun';
+  cefr: 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
+  ipa: string;
+  banglaPronunciation?: string; // readable Bengali pronunciation e.g. "অ্যাবাউট", "অ্যাকশন"
+  bangla: string;
+  example: string;
+  definition?: string;
+}
+
 export interface VocabularyItem {
   id: string;
   word: string;
@@ -217,6 +230,7 @@ export type NavigationTab =
   | 'learn'
   | 'patterns'
   | 'builder'
+  | 'sentence-builder'
   | 'transformation'
   | 'word-family'
   | 'context-vocab'
@@ -227,12 +241,17 @@ export type NavigationTab =
   | 'sentence-structure'
   | 'grammar'
   | 'pronunciation'
+  | 'reading'
+  | 'conversation'
   | 'practice'
   | 'ai-tutor'
   | 'ai-conversation'
   | 'ai-tools'
   | 'progress'
   | 'saved'
+  | 'word-bank'
+  | 'habit'
+  | 'settings'
   | 'profile'
   | 'admin';
 

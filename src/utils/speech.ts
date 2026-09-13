@@ -8,26 +8,53 @@ export function isSpeechRecognitionSupported(): boolean {
 
 export function speakText(
   text: string,
-  rate: number = 1.0,
-  onEnd?: () => void,
+  rateOrAccent: number | string = 1.0,
+  rateOrOnEnd?: number | (() => void),
+  onEndCallback?: () => void,
   onError?: (e: any) => void
 ): void {
   if (!isSpeechSynthesisSupported()) {
     console.warn('Speech synthesis not supported in this browser.');
-    onEnd?.();
+    const callback = typeof rateOrOnEnd === 'function' ? rateOrOnEnd : onEndCallback;
+    callback?.();
     return;
   }
 
   try {
     window.speechSynthesis.cancel(); // Stop any pending utterance
     const utterance = new SpeechSynthesisUtterance(text);
+    
+    let rate = 1.0;
+    let lang = 'en-US';
+    let onEnd: (() => void) | undefined = undefined;
+
+    if (typeof rateOrAccent === 'number') {
+      rate = rateOrAccent;
+      if (typeof rateOrOnEnd === 'function') {
+        onEnd = rateOrOnEnd;
+      }
+    } else if (typeof rateOrAccent === 'string') {
+      lang = rateOrAccent.toUpperCase() === 'UK' ? 'en-GB' : 'en-US';
+      if (typeof rateOrOnEnd === 'number') {
+        rate = rateOrOnEnd;
+        onEnd = onEndCallback;
+      } else if (typeof rateOrOnEnd === 'function') {
+        onEnd = rateOrOnEnd;
+      }
+    }
+
     utterance.rate = Math.max(0.5, Math.min(1.5, rate));
     utterance.pitch = 1.0;
-    utterance.lang = 'en-US';
+    utterance.lang = lang;
 
     // Pick best English voice if available
     const voices = window.speechSynthesis.getVoices();
-    const englishVoice = voices.find(v => v.lang.startsWith('en-') && !v.name.includes('Google') || v.lang === 'en-US');
+    const englishVoice = voices.find(
+      (v) =>
+        (lang === 'en-GB' ? v.lang.includes('GB') : v.lang === 'en-US' || v.lang.startsWith('en-')) &&
+        !v.name.includes('Google')
+    ) || voices.find((v) => v.lang.startsWith('en-'));
+
     if (englishVoice) {
       utterance.voice = englishVoice;
     }
@@ -44,7 +71,8 @@ export function speakText(
     window.speechSynthesis.speak(utterance);
   } catch (err) {
     console.error('Failed to invoke speech synthesis:', err);
-    onEnd?.();
+    const callback = typeof rateOrOnEnd === 'function' ? rateOrOnEnd : onEndCallback;
+    callback?.();
   }
 }
 

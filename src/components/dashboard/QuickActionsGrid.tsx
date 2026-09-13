@@ -1,12 +1,13 @@
 import React from 'react';
 import {
   BookOpen,
-  MessageSquareQuote,
-  GraduationCap,
-  BotMessageSquare,
+  PenTool,
+  Puzzle,
+  Headphones,
+  BookMarked,
+  MessageSquare,
   ArrowRight,
 } from 'lucide-react';
-import { Card } from '../ui/Card';
 import { NavigationTab } from '../../types';
 
 export interface QuickActionsGridProps {
@@ -16,102 +17,129 @@ export interface QuickActionsGridProps {
 export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
   onSelectAction,
 }) => {
-  const actions = [
+  const cards = [
     {
       id: 'vocabulary' as NavigationTab,
       title: 'Vocabulary',
       titleBn: 'শব্দভাণ্ডার',
-      description: 'Learn new words with pronunciation & meanings',
-      cta: 'Explore Words',
-      icon: <BookOpen className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />,
-      badgeColor: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300',
-      iconBg: 'bg-emerald-50 dark:bg-emerald-950/50',
-    },
-    {
-      id: 'sentences' as NavigationTab,
-      title: 'Sentences',
-      titleBn: 'দৈনন্দিন বাক্য',
-      description: 'Practice useful sentences for daily conversations',
-      cta: 'Practice Sentences',
-      icon: <MessageSquareQuote className="h-6 w-6 text-blue-600 dark:text-blue-400" />,
-      badgeColor: 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300',
-      iconBg: 'bg-blue-50 dark:bg-blue-950/50',
+      description: 'Master daily English words with Bangla pronunciation & IPA.',
+      badge: '128+ Words',
+      emoji: '📖',
+      icon: <BookOpen className="h-5 w-5 text-[#4F46E5] dark:text-[#818CF8]" />,
+      iconBg: 'bg-indigo-50 dark:bg-indigo-950/50',
+      badgeColor: 'text-[#4F46E5] bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300',
     },
     {
       id: 'grammar' as NavigationTab,
       title: 'Grammar',
       titleBn: 'সহজ ব্যাকরণ',
-      description: 'Understand grammar easily with clear rules',
-      cta: 'Read Lessons',
-      icon: <GraduationCap className="h-6 w-6 text-purple-600 dark:text-purple-400" />,
-      badgeColor: 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300',
-      iconBg: 'bg-purple-50 dark:bg-purple-950/50',
+      description: 'Clear rules, tense patterns & common spoken mistake fixes.',
+      badge: '12 Lessons',
+      emoji: '✍️',
+      icon: <PenTool className="h-5 w-5 text-[#0EA5E9] dark:text-sky-400" />,
+      iconBg: 'bg-sky-50 dark:bg-sky-950/50',
+      badgeColor: 'text-[#0EA5E9] bg-sky-50 dark:bg-sky-950/60 dark:text-sky-300',
+    },
+    {
+      id: 'builder' as NavigationTab,
+      title: 'Sentence Builder',
+      titleBn: 'বাক্য নির্মাতা',
+      description: 'Interactive Subject + Verb + Object + Place + Time blocks.',
+      badge: '5-Slot Blocks',
+      emoji: '🧩',
+      icon: <Puzzle className="h-5 w-5 text-[#10B981] dark:text-emerald-400" />,
+      iconBg: 'bg-emerald-50 dark:bg-emerald-950/50',
+      badgeColor: 'text-[#10B981] bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300',
+    },
+    {
+      id: 'pronunciation' as NavigationTab,
+      title: 'Pronunciation',
+      titleBn: 'সঠিক উচ্চারণ',
+      description: 'Bangla phonetics, silent letters and audio speech comparison.',
+      badge: 'Audio & IPA',
+      emoji: '🎧',
+      icon: <Headphones className="h-5 w-5 text-[#F59E0B] dark:text-amber-400" />,
+      iconBg: 'bg-amber-50 dark:bg-amber-950/50',
+      badgeColor: 'text-[#F59E0B] bg-amber-50 dark:bg-amber-950/60 dark:text-amber-300',
+    },
+    {
+      id: 'reading' as NavigationTab,
+      title: 'Reading',
+      titleBn: 'রিডিং বুক',
+      description: 'Digital textbook stories with instant click-to-translate & audio.',
+      badge: 'Stories & Quizzes',
+      emoji: '📚',
+      icon: <BookMarked className="h-5 w-5 text-[#0EA5E9] dark:text-sky-400" />,
+      iconBg: 'bg-sky-50 dark:bg-sky-950/50',
+      badgeColor: 'text-[#0EA5E9] bg-sky-50 dark:bg-sky-950/60 dark:text-sky-300',
     },
     {
       id: 'ai-tutor' as NavigationTab,
-      title: 'AI Tutor',
-      titleBn: 'এআই স্পিকিং পার্টনার',
-      description: 'Practice English with AI anytime anywhere',
-      cta: 'Start Conversation',
-      icon: <BotMessageSquare className="h-6 w-6 text-amber-600 dark:text-amber-400" />,
-      badgeColor: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300',
-      iconBg: 'bg-amber-50 dark:bg-amber-950/50',
+      title: 'AI Conversation',
+      titleBn: 'কথোপকথন',
+      description: 'Practice real-life English dialogues with helpful Bangla corrections.',
+      badge: 'Speaking Partner',
+      emoji: '💬',
+      icon: <MessageSquare className="h-5 w-5 text-[#4F46E5] dark:text-[#818CF8]" />,
+      iconBg: 'bg-indigo-50 dark:bg-indigo-950/50',
+      badgeColor: 'text-[#4F46E5] bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300',
     },
   ];
 
   return (
-    <section id="quick-actions-section" className="space-y-3">
-      <div>
-        <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
-          Quick Actions
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 font-sans">
-          আপনার পছন্দমতো মডিউলে সরাসরি প্রবেশ করুন
-        </p>
+    <section id="learning-cards-section" className="space-y-3.5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg sm:text-xl font-black text-[#0F172A] dark:text-white tracking-tight">
+            Learning Modules
+          </h2>
+          <p className="text-xs text-[#475569] dark:text-slate-400 font-sans">
+            দক্ষতা অনুযায়ী প্রয়োজনীয় মডিউলে সরাসরি অনুশীলন শুরু করুন
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {actions.map((action) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {cards.map((card) => (
           <div
-            key={action.id}
-            onClick={() => onSelectAction(action.id)}
+            key={card.id}
+            onClick={() => onSelectAction(card.id)}
             className="group cursor-pointer"
           >
-            <Card
-              hoverEffect
-              padding="md"
-              className="h-full flex flex-col justify-between border border-slate-200/80 hover:border-emerald-300 dark:border-slate-800 dark:hover:border-emerald-700/80 transition-all duration-200"
-            >
+            <div className="h-full flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#1E293B] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-600/40">
               <div className="space-y-3">
-                {/* Icon header */}
                 <div className="flex items-center justify-between">
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-2xl ${action.iconBg} transition-transform duration-200 group-hover:scale-105`}
-                  >
-                    {action.icon}
+                  <div className="flex items-center gap-2.5">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${card.iconBg} transition-transform group-hover:scale-105`}>
+                      {card.icon}
+                    </div>
+                    <span className="text-base select-none">{card.emoji}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-slate-400 font-sans">
-                    {action.titleBn}
+                  <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-md font-sans ${card.badgeColor}`}>
+                    {card.badge}
                   </span>
                 </div>
 
-                {/* Title & Description */}
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                    {action.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-sans mt-1">
-                    {action.description}
+                  <div className="flex items-baseline gap-2">
+                    <h3 className="text-base font-black text-[#0F172A] dark:text-white group-hover:text-[#4F46E5] dark:group-hover:text-[#818CF8] transition-colors">
+                      {card.title}
+                    </h3>
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 font-bangla">
+                      {card.titleBn}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#475569] dark:text-slate-400 leading-relaxed mt-1">
+                    {card.description}
                   </p>
                 </div>
               </div>
 
-              {/* CTA Link */}
-              <div className="pt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                <span>{action.cta}</span>
-                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1" />
+              <div className="pt-3.5 mt-3.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold text-[#4F46E5] dark:text-[#818CF8]">
+                <span className="font-bangla font-semibold">অনুশীলন শুরু করুন</span>
+                <ArrowRight className="h-3.5 w-3.5 transform group-hover:translate-x-1 transition-transform" />
               </div>
-            </Card>
+            </div>
           </div>
         ))}
       </div>

@@ -74,7 +74,17 @@ export function saveStoredProgress(progress: UserProgress): void {
 export function getStoredVocabulary(): VocabularyItem[] {
   try {
     const raw = localStorage.getItem(KEYS.VOCAB);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const stored: VocabularyItem[] = JSON.parse(raw);
+      const storedIds = new Set(stored.map((item) => item.id));
+      const newItems = INITIAL_VOCABULARY.filter((item) => !storedIds.has(item.id));
+      if (newItems.length > 0) {
+        const merged = [...stored, ...newItems];
+        localStorage.setItem(KEYS.VOCAB, JSON.stringify(merged));
+        return merged;
+      }
+      return stored;
+    }
   } catch {}
   return INITIAL_VOCABULARY;
 }

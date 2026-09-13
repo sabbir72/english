@@ -6,10 +6,11 @@ import {
   Check,
   RotateCcw,
   Sparkles,
-  ArrowRight,
   BookmarkPlus,
   Zap,
-  HelpCircle,
+  Plus,
+  Layers,
+  ArrowRight,
 } from 'lucide-react';
 import { speakText } from '../../utils/speech';
 
@@ -17,36 +18,38 @@ interface SlotOption {
   value: string;
   bangla: string;
   thirdPersonValue?: string;
-  auxiliary?: string;
 }
 
-interface TemplateConfig {
+interface TemplateSlot {
+  role: string;
+  roleBangla: string;
+  color: string;
+  options: SlotOption[];
+}
+
+interface SentenceTemplate {
   id: string;
   name: string;
   nameBangla: string;
   description: string;
-  slots: {
-    slot1: { title: string; titleBangla: string; options: SlotOption[] };
-    slot2: { title: string; titleBangla: string; options: SlotOption[] };
-    slot3: { title: string; titleBangla: string; options: SlotOption[] };
-    slot4: { title: string; titleBangla: string; options: SlotOption[] };
-  };
-  computeSentence: (s1: SlotOption, s2: SlotOption, s3: SlotOption, s4: SlotOption) => {
+  slots: TemplateSlot[];
+  computeSentence: (selected: SlotOption[]) => {
     english: string;
     bangla: string;
   };
 }
 
-const TEMPLATES: TemplateConfig[] = [
+const TEMPLATES: SentenceTemplate[] = [
   {
-    id: 'want-need-plan',
-    name: 'Desires & Plans (want to / need to / plan to)',
-    nameBangla: 'ইচ্ছা ও পরিকল্পনা (করতে চাই / প্রয়োজন / পরিকল্পনা)',
-    description: 'Subject + Verb + to + Action + Object',
-    slots: {
-      slot1: {
-        title: '1. Subject (কর্তা)',
-        titleBangla: 'কে কাজ করবে?',
+    id: 'subject-verb-object-place-time',
+    name: 'Block Builder: Subject + Verb + Object + Place + Time',
+    nameBangla: 'প্রধান ব্লক: কর্তা + ক্রিয়া + কর্ম + স্থান + সময়',
+    description: '[Subject] + [Verb] + [Object] + [Place] + [Time]',
+    slots: [
+      {
+        role: 'Subject',
+        roleBangla: 'কর্তা (কে?)',
+        color: 'indigo',
         options: [
           { value: 'I', bangla: 'আমি' },
           { value: 'You', bangla: 'তুমি / আপনি' },
@@ -54,198 +57,153 @@ const TEMPLATES: TemplateConfig[] = [
           { value: 'They', bangla: 'তারা' },
           { value: 'He', bangla: 'সে (ছেলে)', thirdPersonValue: 'He' },
           { value: 'She', bangla: 'সে (মেয়ে)', thirdPersonValue: 'She' },
+          { value: 'Rahim', bangla: 'রহিম', thirdPersonValue: 'Rahim' },
         ],
       },
-      slot2: {
-        title: '2. Verb Anchor (ইচ্ছা/প্রয়োজন)',
-        titleBangla: 'কি ধরনের অনুভূতি?',
+      {
+        role: 'Verb',
+        roleBangla: 'ক্রিয়া (কি করে?)',
+        color: 'sky',
         options: [
-          { value: 'want to', bangla: 'করতে চাই', thirdPersonValue: 'wants to' },
-          { value: 'need to', bangla: 'করা প্রয়োজন', thirdPersonValue: 'needs to' },
-          { value: 'would like to', bangla: 'করতে আগ্রহী (বিনীত)', thirdPersonValue: 'would like to' },
-          { value: 'plan to', bangla: 'করার পরিকল্পনা করছি', thirdPersonValue: 'plans to' },
-          { value: 'love to', bangla: 'করতে ভালোবাসি', thirdPersonValue: 'loves to' },
-          { value: 'hope to', bangla: 'করার আশা রাখি', thirdPersonValue: 'hopes to' },
+          { value: 'eat', bangla: 'খাই', thirdPersonValue: 'eats' },
+          { value: 'practice', bangla: 'চর্চা করি', thirdPersonValue: 'practices' },
+          { value: 'learn', bangla: 'শিখি', thirdPersonValue: 'learns' },
+          { value: 'read', bangla: 'পড়ি', thirdPersonValue: 'reads' },
+          { value: 'drink', bangla: 'পান করি', thirdPersonValue: 'drinks' },
+          { value: 'cook', bangla: 'রান্না করি', thirdPersonValue: 'cooks' },
+          { value: 'watch', bangla: 'দেখি', thirdPersonValue: 'watches' },
         ],
       },
-      slot3: {
-        title: '3. Action Verb (ক্রিয়া)',
-        titleBangla: 'কোন কাজ করতে চায়?',
+      {
+        role: 'Object',
+        roleBangla: 'কর্ম (কি জিনিস?)',
+        color: 'emerald',
         options: [
-          { value: 'learn', bangla: 'শিখতে' },
-          { value: 'practice', bangla: 'অনুশীলন করতে' },
-          { value: 'improve', bangla: 'উন্নত করতে' },
-          { value: 'understand', bangla: 'বুঝতে' },
-          { value: 'speak', bangla: 'বলতে' },
-          { value: 'read', bangla: 'পড়তে' },
+          { value: 'rice', bangla: 'ভাত' },
+          { value: 'English', bangla: 'ইংরেজি' },
+          { value: 'books', bangla: 'বই' },
+          { value: 'tea', bangla: 'চা' },
+          { value: 'delicious food', bangla: 'সুস্বাদু খাবার' },
+          { value: 'news stories', bangla: 'খবরের গল্প' },
+          { value: 'grammar rules', bangla: 'ব্যাকরণের নিয়ম' },
         ],
       },
-      slot4: {
-        title: '4. Target / Object (কর্ম)',
-        titleBangla: 'কি শিখবে বা করবে?',
+      {
+        role: 'Place',
+        roleBangla: 'স্থান (কোথায়?)',
+        color: 'amber',
         options: [
-          { value: 'English fluently', bangla: 'অনর্গল ইংরেজি' },
-          { value: 'spoken English', bangla: 'স্পোকেন ইংরেজি' },
-          { value: 'English grammar rules', bangla: 'ইংরেজি ব্যাকরণের নিয়ম' },
-          { value: 'my pronunciation', bangla: 'আমার উচ্চারণ' },
-          { value: 'new vocabulary every day', bangla: 'প্রতিদিন নতুন শব্দ' },
-          { value: 'without hesitation', bangla: 'কোনো দ্বিধা ছাড়া' },
+          { value: 'at home', bangla: 'বাড়িতে' },
+          { value: 'online', bangla: 'অনলাইনে' },
+          { value: 'in the library', bangla: 'লাইব্রেরিতে' },
+          { value: 'in my room', bangla: 'আমার ঘরে' },
+          { value: 'at the cafe', bangla: 'ক্যাফেতে' },
+          { value: 'at university', bangla: 'বিশ্ববিদ্যালয়ে' },
         ],
       },
-    },
-    computeSentence: (s1, s2, s3, s4) => {
-      const is3rd = s1.value === 'He' || s1.value === 'She';
-      const verbPart = is3rd ? s2.thirdPersonValue || s2.value : s2.value;
+      {
+        role: 'Time',
+        roleBangla: 'সময় (কখন?)',
+        color: 'purple',
+        options: [
+          { value: 'in the morning', bangla: 'সকালে' },
+          { value: 'every day', bangla: 'প্রতিদিন' },
+          { value: 'in the evening', bangla: 'সন্ধ্যায়' },
+          { value: 'at night', bangla: 'রাতে' },
+          { value: 'on weekends', bangla: 'ছুটির দিনে' },
+          { value: 'after work', bangla: 'কাজের পরে' },
+        ],
+      },
+    ],
+    computeSentence: (selected) => {
+      const [sSub, sVerb, sObj, sPlace, sTime] = selected;
+      const is3rd = ['He', 'She', 'Rahim'].includes(sSub.value);
+      const engVerb = is3rd ? sVerb.thirdPersonValue || sVerb.value : sVerb.value;
 
-      let banglaSubject = s1.bangla;
-      if (s2.value === 'need to') {
-        if (s1.value === 'I') banglaSubject = 'আমার';
-        if (s1.value === 'You') banglaSubject = 'তোমার / আপনার';
-        if (s1.value === 'We') banglaSubject = 'আমাদের';
-        if (s1.value === 'They') banglaSubject = 'তাদের';
-        if (s1.value === 'He') banglaSubject = 'তার';
-        if (s1.value === 'She') banglaSubject = 'তার';
+      let bVerb = sVerb.bangla;
+      if (is3rd) {
+        if (bVerb === 'খাই') bVerb = 'খায়';
+        else if (bVerb === 'চর্চা করি') bVerb = 'চর্চা করে';
+        else if (bVerb === 'শিখি') bVerb = 'শেখে';
+        else if (bVerb === 'পড়ি') bVerb = 'পড়ে';
+        else if (bVerb === 'পান করি') bVerb = 'পান করে';
+        else if (bVerb === 'রান্না করি') bVerb = 'রান্না করে';
+        else if (bVerb === 'দেখি') bVerb = 'দেখে';
+      } else if (sSub.value === 'You') {
+        if (bVerb === 'খাই') bVerb = 'খাও';
+        else if (bVerb === 'চর্চা করি') bVerb = 'চর্চা করো';
+        else if (bVerb === 'শিখি') bVerb = 'শেখ';
+        else if (bVerb === 'পড়ি') bVerb = 'পড়';
+        else if (bVerb === 'পান করি') bVerb = 'পান করো';
+        else if (bVerb === 'রান্না করি') bVerb = 'রান্না করো';
+        else if (bVerb === 'দেখি') bVerb = 'দেখো';
       }
 
-      let adjustedTarget = s4.bangla;
-      if (is3rd && s4.value.includes('my')) {
-        adjustedTarget = s4.bangla.replace('আমার', 'তার');
-      } else if (s1.value === 'We' && s4.value.includes('my')) {
-        adjustedTarget = s4.bangla.replace('আমার', 'আমাদের');
-      } else if (s1.value === 'You' && s4.value.includes('my')) {
-        adjustedTarget = s4.bangla.replace('আমার', 'তোমার');
-      }
+      const english = `${sSub.value} ${engVerb} ${sObj.value} ${sPlace.value} ${sTime.value}.`;
+      const bangla = `${sSub.bangla} ${sTime.bangla} ${sPlace.bangla} ${sObj.bangla} ${bVerb}।`;
 
-      const englishTarget =
-        is3rd && s4.value.includes('my')
-          ? s4.value.replace('my', s1.value === 'He' ? 'his' : 'her')
-          : s1.value === 'We' && s4.value.includes('my')
-          ? s4.value.replace('my', 'our')
-          : s1.value === 'You' && s4.value.includes('my')
-          ? s4.value.replace('my', 'your')
-          : s4.value;
-
-      const english = `${s1.value} ${verbPart} ${s3.value} ${englishTarget}.`;
-      const bangla = `${banglaSubject} ${adjustedTarget} ${s3.bangla} ${s2.bangla}।`;
       return { english, bangla };
     },
   },
   {
-    id: 'trying-to-continuous',
-    name: 'Efforts & Continuous Actions (am/is/are trying to)',
-    nameBangla: 'চলমান প্রচেষ্টা (চেষ্টা করছি / কাজ করছি)',
-    description: 'Subject + be-verb + trying to + Verb + Object',
-    slots: {
-      slot1: {
-        title: '1. Subject (কর্তা)',
-        titleBangla: 'কে চেষ্টা করছে?',
-        options: [
-          { value: 'I', bangla: 'আমি', auxiliary: 'am' },
-          { value: 'You', bangla: 'তুমি / আপনি', auxiliary: 'are' },
-          { value: 'We', bangla: 'আমরা', auxiliary: 'are' },
-          { value: 'They', bangla: 'তারা', auxiliary: 'are' },
-          { value: 'He', bangla: 'সে (ছেলে)', auxiliary: 'is' },
-          { value: 'She', bangla: 'সে (মেয়ে)', auxiliary: 'is' },
-        ],
-      },
-      slot2: {
-        title: '2. Continuous Pattern (চেষ্টা)',
-        titleBangla: 'প্রচেষ্টার ধরন',
-        options: [
-          { value: 'trying to', bangla: 'চেষ্টা করছি' },
-          { value: 'working to', bangla: 'উন্নতির কাজ করছি' },
-          { value: 'starting to', bangla: 'শুরু করছি' },
-          { value: 'struggling to', bangla: 'কষ্ট হচ্ছে কিন্তু চেষ্টা করছি' },
-        ],
-      },
-      slot3: {
-        title: '3. Action (কাজ)',
-        titleBangla: 'কোন বিষয়ে প্রচেষ্টা?',
-        options: [
-          { value: 'speak', bangla: 'কথা বলতে' },
-          { value: 'build', bangla: 'তৈরি করতে' },
-          { value: 'overcome', bangla: 'কাটিয়ে উঠতে' },
-          { value: 'master', bangla: 'আয়ত্তে আনতে' },
-          { value: 'remember', bangla: 'মনে রাখতে' },
-        ],
-      },
-      slot4: {
-        title: '4. Goal / Detail (লক্ষ্য)',
-        titleBangla: 'নির্দিষ্ট ক্ষেত্র',
-        options: [
-          { value: 'English with confidence', bangla: 'আত্মবিশ্বাসের সাথে ইংরেজি' },
-          { value: 'longer sentences', bangla: 'বড় বড় বাক্য' },
-          { value: 'speaking hesitation', bangla: 'কথা বলার জড়তা' },
-          { value: 'daily vocabulary', bangla: 'দৈনিক শব্দভাণ্ডার' },
-          { value: 'common mistakes', bangla: 'সাধারণ ভুলগুলো' },
-        ],
-      },
-    },
-    computeSentence: (s1, s2, s3, s4) => {
-      const aux = s1.auxiliary || 'am';
-      const english = `${s1.value} ${aux} ${s2.value} ${s3.value} ${s4.value}.`;
-      const bangla = `${s1.bangla} ${s4.bangla} ${s3.bangla} ${s2.bangla}।`;
-      return { english, bangla };
-    },
-  },
-  {
-    id: 'habit-routine',
-    name: 'Daily Habits & Routine (প্রতিদিনের অভ্যাস)',
-    nameBangla: 'অভ্যাস ও সময় (আমি প্রতিদিন... করি)',
-    description: 'Subject + Verb + Object + Time Expression',
-    slots: {
-      slot1: {
-        title: '1. Subject (কর্তা)',
-        titleBangla: 'কে করে?',
+    id: 'desires-plans',
+    name: 'Desires & Plans (want to / need to / plan to)',
+    nameBangla: 'ইচ্ছা ও পরিকল্পনা (করতে চাই / প্রয়োজন / পরিকল্পনা)',
+    description: '[Subject] + [Need/Want] + [Action] + [Target]',
+    slots: [
+      {
+        role: 'Subject',
+        roleBangla: 'কর্তা',
+        color: 'indigo',
         options: [
           { value: 'I', bangla: 'আমি' },
+          { value: 'You', bangla: 'তুমি' },
           { value: 'We', bangla: 'আমরা' },
           { value: 'They', bangla: 'তারা' },
-          { value: 'You', bangla: 'তুমি' },
-          { value: 'He', bangla: 'সে', thirdPersonValue: 'He' },
+          { value: 'He', bangla: 'সে (ছেলে)', thirdPersonValue: 'He' },
         ],
       },
-      slot2: {
-        title: '2. Habitual Verb (ক্রিয়া)',
-        titleBangla: 'কি কাজ করে?',
+      {
+        role: 'Anchor',
+        roleBangla: 'ইচ্ছা/প্রয়োজন',
+        color: 'sky',
         options: [
-          { value: 'learn', bangla: 'শিখি', thirdPersonValue: 'learns' },
-          { value: 'practice', bangla: 'চর্চা করি', thirdPersonValue: 'practices' },
-          { value: 'read', bangla: 'পড়ি', thirdPersonValue: 'reads' },
-          { value: 'watch', bangla: 'দেখি', thirdPersonValue: 'watches' },
-          { value: 'listen to', bangla: 'শুনি', thirdPersonValue: 'listens to' },
+          { value: 'want to', bangla: 'করতে চাই', thirdPersonValue: 'wants to' },
+          { value: 'need to', bangla: 'করা দরকার', thirdPersonValue: 'needs to' },
+          { value: 'plan to', bangla: 'করার পরিকল্পনা করছি', thirdPersonValue: 'plans to' },
+          { value: 'would like to', bangla: 'করতে আগ্রহী', thirdPersonValue: 'would like to' },
+          { value: 'love to', bangla: 'করতে ভালোবাসি', thirdPersonValue: 'loves to' },
         ],
       },
-      slot3: {
-        title: '3. What (বিষয়/বস্তু)',
-        titleBangla: 'কি বিষয়?',
+      {
+        role: 'Action',
+        roleBangla: 'কোন কাজ?',
+        color: 'emerald',
         options: [
-          { value: 'English lessons', bangla: 'ইংরেজি পাঠ' },
-          { value: 'English podcasts', bangla: 'ইংরেজি পডকাস্ট' },
-          { value: 'short stories', bangla: 'ছোট গল্প' },
-          { value: 'speaking with AI', bangla: 'এআই-এর সাথে কথা বলা' },
-          { value: 'new words', bangla: 'নতুন শব্দ' },
+          { value: 'speak', bangla: 'কথা বলতে' },
+          { value: 'learn', bangla: 'শিখতে' },
+          { value: 'improve', bangla: 'উন্নত করতে' },
+          { value: 'practice', bangla: 'অনুশীলন করতে' },
         ],
       },
-      slot4: {
-        title: '4. Time Expression (সময়)',
-        titleBangla: 'কখন করে?',
+      {
+        role: 'Target',
+        roleBangla: 'কি লক্ষ্য?',
+        color: 'purple',
         options: [
-          { value: 'every day', bangla: 'প্রতিদিন' },
-          { value: 'every morning', bangla: 'প্রতিদিন সকালে' },
-          { value: 'in the evening', bangla: 'সন্ধ্যায়' },
-          { value: 'on weekends', bangla: 'ছুটির দিনে' },
-          { value: 'before going to sleep', bangla: 'ঘুমাতে যাওয়ার আগে' },
+          { value: 'English fluently', bangla: 'অনর্গল ইংরেজি' },
+          { value: 'my pronunciation', bangla: 'আমার উচ্চারণ' },
+          { value: 'new words every day', bangla: 'প্রতিদিন নতুন শব্দ' },
+          { value: 'without fear', bangla: 'ভয় ছাড়া' },
         ],
       },
-    },
-    computeSentence: (s1, s2, s3, s4) => {
-      const is3rd = s1.value === 'He';
-      const verb = is3rd ? s2.thirdPersonValue || s2.value : s2.value;
-      const banglaVerb = is3rd ? s2.bangla.replace('ি', 'ে') : s2.bangla;
-
-      const english = `${s1.value} ${verb} ${s3.value} ${s4.value}.`;
-      const bangla = `${s1.bangla} ${s4.bangla} ${s3.bangla} ${banglaVerb}।`;
+    ],
+    computeSentence: (selected) => {
+      const [sSub, sAnchor, sAct, sTgt] = selected;
+      const is3rd = sSub.value === 'He';
+      const verbPart = is3rd ? sAnchor.thirdPersonValue || sAnchor.value : sAnchor.value;
+      const english = `${sSub.value} ${verbPart} ${sAct.value} ${sTgt.value}.`;
+      const bangla = `${sSub.bangla} ${sTgt.bangla} ${sAct.bangla} ${sAnchor.bangla}।`;
       return { english, bangla };
     },
   },
@@ -262,68 +220,46 @@ export const InteractiveSentenceBuilder: React.FC<InteractiveSentenceBuilderProp
   onSendToAITutor,
   onAwardXP,
 }) => {
-  const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0);
-  const currentTemplate = TEMPLATES[selectedTemplateIndex];
+  const [templateIdx, setTemplateIdx] = useState(0);
+  const currentTemplate = TEMPLATES[templateIdx];
 
-  // Selected slot options indices
-  const [slot1Idx, setSlot1Idx] = useState(0);
-  const [slot2Idx, setSlot2Idx] = useState(0);
-  const [slot3Idx, setSlot3Idx] = useState(0);
-  const [slot4Idx, setSlot4Idx] = useState(0);
+  // Store selected index for each slot of the current template
+  const [slotIndices, setSlotIndices] = useState<number[]>([0, 0, 0, 0, 0]);
+  const [activeSlotModal, setActiveSlotModal] = useState<number | null>(null);
 
-  // Stats & built sentences history
-  const [builtCount, setBuiltCount] = useState(1);
-  const [builtHistory, setBuiltHistory] = useState<
-    Array<{ english: string; bangla: string; timestamp: number }>
-  >([]);
   const [copied, setCopied] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [builtCount, setBuiltCount] = useState(1);
 
-  // Compute live sentence
-  const currentSentence = useMemo(() => {
-    const s1 = currentTemplate.slots.slot1.options[slot1Idx] || currentTemplate.slots.slot1.options[0];
-    const s2 = currentTemplate.slots.slot2.options[slot2Idx] || currentTemplate.slots.slot2.options[0];
-    const s3 = currentTemplate.slots.slot3.options[slot3Idx] || currentTemplate.slots.slot3.options[0];
-    const s4 = currentTemplate.slots.slot4.options[slot4Idx] || currentTemplate.slots.slot4.options[0];
-
-    return currentTemplate.computeSentence(s1, s2, s3, s4);
-  }, [currentTemplate, slot1Idx, slot2Idx, slot3Idx, slot4Idx]);
-
-  const handleSelectSlotOption = (slotNumber: 1 | 2 | 3 | 4, optionIndex: number) => {
-    if (slotNumber === 1) setSlot1Idx(optionIndex);
-    if (slotNumber === 2) setSlot2Idx(optionIndex);
-    if (slotNumber === 3) setSlot3Idx(optionIndex);
-    if (slotNumber === 4) setSlot4Idx(optionIndex);
-
-    setBuiltCount((prev) => {
-      const next = prev + 1;
-      if (next % 5 === 0 && onAwardXP) {
-        onAwardXP(15);
-      }
-      return next;
+  // Compute active slots
+  const selectedOptions = useMemo(() => {
+    return currentTemplate.slots.map((slot, i) => {
+      const selectedIndex = slotIndices[i] ?? 0;
+      return slot.options[selectedIndex] || slot.options[0];
     });
+  }, [currentTemplate, slotIndices]);
 
-    // Auto-record to history if unique
-    setBuiltHistory((prev) => {
-      if (prev.some((h) => h.english === currentSentence.english)) return prev;
-      return [{ ...currentSentence, timestamp: Date.now() }, ...prev.slice(0, 9)];
+  const currentSentence = useMemo(() => {
+    return currentTemplate.computeSentence(selectedOptions);
+  }, [currentTemplate, selectedOptions]);
+
+  const handleSelectSlotOption = (slotIdx: number, optionIdx: number) => {
+    const updated = [...slotIndices];
+    updated[slotIdx] = optionIdx;
+    setSlotIndices(updated);
+    setBuiltCount((c) => {
+      const next = c + 1;
+      if (next === 10 && onAwardXP) onAwardXP(20);
+      return next;
     });
   };
 
-  const handleRandomize = () => {
-    const r1 = Math.floor(Math.random() * currentTemplate.slots.slot1.options.length);
-    const r2 = Math.floor(Math.random() * currentTemplate.slots.slot2.options.length);
-    const r3 = Math.floor(Math.random() * currentTemplate.slots.slot3.options.length);
-    const r4 = Math.floor(Math.random() * currentTemplate.slots.slot4.options.length);
-    setSlot1Idx(r1);
-    setSlot2Idx(r2);
-    setSlot3Idx(r3);
-    setSlot4Idx(r4);
-    setBuiltCount((p) => p + 1);
+  const handleClear = () => {
+    setSlotIndices(currentTemplate.slots.map(() => 0));
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`${currentSentence.english} (${currentSentence.bangla})`);
+    navigator.clipboard.writeText(currentSentence.english);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -336,318 +272,261 @@ export const InteractiveSentenceBuilder: React.FC<InteractiveSentenceBuilderProp
     }
   };
 
+  const handleRandomize = () => {
+    const random = currentTemplate.slots.map((slot) =>
+      Math.floor(Math.random() * slot.options.length)
+    );
+    setSlotIndices(random);
+    setBuiltCount((c) => c + 1);
+  };
+
+  const colorBadgeClasses: Record<string, string> = {
+    indigo: 'bg-indigo-50 border-indigo-200 text-indigo-900 dark:bg-indigo-950/70 dark:border-indigo-800 dark:text-indigo-200',
+    sky: 'bg-sky-50 border-sky-200 text-sky-900 dark:bg-sky-950/70 dark:border-sky-800 dark:text-sky-200',
+    emerald: 'bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-950/70 dark:border-emerald-800 dark:text-emerald-200',
+    amber: 'bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950/70 dark:border-amber-800 dark:text-amber-200',
+    purple: 'bg-purple-50 border-purple-200 text-purple-900 dark:bg-purple-950/70 dark:border-purple-800 dark:text-purple-200',
+  };
+
   return (
-    <div id="interactive-sentence-builder" className="space-y-6">
+    <div id="interactive-sentence-builder" className="space-y-6 animate-in fade-in duration-300">
       {/* Header Banner */}
-      <div className="rounded-3xl border border-emerald-200/80 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent p-5 sm:p-6 dark:border-emerald-800/60 dark:bg-emerald-950/20">
+      <div className="rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50/90 via-white to-sky-50/50 p-6 sm:p-7 shadow-xs dark:border-indigo-950/60 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/30">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-0.5 text-xs font-bold text-white shadow-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-0.5 text-xs font-bold text-white shadow-xs">
                 <Wand2 className="h-3.5 w-3.5" />
-                Interactive Sentence Builder
+                Visual Sentence Builder
               </span>
-              <span className="text-xs font-medium text-emerald-800 dark:text-emerald-300">
-                ইন্টারঅ্যাক্টিভ বাক্য নির্মাতা
+              <span className="text-xs font-semibold text-indigo-800 dark:text-indigo-300 font-bangla">
+                ব্লক দিয়ে ইংরেজি বাক্য তৈরি করুন
               </span>
             </div>
-            <h2 className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-              একটি কাঠামো থেকে শত শত বাক্য তৈরি করুন
-            </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
-              নিচের শব্দগুলোর যেকোনো অংশে ট্যাপ করে পরিবর্তন করুন। দেখুন কীভাবে একটি কাঠামো ঠিক রেখে বিভিন্ন শব্দ বসিয়ে নতুন নতুন সাবলীল ইংরেজি বাক্য তৈরি করা যায়।
+            <h1 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              [Subject] + [Verb] + [Object] + [Place] + [Time]
+            </h1>
+            <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl font-sans">
+              যেকোনো ব্লকে ক্লিক করে শব্দ পরিবর্তন করুন। মুহূর্তের মধ্যে ইংরেজি বাক্য এবং সঠিক বাংলা অনুবাদ তৈরি হবে।
             </p>
           </div>
 
           {/* Gamified Challenge Badge */}
-          <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-white/90 p-3 shadow-xs dark:border-slate-800 dark:bg-slate-900/90 shrink-0">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-white shadow-sm font-black">
+          <div className="flex items-center gap-3 rounded-2xl border border-indigo-200 bg-white/95 p-3.5 shadow-2xs dark:border-slate-800 dark:bg-slate-900/90 shrink-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-white shadow-xs font-black">
               <Zap className="h-5 w-5 fill-current" />
             </div>
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Challenge Goal
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Sentence Challenge
               </div>
               <div className="text-sm font-black text-slate-900 dark:text-white">
-                {builtCount} / 10 বাক্য তৈরি
+                {builtCount} টি বাক্য তৈরি
               </div>
-              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                {builtCount >= 10 ? '🎉 লক্ষ্য অর্জিত! (+20 XP)' : '১০টি বাক্য তৈরি করে XP জিতুন'}
+              <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold font-bangla">
+                {builtCount >= 10 ? '🎉 লক্ষ্য অর্জিত! (+20 XP)' : '১০টি বাক্য তৈরি করে XP পান'}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Template Switcher Tabs */}
-        <div className="mt-5 flex flex-wrap gap-2 pt-4 border-t border-emerald-200/60 dark:border-slate-800">
+        {/* Template Selector */}
+        <div className="mt-5 flex flex-wrap gap-2 pt-4 border-t border-slate-200/70 dark:border-slate-800">
           {TEMPLATES.map((tmpl, idx) => (
             <button
               key={tmpl.id}
               onClick={() => {
-                setSelectedTemplateIndex(idx);
-                setSlot1Idx(0);
-                setSlot2Idx(0);
-                setSlot3Idx(0);
-                setSlot4Idx(0);
+                setTemplateIdx(idx);
+                setSlotIndices(tmpl.slots.map(() => 0));
               }}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition-all ${
-                selectedTemplateIndex === idx
-                  ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30 scale-102'
-                  : 'bg-white text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800'
+              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition-all border ${
+                templateIdx === idx
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
               }`}
             >
-              <span className="block font-sans">{tmpl.name}</span>
-              <span className="text-[10px] opacity-80 block">{tmpl.nameBangla}</span>
+              <span>{tmpl.name}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Live Generated Sentence Display (The Stage) */}
-      <div className="relative overflow-hidden rounded-3xl border-2 border-emerald-500/40 bg-white p-6 shadow-md dark:border-emerald-600/40 dark:bg-slate-900">
+      {/* Visual Interactive Block Chain */}
+      <div className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-7 shadow-xs dark:border-slate-800/80 dark:bg-slate-900">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Live Sentence Preview
+            <Layers className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Interactive Block Chain (ক্লিক করে শব্দ পরিবর্তন করুন)
             </span>
           </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleRandomize}
-              className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              title="Randomize slots to discover a new sentence"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-              <span>Random Sentence</span>
-            </button>
-          </div>
+          <button
+            onClick={handleRandomize}
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition-colors"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+            <span>Randomize</span>
+          </button>
         </div>
 
-        {/* Big English Output */}
-        <div className="py-4">
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
-            {currentSentence.english}
-          </div>
+        {/* The 5 Clickable Blocks Chain */}
+        <div className="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
+          {currentTemplate.slots.map((slot, sIdx) => {
+            const currentOption = selectedOptions[sIdx];
+            const is3rd = ['He', 'She', 'Rahim'].includes(selectedOptions[0]?.value);
+            const displayVal = (sIdx === 1 && is3rd && currentOption.thirdPersonValue)
+              ? currentOption.thirdPersonValue
+              : currentOption.value;
 
-          {/* Bengali Meaning */}
-          <div className="mt-2 text-base sm:text-lg font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
-            <span>বাংলা অর্থ:</span>
-            <span>{currentSentence.bangla}</span>
-          </div>
+            return (
+              <React.Fragment key={sIdx}>
+                <div
+                  onClick={() => setActiveSlotModal(activeSlotModal === sIdx ? null : sIdx)}
+                  className={`cursor-pointer rounded-2xl border-2 p-3 sm:p-3.5 transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                    colorBadgeClasses[slot.color] || colorBadgeClasses.indigo
+                  } ${activeSlotModal === sIdx ? 'ring-2 ring-indigo-500 shadow-md' : 'shadow-xs'}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider opacity-70">
+                      {slot.role}
+                    </span>
+                    <span className="text-[10px] font-bangla opacity-70 font-semibold">
+                      {slot.roleBangla}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-base sm:text-lg font-black tracking-tight">
+                    {displayVal}
+                  </div>
+                  <div className="text-xs opacity-80 font-bangla font-semibold">
+                    {currentOption.bangla}
+                  </div>
+                </div>
 
-          {/* Formula tag */}
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-mono font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-            <span>Structure:</span>
-            <span>{currentTemplate.description}</span>
-          </div>
+                {sIdx < currentTemplate.slots.length - 1 && (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 font-black text-sm shrink-0">
+                    +
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
 
-        {/* Action Controls Bar */}
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => speakText(currentSentence.english)}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 shadow-sm transition-transform active:scale-95"
-            >
-              <Volume2 className="h-4 w-4" />
-              <span>Listen Pronunciation</span>
-            </button>
+        {/* Live Sentence Preview Output Box */}
+        <div className="mt-7 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-5 sm:p-6 dark:border-indigo-950/60 dark:bg-slate-800/40">
+          <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-400 font-bold text-xs">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Live Sentence Preview & Instant Translation</span>
+          </div>
 
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-            >
-              {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-              <span>{copied ? 'Copied!' : 'Copy'}</span>
-            </button>
+          <div className="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-snug font-sans">
+            &ldquo;{currentSentence.english}&rdquo;
+          </div>
 
-            {onSaveSentence && (
+          <div className="mt-2 text-base sm:text-lg font-bold text-emerald-700 dark:text-emerald-300 font-bangla flex items-start gap-2">
+            <span className="shrink-0 text-xs px-2 py-0.5 rounded bg-emerald-100/80 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-sans font-bold">
+              বাংলা
+            </span>
+            <span>&ldquo;{currentSentence.bangla}&rdquo;</span>
+          </div>
+
+          {/* Action Buttons: Pronunciation, Copy, Clear, Save to Word Bank */}
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-indigo-100/80 dark:border-slate-800">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={() => speakText(currentSentence.english, 'US')}
+                className="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-indigo-700 shadow-xs transition-all active:scale-95"
+              >
+                <Volume2 className="h-4 w-4" />
+                <span>উচ্চারণ শুনুন (Audio)</span>
+              </button>
+
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition-colors shadow-2xs"
+              >
+                {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                <span>{copied ? 'কপি হয়েছে!' : 'Copy'}</span>
+              </button>
+
+              <button
+                onClick={handleClear}
+                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition-colors shadow-2xs"
+                title="রিসেট করুন"
+              >
+                <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
+                <span>Clear</span>
+              </button>
+
               <button
                 onClick={handleSave}
-                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-xs font-bold text-indigo-700 hover:bg-indigo-50 dark:border-indigo-900 dark:bg-slate-800 dark:text-indigo-300 transition-colors shadow-2xs"
               >
                 {savedSuccess ? (
                   <Check className="h-3.5 w-3.5 text-emerald-600" />
                 ) : (
                   <BookmarkPlus className="h-3.5 w-3.5 text-amber-500" />
                 )}
-                <span>{savedSuccess ? 'Saved!' : 'Save Sentence'}</span>
+                <span>{savedSuccess ? 'সংরক্ষিত!' : 'Add to Word Bank'}</span>
+              </button>
+            </div>
+
+            {onSendToAITutor && (
+              <button
+                onClick={() => onSendToAITutor(currentSentence.english)}
+                className="flex items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2.5 text-xs font-bold text-sky-800 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-300 transition-colors"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-sky-600" />
+                <span>Practice with AI Tutor</span>
               </button>
             )}
           </div>
+        </div>
+      </div>
 
-          {onSendToAITutor && (
-            <button
-              onClick={() => onSendToAITutor(currentSentence.english)}
-              className="flex items-center gap-1.5 rounded-xl border border-teal-200 bg-teal-50 px-3.5 py-2 text-xs font-bold text-teal-800 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/40 dark:text-teal-300"
+      {/* Grid of Clickable Slot Options */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        {currentTemplate.slots.map((slot, sIdx) => {
+          const currentSelectedIdx = slotIndices[sIdx] ?? 0;
+          return (
+            <div
+              key={sIdx}
+              className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900"
             >
-              <Sparkles className="h-3.5 w-3.5 text-teal-600" />
-              <span>Practice with AI Tutor</span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Interactive 4-Slot Selector Columns */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Slot 1 */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-          <div className="mb-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-              Slot 1
-            </span>
-            <h3 className="text-xs font-black text-slate-900 dark:text-white">
-              {currentTemplate.slots.slot1.title}
-            </h3>
-            <p className="text-[11px] text-slate-500">{currentTemplate.slots.slot1.titleBangla}</p>
-          </div>
-          <div className="space-y-1.5">
-            {currentTemplate.slots.slot1.options.map((opt, i) => (
-              <button
-                key={i}
-                onClick={() => handleSelectSlotOption(1, i)}
-                className={`w-full rounded-xl p-2.5 text-left text-xs transition-all ${
-                  slot1Idx === i
-                    ? 'border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-bold shadow-xs dark:bg-emerald-950/60 dark:text-emerald-200'
-                    : 'border border-slate-100 bg-slate-50 text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300'
-                }`}
-              >
-                <div className="font-sans font-bold">{opt.value}</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">{opt.bangla}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Slot 2 */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-          <div className="mb-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
-              Slot 2
-            </span>
-            <h3 className="text-xs font-black text-slate-900 dark:text-white">
-              {currentTemplate.slots.slot2.title}
-            </h3>
-            <p className="text-[11px] text-slate-500">{currentTemplate.slots.slot2.titleBangla}</p>
-          </div>
-          <div className="space-y-1.5">
-            {currentTemplate.slots.slot2.options.map((opt, i) => (
-              <button
-                key={i}
-                onClick={() => handleSelectSlotOption(2, i)}
-                className={`w-full rounded-xl p-2.5 text-left text-xs transition-all ${
-                  slot2Idx === i
-                    ? 'border-2 border-teal-500 bg-teal-50 text-teal-950 font-bold shadow-xs dark:bg-teal-950/60 dark:text-teal-200'
-                    : 'border border-slate-100 bg-slate-50 text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300'
-                }`}
-              >
-                <div className="font-sans font-bold">{opt.value}</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">{opt.bangla}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Slot 3 */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-          <div className="mb-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-              Slot 3
-            </span>
-            <h3 className="text-xs font-black text-slate-900 dark:text-white">
-              {currentTemplate.slots.slot3.title}
-            </h3>
-            <p className="text-[11px] text-slate-500">{currentTemplate.slots.slot3.titleBangla}</p>
-          </div>
-          <div className="space-y-1.5">
-            {currentTemplate.slots.slot3.options.map((opt, i) => (
-              <button
-                key={i}
-                onClick={() => handleSelectSlotOption(3, i)}
-                className={`w-full rounded-xl p-2.5 text-left text-xs transition-all ${
-                  slot3Idx === i
-                    ? 'border-2 border-blue-500 bg-blue-50 text-blue-950 font-bold shadow-xs dark:bg-blue-950/60 dark:text-blue-200'
-                    : 'border border-slate-100 bg-slate-50 text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300'
-                }`}
-              >
-                <div className="font-sans font-bold">{opt.value}</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">{opt.bangla}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Slot 4 */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-          <div className="mb-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">
-              Slot 4
-            </span>
-            <h3 className="text-xs font-black text-slate-900 dark:text-white">
-              {currentTemplate.slots.slot4.title}
-            </h3>
-            <p className="text-[11px] text-slate-500">{currentTemplate.slots.slot4.titleBangla}</p>
-          </div>
-          <div className="space-y-1.5">
-            {currentTemplate.slots.slot4.options.map((opt, i) => (
-              <button
-                key={i}
-                onClick={() => handleSelectSlotOption(4, i)}
-                className={`w-full rounded-xl p-2.5 text-left text-xs transition-all ${
-                  slot4Idx === i
-                    ? 'border-2 border-purple-500 bg-purple-50 text-purple-950 font-bold shadow-xs dark:bg-purple-950/60 dark:text-purple-200'
-                    : 'border border-slate-100 bg-slate-50 text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300'
-                }`}
-              >
-                <div className="font-sans font-bold">{opt.value}</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">{opt.bangla}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Recently Built Sentences Reel */}
-      {builtHistory.length > 0 && (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-850">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700">
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <RotateCcw className="h-3.5 w-3.5 text-emerald-600" />
-              আপনার তৈরি করা বাক্যসমূহ (Session History):
-            </span>
-            <span className="text-[11px] text-slate-500">
-              মোট তৈরি: {builtHistory.length}টি
-            </span>
-          </div>
-
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {builtHistory.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between rounded-xl bg-white p-3 shadow-2xs dark:bg-slate-900 border border-slate-100 dark:border-slate-800"
-              >
-                <div>
-                  <div className="text-xs font-bold text-slate-900 dark:text-white">
-                    {item.english}
-                  </div>
-                  <div className="text-[11px] text-emerald-700 dark:text-emerald-300">
-                    {item.bangla}
-                  </div>
-                </div>
-                <button
-                  onClick={() => speakText(item.english)}
-                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-slate-800"
-                  title="Listen"
-                >
-                  <Volume2 className="h-4 w-4" />
-                </button>
+              <div className="mb-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                  {slot.role}
+                </span>
+                <h3 className="text-xs font-black text-slate-900 dark:text-white">
+                  {slot.roleBangla}
+                </h3>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+
+              <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+                {slot.options.map((opt, oIdx) => {
+                  const isSelected = currentSelectedIdx === oIdx;
+                  return (
+                    <button
+                      key={oIdx}
+                      onClick={() => handleSelectSlotOption(sIdx, oIdx)}
+                      className={`w-full rounded-xl p-2 text-left text-xs transition-all ${
+                        isSelected
+                          ? 'border-2 border-indigo-600 bg-indigo-50 text-indigo-950 font-bold shadow-2xs dark:bg-indigo-950/60 dark:text-indigo-200'
+                          : 'border border-slate-100 bg-slate-50 text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300'
+                      }`}
+                    >
+                      <div className="font-sans font-bold capitalize">{opt.value}</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 font-bangla">
+                        {opt.bangla}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

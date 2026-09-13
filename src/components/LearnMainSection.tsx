@@ -338,6 +338,7 @@ export const LearnMainSection: React.FC<LearnMainSectionProps> = ({
               setActiveLearnWord(word);
               onPracticeVocabWord(word);
             }}
+            onAwardXP={onAwardXP}
           />
         )}
 

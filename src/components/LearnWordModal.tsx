@@ -116,10 +116,12 @@ export const LearnWordModal: React.FC<LearnWordModalProps> = ({
                 {word.word}
               </h2>
 
-              <div className="flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400">
-                <span className="font-mono text-sm">{word.ipa}</span>
-                <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 font-sans">
-                  ({word.pronunciation})
+              <div className="flex flex-wrap items-center justify-center gap-2 text-slate-500 dark:text-slate-400">
+                <span className="font-mono text-sm bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-lg">
+                  {word.ipa}
+                </span>
+                <span className="rounded-lg bg-emerald-100 dark:bg-emerald-950/80 px-3 py-0.5 text-sm font-bold text-emerald-800 dark:text-emerald-300 font-bangla border border-emerald-200 dark:border-emerald-800">
+                  উচ্চারণ: {word.pronunciation}
                 </span>
               </div>
 
