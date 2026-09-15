@@ -14,6 +14,7 @@ import { SavedContentSection } from './components/SavedContentSection';
 import { ProfileSection } from './components/ProfileSection';
 import { AdminPanelSection } from './components/AdminPanelSection';
 import { ReadingSection } from './components/ReadingSection';
+import { SpokenBookSection } from './components/book/SpokenBookSection';
 import { DailyHabitSection } from './components/DailyHabitSection';
 import { Sidebar } from './components/Sidebar';
 
@@ -132,7 +133,7 @@ export function App() {
   }, [practice]);
 
   // Award XP helper with confetti
-  const handleAwardXP = (amount: number) => {
+  const handleAwardXP = (amount: number, _reason?: string) => {
     setProgress((prev) => ({
       ...prev,
       xp: (prev.xp || 140) + amount,
@@ -412,6 +413,38 @@ export function App() {
               onNavigate={handleNavigate}
               onSelectLearnSubTab={handleSelectLearnSubTab}
               onAwardXP={handleAwardXP}
+            />
+          )}
+
+          {activeTab === 'book' && (
+            <SpokenBookSection
+              onAwardXP={handleAwardXP}
+              onSaveSentence={(english, bangla) => {
+                setSentences((prev) => {
+                  const exists = prev.some((s) => s.english.toLowerCase() === english.toLowerCase());
+                  if (exists) {
+                    return prev.map((s) =>
+                      s.english.toLowerCase() === english.toLowerCase() ? { ...s, isSaved: true } : s
+                    );
+                  }
+                  return [
+                    {
+                      id: `sent-book-${Date.now()}`,
+                      english,
+                      bangla,
+                      sentenceType: 'Affirmative',
+                      difficulty: 'Beginner',
+                      structure: 'Daily Routine Sentence',
+                      grammarExplanationBangla: 'স্পোকেন ইংলিশ বই থেকে সংরক্ষিত বাক্য',
+                      importantVocab: [],
+                      isSaved: true,
+                      isPracticed: true,
+                    },
+                    ...prev,
+                  ];
+                });
+                handleAwardXP(10, 'Saved Spoken Book sentence');
+              }}
             />
           )}
 

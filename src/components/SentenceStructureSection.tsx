@@ -249,7 +249,7 @@ export const SentenceStructureSection: React.FC<SentenceStructureSectionProps> =
                 className="flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50/70 px-3.5 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
               >
                 <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
-                <span>Ask AI to generate 5 more sentences with this formula</span>
+                <span>Ask ChatGPT to generate 5 more sentences with this formula</span>
               </button>
             </div>
           </div>

@@ -304,14 +304,14 @@ export const GrammarSection: React.FC<GrammarSectionProps> = ({
                   {/* AI Assistance Action */}
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                     <span className="text-xs text-slate-400 dark:text-slate-500 font-bangla">
-                      নিয়মটি বুঝতে কোনো সন্দেহ থাকলে AI শিক্ষকের সহায়তা নিন
+                      নিয়মটি বুঝতে কোনো সন্দেহ থাকলে ChatGPT-এর সহায়তা নিন
                     </span>
                     <button
                       onClick={() => onAskAIGrammar(lesson.title)}
                       className="inline-flex items-center gap-2 rounded-xl bg-[#4F46E5] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#3730A3] transition-all cursor-pointer shadow-xs active:scale-[0.98]"
                     >
                       <Sparkles className="h-3.5 w-3.5" />
-                      <span>Ask AI Tutor in Bangla</span>
+                      <span>Ask ChatGPT in Bangla</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>
                   </div>

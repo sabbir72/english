@@ -182,7 +182,7 @@ export const AITutorToolsSection: React.FC<AITutorToolsSectionProps> = ({
           }`}
         >
           <HelpCircle className="h-4 w-4" />
-          <span>Ask AI English Doubt</span>
+          <span>Ask ChatGPT</span>
         </button>
 
         <button
@@ -194,7 +194,7 @@ export const AITutorToolsSection: React.FC<AITutorToolsSectionProps> = ({
           }`}
         >
           <Layers className="h-4 w-4" />
-          <span>AI Sentence Generator</span>
+          <span>ChatGPT Sentence Generator</span>
         </button>
 
         <button
@@ -206,7 +206,7 @@ export const AITutorToolsSection: React.FC<AITutorToolsSectionProps> = ({
           }`}
         >
           <BookOpen className="h-4 w-4" />
-          <span>Topic Vocab Builder</span>
+          <span>ChatGPT Vocab Builder</span>
         </button>
       </div>
 
@@ -236,7 +236,7 @@ export const AITutorToolsSection: React.FC<AITutorToolsSectionProps> = ({
                 ) : (
                   <Send className="h-4 w-4" />
                 )}
-                <span>Ask AI</span>
+                <span>Ask ChatGPT</span>
               </button>
             </div>
 
@@ -384,7 +384,7 @@ export const AITutorToolsSection: React.FC<AITutorToolsSectionProps> = ({
               ) : (
                 <Layers className="h-4 w-4" />
               )}
-              <span>Generate Sentences with Gemini AI</span>
+              <span>Generate Sentences with ChatGPT</span>
             </button>
           </div>
 

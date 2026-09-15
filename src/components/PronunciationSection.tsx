@@ -366,7 +366,7 @@ export const PronunciationSection: React.FC<PronunciationSectionProps> = ({
               </div>
 
               <div className="text-[11px] text-slate-500 dark:text-slate-400 italic">
-                * Note: Speech recognition utilizes browser Web Speech synthesis and Google Gemini phonetic analysis.
+                * Note: Speech recognition utilizes browser Web Speech synthesis and ChatGPT phonetic analysis.
               </div>
             </div>
           </div>

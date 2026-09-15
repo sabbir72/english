@@ -10,6 +10,7 @@ import {
   Dumbbell,
   BarChart3,
   Bookmark,
+  BookMarked,
   Settings2,
   ShieldCheck,
   Sparkles,
@@ -68,6 +69,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: 'Blocks',
     },
     {
+      id: 'book' as NavigationTab,
+      label: 'Spoken Book',
+      labelBn: 'স্পোকেন বই',
+      icon: <BookMarked className="h-4 w-4" />,
+      badge: 'বই ফরম্যাট',
+    },
+    {
       id: 'reading' as NavigationTab,
       label: 'Reading',
       labelBn: 'রিডিং ও অর্থ',
@@ -76,10 +84,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'ai-tutor' as NavigationTab,
-      label: 'Conversation',
-      labelBn: 'এআই স্পিকিং',
+      label: 'ChatGPT Tutor',
+      labelBn: 'চ্যাটজিপিটি এআই',
       icon: <BotMessageSquare className="h-4 w-4" />,
-      badge: 'AI',
+      badge: 'GPT-4o',
     },
     {
       id: 'practice' as NavigationTab,

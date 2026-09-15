@@ -1,24 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import {
-  Sparkles,
   Flame,
   Search,
   Sun,
   Moon,
-  ChevronDown,
+  Menu,
+  ChevronRight,
+  Sparkles,
+  LayoutDashboard,
   BookOpen,
-  MessageSquareQuote,
-  Layers,
-  GraduationCap,
-  Mic,
+  Headphones,
+  Dumbbell,
   BotMessageSquare,
   BarChart3,
-  User,
-  Home,
-  Dumbbell,
-  Menu,
-  Headphones,
+  Bookmark,
   Settings2,
+  User,
+  Layers,
+  GraduationCap,
+  SpellCheck,
+  BookMarked,
 } from 'lucide-react';
 import { NavigationTab, LearnSubTab, UserProfile } from '../../types';
 
@@ -37,7 +38,6 @@ export interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   onNavigate,
-  onSelectLearnSubTab,
   onOpenSearch,
   isDarkMode,
   onToggleTheme,
@@ -45,45 +45,171 @@ export const Navbar: React.FC<NavbarProps> = ({
   profile,
   onOpenMobileMenu,
 }) => {
-  const [learnDropdownOpen, setLearnDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  // Derive breadcrumb context for the top bar
+  const getBreadcrumb = () => {
+    switch (activeTab) {
+      case 'home':
+        return {
+          icon: <LayoutDashboard className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          section: 'App',
+          page: 'Dashboard',
+          pageBn: 'সামগ্রিক অগ্রগতি ও দৈনিক লক্ষ্য',
+        };
+      case 'learn':
+        return {
+          icon: <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Core',
+          page: 'Learn & Methodology',
+          pageBn: 'পদ্ধতি ও বাক্য তৈরির কাঠামো',
+        };
+      case 'patterns':
+        return {
+          icon: <Layers className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Learn',
+          page: 'Sentence Patterns',
+          pageBn: 'প্যাটার্ন লাইব্রেরি',
+        };
+      case 'builder':
+      case 'sentence-builder':
+        return {
+          icon: <Layers className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Learn',
+          page: 'Sentence Builder',
+          pageBn: 'ব্লক দিয়ে বাক্য গঠন',
+        };
+      case 'transformation':
+        return {
+          icon: <Layers className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Learn',
+          page: 'Sentence Transformation',
+          pageBn: 'বাক্য রূপান্তর ড্রিল',
+        };
+      case 'word-family':
+        return {
+          icon: <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Learn',
+          page: 'Word Family Tree',
+          pageBn: 'শব্দের পরিবার',
+        };
+      case 'context-vocab':
+        return {
+          icon: <SpellCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Learn',
+          page: 'Situational Vocab',
+          pageBn: 'পরিস্থিতিভিত্তিক শব্দ',
+        };
+      case 'translation':
+        return {
+          icon: <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Learn',
+          page: 'Translation Drill',
+          pageBn: 'বাংলা থেকে ইংরেজি ড্রিল',
+        };
+      case 'mistakes':
+        return {
+          icon: <GraduationCap className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Learn',
+          page: 'Common Mistakes',
+          pageBn: 'সাধারণ ভুলের সমাধান',
+        };
+      case 'vocabulary':
+        return {
+          icon: <SpellCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Foundations',
+          page: 'Oxford 3000 Vocabulary',
+          pageBn: 'উচ্চারণসহ শব্দভাণ্ডার',
+        };
+      case 'sentences':
+      case 'sentence-structure':
+        return {
+          icon: <Layers className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+          section: 'Foundations',
+          page: 'Daily Sentences & Structure',
+          pageBn: 'দৈনন্দিন বাক্য ও গঠন',
+        };
+      case 'grammar':
+        return {
+          icon: <GraduationCap className="h-4 w-4 text-sky-600 dark:text-sky-400" />,
+          section: 'Foundations',
+          page: 'Grammar Lessons',
+          pageBn: 'সহজ ব্যাকরণ ও নিয়ম',
+        };
+      case 'pronunciation':
+        return {
+          icon: <Headphones className="h-4 w-4 text-rose-600 dark:text-rose-400" />,
+          section: 'Foundations',
+          page: 'Pronunciation Studio',
+          pageBn: 'উচ্চারণ ও ফোনেটিক্স',
+        };
+      case 'book':
+        return {
+          icon: <BookMarked className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
+          section: 'Book',
+          page: 'Spoken English Book',
+          pageBn: 'স্পোকেন ইংলিশ এর সেরা বই',
+        };
+      case 'reading':
+        return {
+          icon: <Headphones className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          section: 'Practice',
+          page: 'Reading & Audio Comprehension',
+          pageBn: 'লিসেনিং ও সাবটাইটেল অর্থ',
+        };
+      case 'ai-tutor':
+      case 'ai-conversation':
+      case 'ai-tools':
+        return {
+          icon: <BotMessageSquare className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          section: 'AI Partner',
+          page: 'ChatGPT English Tutor',
+          pageBn: 'চ্যাটজিপিটি স্পিকিং পার্টনার ও শিক্ষক',
+        };
+      case 'practice':
+        return {
+          icon: <Dumbbell className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
+          section: 'Practice',
+          page: 'Interactive Quiz Arena',
+          pageBn: 'কুইজ ও চ্যালেঞ্জ',
+        };
+      case 'progress':
+        return {
+          icon: <BarChart3 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          section: 'Analytics',
+          page: 'Learning Progress',
+          pageBn: 'অগ্রগতি ট্র্যাকার',
+        };
+      case 'saved':
+        return {
+          icon: <Bookmark className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          section: 'Saved',
+          page: 'Word Bank & Bookmarks',
+          pageBn: 'সংরক্ষিত শব্দভাণ্ডার',
+        };
+      case 'habit':
+        return {
+          icon: <Settings2 className="h-4 w-4 text-slate-600 dark:text-slate-400" />,
+          section: 'Settings',
+          page: 'Habits & Goals',
+          pageBn: 'দৈনিক লক্ষ্য ও অভ্যাস',
+        };
+      case 'profile':
+        return {
+          icon: <User className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          section: 'User',
+          page: 'Profile & Settings',
+          pageBn: 'প্রোফাইল সেটিংস',
+        };
+      default:
+        return {
+          icon: <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          section: 'BoliEnglish',
+          page: 'English Learning',
+          pageBn: 'সহজে ইংরেজি শিখুন',
+        };
+    }
+  };
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setLearnDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
-
-  const isLearnActive = [
-    'learn',
-    'patterns',
-    'builder',
-    'sentence-builder',
-    'transformation',
-    'word-family',
-    'context-vocab',
-    'translation',
-    'mistakes',
-    'vocabulary',
-    'sentences',
-    'sentence-structure',
-    'grammar',
-    'pronunciation',
-  ].includes(activeTab);
-
-  const learnItems = [
-    { id: 'patterns' as LearnSubTab, label: 'Sentence Patterns', labelBn: 'প্যাটার্ন লাইব্রেরি', icon: <Layers className="h-4 w-4 text-indigo-600" /> },
-    { id: 'builder' as LearnSubTab, label: 'Sentence Builder', labelBn: 'ব্লক দিয়ে বাক্য গঠন', icon: <Layers className="h-4 w-4 text-sky-600" /> },
-    { id: 'vocabulary' as LearnSubTab, label: 'Vocabulary & Oxford 3000', labelBn: 'উচ্চারণসহ শব্দভাণ্ডার', icon: <BookOpen className="h-4 w-4 text-emerald-600" /> },
-    { id: 'sentences' as LearnSubTab, label: 'Daily Sentences', labelBn: 'দৈনন্দিন বাক্য', icon: <MessageSquareQuote className="h-4 w-4 text-indigo-600" /> },
-    { id: 'grammar' as LearnSubTab, label: 'Grammar Lessons', labelBn: 'সহজ ব্যাকরণ ও নিয়ম', icon: <GraduationCap className="h-4 w-4 text-sky-600" /> },
-    { id: 'pronunciation' as LearnSubTab, label: 'Pronunciation Studio', labelBn: 'সঠিক উচ্চারণ ও ফোনেটিক্স', icon: <Mic className="h-4 w-4 text-rose-600" /> },
-  ];
+  const breadcrumb = getBreadcrumb();
 
   return (
     <header
@@ -91,163 +217,61 @@ export const Navbar: React.FC<NavbarProps> = ({
       className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/95 transition-colors shadow-2xs"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Left: Hamburger (mobile) + Brand Logo */}
-        <div className="flex items-center gap-3 sm:gap-6">
-          {onOpenMobileMenu && (
-            <button
-              type="button"
-              onClick={onOpenMobileMenu}
-              className="p-2 -ml-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 md:hidden"
-              aria-label="Open menu"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-          )}
+        {/* Left Side */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Mobile Hamburger & Logo (visible only on mobile where Sidebar is hidden) */}
+          <div className="flex items-center gap-2 md:hidden">
+            {onOpenMobileMenu && (
+              <button
+                type="button"
+                onClick={onOpenMobileMenu}
+                className="p-2 -ml-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800"
+                aria-label="Open menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            )}
 
-          <button
-            type="button"
-            onClick={() => onNavigate('home')}
-            className="flex items-center gap-2.5 text-left group focus-visible:outline-none"
-          >
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-600 font-black text-white shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-transform ring-2 ring-indigo-500/20">
-              <span className="text-base font-bold font-sans">ব</span>
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5 leading-none">
-                <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
-                  BoliEnglish
-                </span>
-                <span className="rounded-full bg-indigo-100 dark:bg-indigo-950 px-1.5 py-0.5 text-[9px] font-black text-indigo-700 dark:text-indigo-300 uppercase tracking-wide border border-indigo-200/50">
-                  PRO
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bangla hidden sm:block">
-                সহজে ইংরেজি শিখুন ও বলুন
-              </p>
-            </div>
-          </button>
-
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {/* Dashboard */}
             <button
               type="button"
               onClick={() => onNavigate('home')}
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
-                activeTab === 'home'
-                  ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-2xs dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/60'
-                  : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white'
-              }`}
+              className="flex items-center gap-2 text-left focus-visible:outline-none"
             >
-              <Home className="h-3.5 w-3.5" />
-              <span>Dashboard</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 font-black text-white shadow-sm ring-2 ring-indigo-500/20 text-sm">
+                ব
+              </div>
+              <span className="text-base font-black tracking-tight text-slate-900 dark:text-white">
+                BoliEnglish
+              </span>
+              <span className="rounded-full bg-indigo-100 dark:bg-indigo-950 px-1.5 py-0.2 text-[8px] font-black text-indigo-700 dark:text-indigo-300">
+                PRO
+              </span>
             </button>
+          </div>
 
-            {/* Learn with Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setLearnDropdownOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
-                  isLearnActive
-                    ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-2xs dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/60'
-                    : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white'
-                }`}
-              >
-                <BookOpen className="h-3.5 w-3.5" />
-                <span>Learn</span>
-                <ChevronDown
-                  className={`h-3.5 w-3.5 text-slate-400 transition-transform ${
-                    learnDropdownOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-
-              {learnDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-64 rounded-2xl border border-slate-200/80 bg-white/95 backdrop-blur-md p-2 shadow-xl dark:border-slate-800 dark:bg-slate-900/95 animate-in fade-in zoom-in-95 z-50">
-                  <div className="px-2.5 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
-                    Modules / মডিউল
-                  </div>
-                  {learnItems.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        if (onSelectLearnSubTab) onSelectLearnSubTab(item.id);
-                        onNavigate(item.id as NavigationTab);
-                        setLearnDropdownOpen(false);
-                      }}
-                      className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-bold text-slate-700 hover:bg-indigo-50/70 hover:text-indigo-800 dark:text-slate-300 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300 transition-colors"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        {item.icon}
-                        <span>{item.label}</span>
-                      </div>
-                      <span className="text-[10px] text-slate-400 font-sans font-medium">
-                        {item.labelBn}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
+          {/* Desktop Breadcrumb Header (Eliminates duplicate nav buttons & duplicate logo) */}
+          <div className="hidden md:flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700">
+              {breadcrumb.icon}
             </div>
 
-            {/* Reading */}
-            <button
-              type="button"
-              onClick={() => onNavigate('reading')}
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
-                activeTab === 'reading'
-                  ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-2xs dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/60'
-                  : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white'
-              }`}
-            >
-              <Headphones className="h-3.5 w-3.5" />
-              <span>Reading</span>
-            </button>
-
-            {/* Practice */}
-            <button
-              type="button"
-              onClick={() => onNavigate('practice')}
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
-                activeTab === 'practice'
-                  ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-2xs dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/60'
-                  : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white'
-              }`}
-            >
-              <Dumbbell className="h-3.5 w-3.5" />
-              <span>Practice</span>
-            </button>
-
-            {/* AI Tutor */}
-            <button
-              type="button"
-              onClick={() => onNavigate('ai-tutor')}
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
-                ['ai-tutor', 'ai-conversation', 'ai-tools'].includes(activeTab)
-                  ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30'
-                  : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white'
-              }`}
-            >
-              <BotMessageSquare className="h-3.5 w-3.5" />
-              <span>AI Tutor</span>
-            </button>
-
-            {/* Habit & Goals */}
-            <button
-              type="button"
-              onClick={() => onNavigate('habit')}
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
-                activeTab === 'habit'
-                  ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-2xs dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/60'
-                  : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white'
-              }`}
-            >
-              <Settings2 className="h-3.5 w-3.5" />
-              <span>Habit & Goals</span>
-            </button>
-          </nav>
+            <div className="flex items-center gap-1.5 text-xs">
+              <button
+                type="button"
+                onClick={() => onNavigate('home')}
+                className="font-semibold text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300 transition-colors"
+              >
+                {breadcrumb.section}
+              </button>
+              <ChevronRight className="h-3.5 w-3.5 text-slate-300 dark:text-slate-600" />
+              <span className="font-bold text-slate-900 dark:text-white">
+                {breadcrumb.page}
+              </span>
+              <span className="hidden xl:inline text-[11px] text-slate-400 dark:text-slate-500 font-bangla pl-1">
+                ({breadcrumb.pageBn})
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Right Utilities: Search, Streak, Theme, Profile */}
@@ -256,7 +280,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={onOpenSearch}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 cursor-pointer"
             title="Search vocabulary, sentences, grammar (Ctrl+K)"
           >
             <Search className="h-3.5 w-3.5 text-slate-400" />
@@ -268,7 +292,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Learning Streak Pill */}
           <div
-            className="flex items-center gap-1 rounded-xl border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300 cursor-pointer"
+            className="flex items-center gap-1 rounded-xl border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300 cursor-pointer hover:bg-amber-100/80 transition-colors"
             onClick={() => onNavigate('habit')}
             title={`${streak} day streak (অভ্যাস দেখতে ক্লিক করুন)`}
           >
@@ -280,7 +304,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={onToggleTheme}
-            className="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/80 transition-colors"
+            className="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/80 transition-colors cursor-pointer"
             aria-label="Toggle theme"
           >
             {isDarkMode ? (

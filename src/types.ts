@@ -242,6 +242,7 @@ export type NavigationTab =
   | 'grammar'
   | 'pronunciation'
   | 'reading'
+  | 'book'
   | 'conversation'
   | 'practice'
   | 'ai-tutor'
@@ -402,5 +403,25 @@ export interface EnglishUnderstandingItem {
   grammarFocus: string;
   breakdown: { chunk: string; banglaChunk: string; explanation: string }[];
 }
+
+export interface BookSentenceItem {
+  id: number;
+  english: string;
+  banglaPronunciation: string;
+  banglaMeaning: string;
+  category?: string;
+  noteBangla?: string;
+}
+
+export interface BookChapter {
+  id: string;
+  number: number;
+  title: string;
+  bannerTitle: string;
+  category?: string;
+  introLines: string[];
+  sentences: BookSentenceItem[];
+}
+
 
 

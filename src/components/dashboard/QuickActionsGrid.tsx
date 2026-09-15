@@ -19,6 +19,17 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
 }) => {
   const cards = [
     {
+      id: 'book' as NavigationTab,
+      title: 'Spoken English Book',
+      titleBn: 'স্পোকেন সেরা বই',
+      description: 'বইয়ের হুবহু পাতায় দৈনন্দিন রুটিন, বাংলা উচ্চারণ ও অর্থসহ অডিও স্পিকিং ড্রিল।',
+      badge: 'বই ফরম্যাট',
+      emoji: '📖',
+      icon: <BookMarked className="h-5 w-5 text-amber-600 dark:text-amber-400" />,
+      iconBg: 'bg-amber-50 dark:bg-amber-950/50',
+      badgeColor: 'text-amber-700 bg-amber-50 dark:bg-amber-950/60 dark:text-amber-300',
+    },
+    {
       id: 'vocabulary' as NavigationTab,
       title: 'Vocabulary',
       titleBn: 'শব্দভাণ্ডার',
@@ -75,11 +86,11 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
     },
     {
       id: 'ai-tutor' as NavigationTab,
-      title: 'AI Conversation',
-      titleBn: 'কথোপকথন',
-      description: 'Practice real-life English dialogues with helpful Bangla corrections.',
-      badge: 'Speaking Partner',
-      emoji: '💬',
+      title: 'ChatGPT Conversation',
+      titleBn: 'চ্যাটজিপিটি স্পিকিং',
+      description: 'Practice real-life English dialogues with ChatGPT, instant grammar corrections & Bangla guidance.',
+      badge: 'ChatGPT Partner',
+      emoji: '🤖',
       icon: <MessageSquare className="h-5 w-5 text-[#4F46E5] dark:text-[#818CF8]" />,
       iconBg: 'bg-indigo-50 dark:bg-indigo-950/50',
       badgeColor: 'text-[#4F46E5] bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300',
