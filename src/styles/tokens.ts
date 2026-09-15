@@ -1,5 +1,5 @@
 /**
- * Design Tokens for BoliEnglish
+ * Design Tokens for NextGen-LearnHub
  * Centralized design system constants for colors, radiuses, typography, and spacing.
  */
 

@@ -87,22 +87,24 @@ export const Header: React.FC<HeaderProps> = ({
 
         <button
           onClick={() => onNavigate('home')}
-          className="flex items-center gap-2.5 text-left focus:outline-none group"
+          className="flex items-center gap-2.5 text-left focus:outline-none group cursor-pointer"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 font-bold text-white shadow-sm shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-            <span className="text-base">ব</span>
+          <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-xl border border-cyan-500/40 bg-slate-950 shadow-sm shadow-cyan-500/15 group-hover:scale-105 transition-transform ring-1 ring-cyan-400/20">
+            <img
+              src="/nextgen_logo.jpg"
+              alt="NextGen-LearnHub"
+              className="h-full w-full object-cover"
+              referrerPolicy="no-referrer"
+            />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5 leading-none">
-              <span className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
-                Boli<span className="text-emerald-600 dark:text-emerald-400">English</span>
-              </span>
-              <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                MVP
+              <span className="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
+                NextGen<span className="text-cyan-600 dark:text-cyan-400">-LearnHub</span>
               </span>
             </div>
             <span className="hidden text-[10px] font-medium text-slate-500 dark:text-slate-400 sm:inline-block mt-0.5">
-              Learn English. Practice Daily. Speak Confidently.
+              Smart Learning. Practice Daily. Speak Confidently.
             </span>
           </div>
         </button>

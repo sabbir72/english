@@ -1,6 +1,6 @@
 {
-  "name": "BoliEnglish - English Learning & Practice",
-  "description": "An AI-powered English learning platform for Bengali speakers with Spoken English Book reader, vocabulary, sentence structures, grammar, pronunciation, interactive practice, and ChatGPT conversation tutor.",
+  "name": "NextGen-LearnHub",
+  "description": "NextGen-LearnHub - Next-generation interactive English and skill learning platform with 100-page spoken book, sentence builder, Oxford vocabulary, speech pronunciation, and AI tutor.",
   "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -201,10 +201,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         };
       default:
         return {
-          icon: <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
-          section: 'BoliEnglish',
-          page: 'English Learning',
-          pageBn: 'সহজে ইংরেজি শিখুন',
+          icon: <Sparkles className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />,
+          section: 'NextGen-LearnHub',
+          page: 'Learning Hub',
+          pageBn: 'স্মার্ট লার্নিং প্ল্যাটফর্ম',
         };
     }
   };
@@ -216,16 +216,16 @@ export const Navbar: React.FC<NavbarProps> = ({
       id="main-navbar"
       className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/95 transition-colors shadow-2xs"
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
         {/* Left Side */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           {/* Mobile Hamburger & Logo (visible only on mobile where Sidebar is hidden) */}
           <div className="flex items-center gap-2 md:hidden">
             {onOpenMobileMenu && (
               <button
                 type="button"
                 onClick={onOpenMobileMenu}
-                className="p-2 -ml-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800"
+                className="p-1.5 -ml-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 cursor-pointer"
                 aria-label="Open menu"
               >
                 <Menu className="h-5 w-5" />
@@ -235,16 +235,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('home')}
-              className="flex items-center gap-2 text-left focus-visible:outline-none"
+              className="flex items-center gap-2 text-left focus-visible:outline-none cursor-pointer"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 font-black text-white shadow-sm ring-2 ring-indigo-500/20 text-sm">
-                ব
+              <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-lg border border-cyan-500/40 bg-slate-950 shadow-xs ring-1 ring-cyan-400/30">
+                <img
+                  src="/nextgen_logo.jpg"
+                  alt="NextGen-LearnHub"
+                  className="h-full w-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
               </div>
-              <span className="text-base font-black tracking-tight text-slate-900 dark:text-white">
-                BoliEnglish
-              </span>
-              <span className="rounded-full bg-indigo-100 dark:bg-indigo-950 px-1.5 py-0.2 text-[8px] font-black text-indigo-700 dark:text-indigo-300">
-                PRO
+              <span className="text-sm sm:text-base font-black tracking-tight text-slate-900 dark:text-white truncate max-w-[140px] sm:max-w-none">
+                NextGen<span className="text-cyan-600 dark:text-cyan-400">-LearnHub</span>
               </span>
             </button>
           </div>

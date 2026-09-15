@@ -226,8 +226,8 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               Audio Test:{' '}
             </span>
             <button
-              onClick={() => speakText('Hello, welcome to BoliEnglish speaking practice!', speechSpeed)}
-              className="mt-1 text-emerald-600 hover:underline font-bold flex items-center gap-1"
+              onClick={() => speakText('Hello, welcome to NextGen-LearnHub speaking practice!', speechSpeed)}
+              className="mt-1 text-cyan-600 hover:underline font-bold flex items-center gap-1 cursor-pointer"
             >
               <Volume2 className="h-3.5 w-3.5" />
               <span>Listen to sample voice</span>

@@ -14,6 +14,7 @@ import {
   Settings2,
   ShieldCheck,
   Sparkles,
+  X,
 } from 'lucide-react';
 import { NavigationTab } from '../types';
 
@@ -120,7 +121,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Backdrop */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs transition-opacity md:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs transition-opacity md:hidden"
           onClick={onCloseMobileMenu}
         />
       )}
@@ -128,29 +129,45 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Container */}
       <aside
         id="app-sidebar"
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-slate-200/80 bg-white/95 backdrop-blur-md p-4 transition-transform duration-200 ease-in-out dark:border-slate-800/80 dark:bg-slate-900/95 md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] transform border-r border-slate-200/80 bg-white/95 backdrop-blur-md p-4 transition-transform duration-200 ease-in-out dark:border-slate-800/80 dark:bg-slate-900/95 md:static md:w-64 md:translate-x-0 ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        } flex flex-col justify-between shadow-xs`}
+        } flex flex-col justify-between shadow-xl md:shadow-xs overflow-y-auto`}
       >
         <div className="space-y-4">
           {/* Brand Identity / Logo Header */}
-          <div className="flex items-center gap-3 px-2 py-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600 font-black text-white shadow-md shadow-indigo-600/20 ring-2 ring-indigo-500/20 text-lg">
-              ব
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5 leading-none">
-                <span className="font-extrabold text-base text-slate-900 dark:text-white tracking-tight">
-                  BoliEnglish
-                </span>
-                <span className="rounded-full bg-indigo-100 dark:bg-indigo-950 px-1.5 py-0.5 text-[9px] font-black text-indigo-700 dark:text-indigo-300 uppercase tracking-wide border border-indigo-200/50">
-                  PRO
-                </span>
+          <div className="flex items-center justify-between gap-2 px-1 py-1">
+            <div className="flex items-center gap-2.5">
+              <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl border border-cyan-500/40 bg-slate-950 shadow-md shadow-cyan-500/10 ring-2 ring-cyan-400/20">
+                <img
+                  src="/nextgen_logo.jpg"
+                  alt="NextGen-LearnHub"
+                  className="h-full w-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-bangla mt-0.5">
-                সহজে ইংরেজি শিখুন
-              </p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1 leading-none">
+                  <span className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight truncate">
+                    NextGen<span className="text-cyan-600 dark:text-cyan-400">-LearnHub</span>
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-bangla mt-1 truncate">
+                  স্মার্ট লার্নিং প্ল্যাটফর্ম
+                </p>
+              </div>
             </div>
+
+            {/* Close button on mobile */}
+            {mobileMenuOpen && (
+              <button
+                type="button"
+                onClick={onCloseMobileMenu}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 md:hidden cursor-pointer"
+                aria-label="Close sidebar"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
           </div>
 
           {/* Navigation Links */}

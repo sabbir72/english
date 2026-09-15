@@ -594,7 +594,7 @@ export const SpokenBookSection: React.FC<SpokenBookSectionProps> = ({
         {/* Book Footer / Page Number */}
         <footer className="mt-12 pt-6 border-t border-stone-200 dark:border-slate-800 flex items-center justify-between text-xs text-stone-500 dark:text-slate-400">
           <div className="flex items-center gap-2">
-            <span className="font-serif italic">BoliEnglish 100-Page Daily Spoken Guide</span>
+            <span className="font-serif italic">NextGen-LearnHub 100-Page Daily Spoken Guide</span>
             <span className="hidden sm:inline">• অধ্যায় {currentChapter.number}</span>
           </div>
 
