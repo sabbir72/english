@@ -207,15 +207,15 @@ export const Navbar: React.FC<NavbarProps> = ({
       className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/95 transition-colors shadow-2xs"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
-        {/* Left Side */}
-        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+        {/* Left Side: Brand on mobile, Breadcrumb on desktop */}
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1 mr-2">
           {/* Mobile Hamburger & Logo (visible only on mobile where Sidebar is hidden) */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 md:hidden min-w-0">
             {onOpenMobileMenu && (
               <button
                 type="button"
                 onClick={onOpenMobileMenu}
-                className="p-1.5 -ml-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 cursor-pointer"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 cursor-pointer transition-colors"
                 aria-label="Open menu"
               >
                 <Menu className="h-5 w-5" />
@@ -225,9 +225,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('home')}
-              className="flex items-center gap-2 text-left focus-visible:outline-none cursor-pointer"
+              className="flex items-center gap-2 text-left focus-visible:outline-none cursor-pointer min-w-0"
             >
-              <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-lg border border-cyan-500/40 bg-slate-950 shadow-xs ring-1 ring-cyan-400/30">
+              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-cyan-500/40 bg-slate-950 shadow-xs ring-1 ring-cyan-400/30">
                 <img
                   src="/nextgen_logo.jpg"
                   alt="NextGen-LearnHub"
@@ -235,15 +235,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <span className="text-sm sm:text-base font-black tracking-tight text-slate-900 dark:text-white truncate max-w-[140px] sm:max-w-none">
-                NextGen<span className="text-cyan-600 dark:text-cyan-400">-LearnHub</span>
+              <span className="text-sm sm:text-base font-black tracking-tight text-slate-900 dark:text-white truncate">
+                NextGen<span className="hidden sm:inline text-cyan-600 dark:text-cyan-400">-LearnHub</span>
               </span>
             </button>
           </div>
 
           {/* Desktop Breadcrumb Header (Eliminates duplicate nav buttons & duplicate logo) */}
           <div className="hidden md:flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shrink-0">
               {breadcrumb.icon}
             </div>
 
@@ -251,11 +251,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => onNavigate('home')}
-                className="font-semibold text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300 transition-colors"
+                className="font-semibold text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300 transition-colors cursor-pointer"
               >
                 {breadcrumb.section}
               </button>
-              <ChevronRight className="h-3.5 w-3.5 text-slate-300 dark:text-slate-600" />
+              <ChevronRight className="h-3.5 w-3.5 text-slate-300 dark:text-slate-600 shrink-0" />
               <span className="font-bold text-slate-900 dark:text-white">
                 {breadcrumb.page}
               </span>
@@ -267,15 +267,16 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Right Utilities: Search, Streak, Theme, Profile */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           {/* Quick Search Button */}
           <button
             type="button"
             onClick={onOpenSearch}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 cursor-pointer"
+            className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 cursor-pointer shrink-0"
             title="Search vocabulary, sentences, grammar (Ctrl+K)"
+            aria-label="Search"
           >
-            <Search className="h-3.5 w-3.5 text-slate-400" />
+            <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <span className="hidden sm:inline text-[11px]">Search</span>
             <kbd className="hidden rounded bg-slate-200 px-1 py-0.2 text-[9px] font-mono text-slate-600 dark:bg-slate-700 dark:text-slate-300 md:inline">
               ⌘K
@@ -284,11 +285,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Learning Streak Pill */}
           <div
-            className="flex items-center gap-1 rounded-xl border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300 cursor-pointer hover:bg-amber-100/80 transition-colors"
+            className="flex h-9 items-center gap-1 rounded-xl border border-amber-200 bg-amber-50 px-2 sm:px-2.5 text-xs font-bold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300 cursor-pointer hover:bg-amber-100/80 transition-colors shrink-0"
             onClick={() => onNavigate('habit')}
             title={`${streak} day streak (অভ্যাস দেখতে ক্লিক করুন)`}
           >
-            <Flame className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+            <Flame className="h-3.5 w-3.5 fill-amber-500 text-amber-500 shrink-0" />
             <span>{streak}d</span>
           </div>
 
@@ -296,13 +297,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={onToggleTheme}
-            className="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/80 transition-colors cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/80 transition-colors cursor-pointer shrink-0"
             aria-label="Toggle theme"
           >
             {isDarkMode ? (
-              <Sun className="h-4 w-4 text-amber-400" />
+              <Sun className="h-4 w-4 text-amber-400 shrink-0" />
             ) : (
-              <Moon className="h-4 w-4 text-slate-600" />
+              <Moon className="h-4 w-4 text-slate-600 shrink-0" />
             )}
           </button>
 
@@ -310,7 +311,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={() => onNavigate('profile')}
-            className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-100 font-extrabold text-indigo-800 text-xs hover:bg-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 transition-colors cursor-pointer ring-1 ring-indigo-300 dark:ring-indigo-800"
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-100 font-extrabold text-indigo-800 text-xs hover:bg-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 transition-colors cursor-pointer ring-1 ring-indigo-300 dark:ring-indigo-800 shrink-0"
             title="User Profile"
             aria-label="User Profile"
           >

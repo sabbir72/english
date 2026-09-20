@@ -40,3 +40,12 @@
   background: rgba(148, 163, 184, 0.7);
 }
 
+/* Mobile & Touch Viewport Optimization */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 12px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+
