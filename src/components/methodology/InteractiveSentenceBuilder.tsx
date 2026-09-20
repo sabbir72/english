@@ -470,16 +470,6 @@ export const InteractiveSentenceBuilder: React.FC<InteractiveSentenceBuilderProp
                 <span>{savedSuccess ? 'সংরক্ষিত!' : 'Add to Word Bank'}</span>
               </button>
             </div>
-
-            {onSendToAITutor && (
-              <button
-                onClick={() => onSendToAITutor(currentSentence.english)}
-                className="flex items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2.5 text-xs font-bold text-sky-800 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-300 transition-colors"
-              >
-                <Sparkles className="h-3.5 w-3.5 text-sky-600" />
-                <span>Practice with AI Tutor</span>
-              </button>
-            )}
           </div>
         </div>
       </div>

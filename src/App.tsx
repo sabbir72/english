@@ -8,7 +8,6 @@ import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { HomeDashboard } from './components/HomeDashboard';
 import { LearnMainSection } from './components/LearnMainSection';
 import { PracticeSection } from './components/PracticeSection';
-import { AITutorMainSection } from './components/AITutorMainSection';
 import { ProgressSection } from './components/ProgressSection';
 import { SavedContentSection } from './components/SavedContentSection';
 import { ProfileSection } from './components/ProfileSection';
@@ -312,8 +311,8 @@ export function App() {
       setActiveTab('habit');
     } else if (t === 'word-bank') {
       setActiveTab('saved');
-    } else if (t === 'conversation') {
-      setActiveTab('ai-tutor');
+    } else if (t === 'conversation' || t === 'ai-tutor') {
+      setActiveTab('practice');
     } else {
       const learnTabsMap: Record<string, LearnSubTab> = {
         patterns: 'patterns',
@@ -363,12 +362,6 @@ export function App() {
     'context-vocab',
     'translation',
     'mistakes',
-  ].includes(activeTab);
-
-  const isAITutorModule = [
-    'ai-tutor',
-    'ai-conversation',
-    'ai-tools',
   ].includes(activeTab);
 
   return (
@@ -514,14 +507,6 @@ export function App() {
             <PracticeSection
               questions={practice}
               onCompletePractice={handleCompletePractice}
-              onAwardXP={handleAwardXP}
-            />
-          )}
-
-          {isAITutorModule && (
-            <AITutorMainSection
-              userLevel={profile.level}
-              onIncrementSpeakingMinutes={handleIncrementSpeakingMinutes}
               onAwardXP={handleAwardXP}
             />
           )}

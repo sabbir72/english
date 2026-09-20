@@ -6,7 +6,6 @@ import {
   GraduationCap,
   Layers,
   Headphones,
-  BotMessageSquare,
   Dumbbell,
   BarChart3,
   Bookmark,
@@ -82,13 +81,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       labelBn: 'রিডিং ও অর্থ',
       icon: <Headphones className="h-4 w-4" />,
       badge: 'Audio',
-    },
-    {
-      id: 'ai-tutor' as NavigationTab,
-      label: 'ChatGPT Tutor',
-      labelBn: 'চ্যাটজিপিটি এআই',
-      icon: <BotMessageSquare className="h-4 w-4" />,
-      badge: 'GPT-4o',
     },
     {
       id: 'practice' as NavigationTab,
@@ -175,7 +167,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {navItems.map((item) => {
               const isActive =
                 activeTab === item.id ||
-                (item.id === 'ai-tutor' && ['ai-tutor', 'ai-conversation', 'ai-tools'].includes(activeTab)) ||
                 (item.id === 'builder' && activeTab === 'builder');
 
               return (

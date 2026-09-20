@@ -1,6 +1,6 @@
 {
   "name": "NextGen-LearnHub",
-  "description": "NextGen-LearnHub - Next-generation interactive English and skill learning platform with 100-page spoken book, sentence builder, Oxford vocabulary, speech pronunciation, and AI tutor.",
+  "description": "NextGen-LearnHub - Next-generation interactive English and skill learning platform with 100-page spoken book, sentence builder, Oxford vocabulary, speech pronunciation, and interactive practice.",
   "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

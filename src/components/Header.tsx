@@ -48,8 +48,8 @@ export const Header: React.FC<HeaderProps> = ({
   const mainNavItems = [
     { id: 'home' as NavigationTab, label: 'Home', labelBn: 'হোম' },
     { id: 'learn' as NavigationTab, label: 'Learn', labelBn: 'শিখুন' },
+    { id: 'book' as NavigationTab, label: 'Spoken Book', labelBn: 'স্পোকেন বই' },
     { id: 'practice' as NavigationTab, label: 'Practice', labelBn: 'অনুশীলন' },
-    { id: 'ai-tutor' as NavigationTab, label: 'AI Tutor', labelBn: 'এআই টিউটর', highlight: true },
     { id: 'progress' as NavigationTab, label: 'Progress', labelBn: 'অগ্রগতি' },
   ];
 
@@ -61,9 +61,6 @@ export const Header: React.FC<HeaderProps> = ({
         activeTab
       )
     ) {
-      return true;
-    }
-    if (id === 'ai-tutor' && ['ai-tutor', 'ai-conversation', 'ai-tools'].includes(activeTab)) {
       return true;
     }
     return false;
@@ -125,11 +122,6 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <span>{item.label}</span>
-              {item.highlight && (
-                <span className="rounded-full bg-emerald-600 px-1.5 py-0.2 text-[9px] font-black text-white uppercase tracking-wider">
-                  AI
-                </span>
-              )}
               {active && (
                 <span className="absolute -bottom-2 left-3 right-3 h-0.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
               )}

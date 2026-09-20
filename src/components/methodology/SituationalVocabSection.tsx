@@ -92,21 +92,6 @@ export const SituationalVocabSection: React.FC<SituationalVocabSectionProps> = (
                     {currentTopic.banglaTitle} • {currentTopic.description}
                   </p>
                 </div>
-
-                {onStartScenarioChat && (
-                  <button
-                    onClick={() =>
-                      onStartScenarioChat(
-                        currentTopic.title,
-                        `Let's do a roleplay practice for ${currentTopic.title} (${currentTopic.banglaTitle}). You speak first.`
-                      )
-                    }
-                    className="flex items-center gap-2 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-blue-700 shadow-xs"
-                  >
-                    <MessageSquare className="h-3.5 w-3.5" />
-                    <span>Practice with AI</span>
-                  </button>
-                )}
               </div>
 
               {/* Dialogue Transcript */}

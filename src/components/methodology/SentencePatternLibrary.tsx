@@ -532,19 +532,6 @@ export const SentencePatternLibrary: React.FC<SentencePatternLibraryProps> = ({
                 </div>
               </div>
             )}
-
-            {/* AI Generator Integration */}
-            {onAskAIStructure && (
-              <div className="mt-5 flex justify-end">
-                <button
-                  onClick={() => onAskAIStructure(currentPattern.formula)}
-                  className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
-                >
-                  <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>Ask ChatGPT to generate 5 new conversational examples</span>
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}

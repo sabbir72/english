@@ -3,8 +3,8 @@ import {
   Home,
   BookOpen,
   BookMarked,
-  BotMessageSquare,
   Layers,
+  Dumbbell,
 } from 'lucide-react';
 import { NavigationTab } from '../../types';
 
@@ -27,8 +27,6 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
     'grammar',
     'pronunciation',
   ].includes(activeTab);
-
-  const isAITutorActive = ['ai-tutor', 'ai-conversation', 'ai-tools'].includes(activeTab);
 
   return (
     <div
@@ -103,21 +101,18 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <span className="text-[10px] mt-0.5">Builder</span>
         </button>
 
-        {/* 5. AI Tutor */}
+        {/* 5. Practice & Quizzes */}
         <button
           type="button"
-          onClick={() => onNavigate('ai-tutor')}
+          onClick={() => onNavigate('practice')}
           className={`flex flex-col items-center justify-center py-1 px-2 min-w-[48px] min-h-[44px] rounded-xl transition-colors cursor-pointer ${
-            isAITutorActive
+            activeTab === 'practice'
               ? 'text-cyan-600 dark:text-cyan-400 font-bold'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium'
           }`}
         >
-          <div className="relative">
-            <BotMessageSquare className="h-5 w-5" />
-            <span className="absolute -top-1 -right-2 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
-          </div>
-          <span className="text-[10px] mt-0.5">AI Tutor</span>
+          <Dumbbell className="h-5 w-5" />
+          <span className="text-[10px] mt-0.5">Practice</span>
         </button>
       </nav>
     </div>

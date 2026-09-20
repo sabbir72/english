@@ -287,9 +287,6 @@ export const LearnMainSection: React.FC<LearnMainSectionProps> = ({
                 // save through sentence logic
               }
             }}
-            onSendToAITutor={(sent) => {
-              onNavigate('ai-tutor');
-            }}
             onAwardXP={onAwardXP}
           />
         )}
@@ -308,9 +305,6 @@ export const LearnMainSection: React.FC<LearnMainSectionProps> = ({
         {activeSubTab === 'context-vocab' && (
           <SituationalVocabSection
             topics={SITUATIONAL_VOCAB_TOPICS}
-            onStartScenarioChat={(title, prompt) => {
-              onNavigate('ai-tutor');
-            }}
           />
         )}
 

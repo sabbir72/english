@@ -11,7 +11,6 @@ import {
   BookOpen,
   Headphones,
   Dumbbell,
-  BotMessageSquare,
   BarChart3,
   Bookmark,
   Settings2,
@@ -154,15 +153,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           section: 'Practice',
           page: 'Reading & Audio Comprehension',
           pageBn: 'লিসেনিং ও সাবটাইটেল অর্থ',
-        };
-      case 'ai-tutor':
-      case 'ai-conversation':
-      case 'ai-tools':
-        return {
-          icon: <BotMessageSquare className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
-          section: 'AI Partner',
-          page: 'ChatGPT English Tutor',
-          pageBn: 'চ্যাটজিপিটি স্পিকিং পার্টনার ও শিক্ষক',
         };
       case 'practice':
         return {

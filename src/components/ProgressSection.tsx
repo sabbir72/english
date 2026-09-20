@@ -95,7 +95,7 @@ export const ProgressSection: React.FC<ProgressSectionProps> = ({
       titleBangla: 'স্পিকিং চ্যাম্পিয়ন',
       icon: <Mic className="h-5 w-5 text-rose-500" />,
       earned: progress.speakingMinutes >= 5,
-      desc: 'Spoke 5+ minutes with AI tutor.',
+      desc: 'Practiced 5+ minutes of speaking.',
     },
     {
       title: 'Quiz Master (80%+ Accuracy)',
@@ -246,7 +246,7 @@ export const ProgressSection: React.FC<ProgressSectionProps> = ({
           <div className="mt-2 text-3xl font-black text-slate-900 dark:text-white">
             {progress.speakingMinutes}m
           </div>
-          <p className="mt-1 text-xs text-rose-600 font-semibold">With AI Partner</p>
+          <p className="mt-1 text-xs text-rose-600 font-semibold">Spoken Drills</p>
         </div>
       </div>
 

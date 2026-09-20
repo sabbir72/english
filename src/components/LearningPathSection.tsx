@@ -8,7 +8,6 @@ import {
   MessageSquareQuote,
   Layers,
   GraduationCap,
-  BotMessageSquare,
   Sparkles,
   Trophy,
 } from 'lucide-react';
@@ -73,10 +72,10 @@ export const LearningPathSection: React.FC<LearningPathSectionProps> = ({
     },
     {
       step: 6,
-      title: 'Fluent Conversation with AI Tutor',
-      titleBangla: 'এআই স্পিকিং পার্টনারের সাথে সরাসরি চর্চা',
-      description: 'ভুল সংশোধনসহ স্বতঃস্ফূর্ত ইংরেজি কথপোকথন।',
-      targetTab: 'ai-conversation' as NavigationTab,
+      title: 'Spoken Book Mastery & Fluency Practice',
+      titleBangla: 'স্পোকেন বইয়ের ১০০ অধ্যায় ও ফ্লুয়েন্সি কুইজ চর্চা',
+      description: 'দৈনন্দিন বাস্তব বাক্য ও ইন্টারেক্টিভ কুইজের মাধ্যমে আত্মবিশ্বাসী হয়ে ওঠা।',
+      targetTab: 'book' as NavigationTab,
       completed: false,
       badge: 'Final Goal',
     },

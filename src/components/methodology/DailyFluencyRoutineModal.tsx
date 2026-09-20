@@ -52,9 +52,9 @@ export const DailyFluencyRoutineModal: React.FC<DailyFluencyRoutineModalProps> =
     },
     {
       id: 'exp-4',
-      title: '4. Quick AI Conversation (৩ মিনিট)',
-      bangla: 'আজকের শেখা বাক্য দিয়ে এআই টিউটরের সাথে ৩ মিনিট কথা বলুন',
-      tabTarget: 'ai-tutor',
+      title: '4. Spoken Book Speaking (৩ মিনিট)',
+      bangla: 'আজকের শেখা বাক্য দিয়ে স্পোকেন বই থেকে অডিও শুনে ৩ মিনিট উচ্চস্বরে পড়ুন',
+      tabTarget: 'book',
       duration: '3m',
     },
   ];
@@ -90,9 +90,9 @@ export const DailyFluencyRoutineModal: React.FC<DailyFluencyRoutineModalProps> =
     },
     {
       id: 'deep-5',
-      title: '5. Deep AI Speaking Practice (৫ মিনিট)',
-      bangla: 'এআই-এর সাথে লাইভ স্পিকিং ও তাত্ক্ষণিক উচ্চারণ চেক',
-      tabTarget: 'ai-tutor',
+      title: '5. Interactive Quiz & Fluency Challenge (৫ মিনিট)',
+      bangla: 'কুইজ অনুশীলন ও বাক্য গঠনের চ্যালেঞ্জ সম্পন্ন করুন',
+      tabTarget: 'practice',
       duration: '5m',
     },
   ];
