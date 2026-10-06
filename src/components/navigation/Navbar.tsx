@@ -140,12 +140,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           page: 'Pronunciation Studio',
           pageBn: 'উচ্চারণ ও ফোনেটিক্স',
         };
+      case 'smart-book':
+        return {
+          icon: <BookOpen className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          section: 'Book',
+          page: '100-Page Smart Story Book',
+          pageBn: '১০০ পৃষ্ঠার স্মার্ট গল্প ও শব্দ বই',
+        };
       case 'book':
         return {
           icon: <BookMarked className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
           section: 'Book',
-          page: 'Spoken English Book',
-          pageBn: 'স্পোকেন ইংলিশ এর সেরা বই',
+          page: 'Spoken English Book (আগের বই)',
+          pageBn: 'স্পোকেন ইংলিশ এর সেরা বই (৫০ অধ্যায়)',
         };
       case 'reading':
         return {

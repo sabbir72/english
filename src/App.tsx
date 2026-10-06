@@ -409,8 +409,42 @@ export function App() {
             />
           )}
 
+          {activeTab === 'smart-book' && (
+            <SpokenBookSection
+              initialTab="smart100"
+              onAwardXP={handleAwardXP}
+              onSaveSentence={(english, bangla) => {
+                setSentences((prev) => {
+                  const exists = prev.some((s) => s.english.toLowerCase() === english.toLowerCase());
+                  if (exists) {
+                    return prev.map((s) =>
+                      s.english.toLowerCase() === english.toLowerCase() ? { ...s, isSaved: true } : s
+                    );
+                  }
+                  return [
+                    {
+                      id: `sent-book-${Date.now()}`,
+                      english,
+                      bangla,
+                      sentenceType: 'Affirmative',
+                      difficulty: 'Beginner',
+                      structure: 'Daily Routine Sentence',
+                      grammarExplanationBangla: 'স্মার্ট বই থেকে সংরক্ষিত বাক্য',
+                      importantVocab: [],
+                      isSaved: true,
+                      isPracticed: true,
+                    },
+                    ...prev,
+                  ];
+                });
+                handleAwardXP(10, 'Saved Smart Book sentence');
+              }}
+            />
+          )}
+
           {activeTab === 'book' && (
             <SpokenBookSection
+              initialTab="spokenSentences"
               onAwardXP={handleAwardXP}
               onSaveSentence={(english, bangla) => {
                 setSentences((prev) => {

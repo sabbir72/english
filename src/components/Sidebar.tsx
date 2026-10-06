@@ -69,11 +69,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: 'Blocks',
     },
     {
-      id: 'book' as NavigationTab,
+      id: 'smart-book' as NavigationTab,
       label: '100-Page Smart Book',
-      labelBn: '১০০ পাতার বই',
-      icon: <BookMarked className="h-4 w-4" />,
+      labelBn: '১০০ পাতার স্মার্ট বই',
+      icon: <BookOpen className="h-4 w-4" />,
       badge: '১০০ পৃষ্ঠা',
+    },
+    {
+      id: 'book' as NavigationTab,
+      label: 'Spoken English Book',
+      labelBn: 'স্পোকেন বই (আগের বই)',
+      icon: <BookMarked className="h-4 w-4" />,
+      badge: '৫০ অধ্যায়',
     },
     {
       id: 'reading' as NavigationTab,

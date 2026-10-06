@@ -29,6 +29,7 @@ import { SmartStoryBook100Section } from './SmartStoryBook100Section';
 export interface SpokenBookSectionProps {
   onSaveSentence?: (english: string, bangla: string) => void;
   onAwardXP?: (amount: number, reason: string) => void;
+  initialTab?: 'spokenSentences' | 'smart100';
 }
 
 type PaperTheme = 'book' | 'white' | 'sepia' | 'dark';
@@ -36,8 +37,16 @@ type PaperTheme = 'book' | 'white' | 'sepia' | 'dark';
 export const SpokenBookSection: React.FC<SpokenBookSectionProps> = ({
   onSaveSentence,
   onAwardXP,
+  initialTab = 'spokenSentences',
 }) => {
-  const [bookTab, setBookTab] = useState<'smart100' | 'spokenSentences'>('smart100');
+  const [bookTab, setBookTab] = useState<'smart100' | 'spokenSentences'>(initialTab);
+
+  useEffect(() => {
+    if (initialTab) {
+      setBookTab(initialTab);
+    }
+  }, [initialTab]);
+
   const [chapters] = useState<BookChapter[]>(SPOKEN_BOOK_CHAPTERS);
   const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

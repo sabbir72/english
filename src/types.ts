@@ -242,6 +242,7 @@ export type NavigationTab =
   | 'grammar'
   | 'pronunciation'
   | 'reading'
+  | 'smart-book'
   | 'book'
   | 'conversation'
   | 'practice'

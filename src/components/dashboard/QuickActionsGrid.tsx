@@ -19,15 +19,26 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
 }) => {
   const cards = [
     {
-      id: 'book' as NavigationTab,
-      title: '100-Page Smart Story Book',
-      titleBn: '১০০ পৃষ্ঠার স্মার্ট বই',
-      description: 'গল্পের ভেতর বোল্ড স্মার্ট শব্দ, উচ্চারণ ও সমার্থক-বিপরীত শব্দসহ সম্পূর্ণ ১০০ পৃষ্ঠা।',
+      id: 'smart-book' as NavigationTab,
+      title: '100-Page Smart Book',
+      titleBn: '১০০ পাতার স্মার্ট বই',
+      description: 'গল্পের ভেতর বোল্ড স্মার্ট শব্দ, উচ্চারণ ও সমার্থক-বিপরীত শব্দসহ ১০০ পৃষ্ঠা।',
       badge: '১০০ পৃষ্ঠা বই',
       emoji: '📖',
-      icon: <BookMarked className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />,
+      icon: <BookOpen className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />,
       iconBg: 'bg-indigo-50 dark:bg-indigo-950/50',
       badgeColor: 'text-indigo-700 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300',
+    },
+    {
+      id: 'book' as NavigationTab,
+      title: 'Spoken English Book',
+      titleBn: 'স্পোকেন বই (আগের বই)',
+      description: 'বইয়ের পাতায় দৈনন্দিন রুটিন, বাংলা উচ্চারণ ও অর্থসহ ৫০ অধ্যায়ের স্পিকিং ড্রিল।',
+      badge: '৫০ অধ্যায় বই',
+      emoji: '🗣️',
+      icon: <BookMarked className="h-5 w-5 text-amber-600 dark:text-amber-400" />,
+      iconBg: 'bg-amber-50 dark:bg-amber-950/50',
+      badgeColor: 'text-amber-700 bg-amber-50 dark:bg-amber-950/60 dark:text-amber-300',
     },
     {
       id: 'vocabulary' as NavigationTab,
