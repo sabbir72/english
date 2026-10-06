@@ -14,6 +14,7 @@ import {
   StreakCard,
   ContinueLearningCard,
   MethodologySpotlightCard,
+  SmartBookSpotlightCard,
 } from './dashboard';
 import { DailyFluencyRoutineModal } from './methodology/DailyFluencyRoutineModal';
 import {
@@ -175,6 +176,9 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         onPracticeNow={handlePracticeNow}
         streak={streakCount}
       />
+
+      {/* 3.5. 100-Page Smart Story Immersion Book Spotlight */}
+      <SmartBookSpotlightCard onOpenBook={() => onNavigate('book')} />
 
       {/* 4. Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

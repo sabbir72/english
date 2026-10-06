@@ -5,4 +5,5 @@ export * from './DailyGoalCard';
 export * from './StreakCard';
 export * from './ContinueLearningCard';
 export * from './MethodologySpotlightCard';
+export * from './SmartBookSpotlightCard';
 

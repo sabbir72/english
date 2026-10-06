@@ -24,6 +24,7 @@ import {
 import { BookChapter, BookSentenceItem } from '../../types';
 import { SPOKEN_BOOK_CHAPTERS } from '../../data/spokenBookData';
 import { speakText, stopSpeaking } from '../../utils/speech';
+import { SmartStoryBook100Section } from './SmartStoryBook100Section';
 
 export interface SpokenBookSectionProps {
   onSaveSentence?: (english: string, bangla: string) => void;
@@ -36,6 +37,7 @@ export const SpokenBookSection: React.FC<SpokenBookSectionProps> = ({
   onSaveSentence,
   onAwardXP,
 }) => {
+  const [bookTab, setBookTab] = useState<'smart100' | 'spokenSentences'>('smart100');
   const [chapters] = useState<BookChapter[]>(SPOKEN_BOOK_CHAPTERS);
   const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -257,8 +259,46 @@ export const SpokenBookSection: React.FC<SpokenBookSectionProps> = ({
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto font-sans print:p-0">
-      {/* Category Navigation Pills */}
-      <div className="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs dark:bg-slate-900 dark:border-slate-800 print:hidden overflow-x-auto">
+      {/* Top Format Switcher Tabs */}
+      <div className="flex items-center justify-between gap-2 p-1.5 bg-slate-100 dark:bg-slate-800/90 rounded-2xl border border-slate-200/90 dark:border-slate-700/80 shadow-2xs print:hidden">
+        <button
+          type="button"
+          onClick={() => setBookTab('smart100')}
+          className={`flex-1 py-2.5 px-3 sm:px-4 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            bookTab === 'smart100'
+              ? 'bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <BookOpen className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+          <span className="font-bangla">১০০ পৃষ্ঠার স্মার্ট গল্প ও শব্দ বই (Smart 100 Pages)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setBookTab('spokenSentences')}
+          className={`flex-1 py-2.5 px-3 sm:px-4 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            bookTab === 'spokenSentences'
+              ? 'bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <BookMarked className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <span className="font-bangla">দৈনন্দিন স্পোকেন সংলাপ বই (50 Chapters)</span>
+        </button>
+      </div>
+
+      {bookTab === 'smart100' ? (
+        <SmartStoryBook100Section
+          onAwardXP={onAwardXP}
+          onSaveWord={(word, meaning) => {
+            if (onSaveSentence) onSaveSentence(word, meaning);
+          }}
+        />
+      ) : (
+        <div className="space-y-6">
+          {/* Category Navigation Pills */}
+          <div className="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs dark:bg-slate-900 dark:border-slate-800 print:hidden overflow-x-auto">
         <div className="flex items-center gap-1.5 min-w-max">
           <div className="flex items-center gap-1 text-xs font-bold text-slate-500 mr-2">
             <Filter className="h-3.5 w-3.5 text-indigo-500" />
@@ -671,6 +711,8 @@ export const SpokenBookSection: React.FC<SpokenBookSectionProps> = ({
       <div className="text-center text-xs text-slate-400 dark:text-slate-500 py-2 print:hidden">
         💡 টিপস: কীবোর্ডের <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 font-mono text-[10px]">←</kbd> ও <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 font-mono text-[10px]">→</kbd> চাপলে সহজেই আগের ও পরের পাতায় যেতে পারবেন। যেকোনো বাক্যে ক্লিক করলে উচ্চারণ শুনতে পাবেন।
       </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -70,10 +70,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'book' as NavigationTab,
-      label: 'Spoken Book',
-      labelBn: 'স্পোকেন বই',
+      label: '100-Page Smart Book',
+      labelBn: '১০০ পাতার বই',
       icon: <BookMarked className="h-4 w-4" />,
-      badge: 'বই ফরম্যাট',
+      badge: '১০০ পৃষ্ঠা',
     },
     {
       id: 'reading' as NavigationTab,

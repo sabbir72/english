@@ -423,5 +423,42 @@ export interface BookChapter {
   sentences: BookSentenceItem[];
 }
 
+export interface SmartBookVocabWord {
+  id: string;
+  word: string;
+  ipa: string;
+  banglaPronunciation: string;
+  partOfSpeech: string;
+  banglaMeaning: string;
+  synonyms: string[];
+  antonyms: string[];
+  exampleSentence: string;
+  exampleSentenceBn: string;
+  difficulty?: 'Intermediate' | 'Advanced' | 'Expert';
+}
+
+export interface SmartBookQuiz {
+  question: string;
+  questionBn?: string;
+  options: string[];
+  correctIndex: number;
+  explanationBn: string;
+}
+
+export interface SmartBookPage {
+  pageNumber: number; // 1 to 100
+  chapterNumber: number; // 1 to 10
+  chapterTitle: string;
+  chapterTitleBn: string;
+  title: string;
+  titleBn: string;
+  theme: string;
+  storyBengali: string;
+  storyEnglishSummary?: string;
+  vocabulary: SmartBookVocabWord[];
+  quiz: SmartBookQuiz;
+  practicalTipBn?: string;
+}
+
 
 

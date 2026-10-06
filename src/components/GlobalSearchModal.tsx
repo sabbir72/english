@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, X, Volume2, ArrowRight, BookOpen, Layers, GraduationCap, MessageSquareQuote } from 'lucide-react';
 import { VocabularyItem, SentenceItem, SentenceStructureItem, GrammarLesson, NavigationTab } from '../types';
 import { speakText } from '../utils/speech';
+import { SMART_BOOK_100_PAGES } from '../data/smartBook';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         sentences: sentences.slice(0, 2),
         structures: structures.slice(0, 2),
         grammar: grammar.slice(0, 2),
+        bookPages: SMART_BOOK_100_PAGES.slice(0, 2),
       };
     }
 
@@ -62,6 +64,17 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           g.titleBangla.toLowerCase().includes(q) ||
           g.summaryBangla.toLowerCase().includes(q)
       ),
+      bookPages: SMART_BOOK_100_PAGES.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.titleBn.toLowerCase().includes(q) ||
+          p.vocabulary.some(
+            (v) =>
+              v.word.toLowerCase().includes(q) ||
+              v.banglaMeaning.toLowerCase().includes(q) ||
+              v.banglaPronunciation.toLowerCase().includes(q)
+          )
+      ).slice(0, 3),
     };
   }, [query, vocabulary, sentences, structures, grammar]);
 
@@ -71,7 +84,8 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     results.vocab.length +
     results.sentences.length +
     results.structures.length +
-    results.grammar.length;
+    results.grammar.length +
+    (results.bookPages ? results.bookPages.length : 0);
 
   return (
     <div
@@ -296,6 +310,52 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                         </div>
                         <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 line-clamp-1">
                           {item.summaryBangla}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 100-Page Smart Story Book Results */}
+              {results.bookPages && results.bookPages.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between pb-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+                    <span className="flex items-center gap-1.5">
+                      <BookOpen className="h-3.5 w-3.5 text-indigo-500" />
+                      ১০০ পৃষ্ঠার স্মার্ট বই ({results.bookPages.length})
+                    </span>
+                    <button
+                      onClick={() => {
+                        onNavigate('book');
+                        onClose();
+                      }}
+                      className="text-[11px] font-semibold text-indigo-600 hover:underline dark:text-indigo-400 font-bangla"
+                    >
+                      বই খুলুন
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {results.bookPages.map((page) => (
+                      <div
+                        key={page.pageNumber}
+                        onClick={() => {
+                          localStorage.setItem('smart_book_current_page', page.pageNumber.toString());
+                          onNavigate('book');
+                          onClose();
+                        }}
+                        className="cursor-pointer rounded-xl border border-indigo-100 bg-indigo-50/40 p-2.5 transition-colors hover:border-indigo-300 dark:border-indigo-900/60 dark:bg-indigo-950/30"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-black text-xs text-indigo-900 dark:text-indigo-200 font-bangla">
+                            পৃষ্ঠা {page.pageNumber}: {page.titleBn}
+                          </span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300">
+                            P.{page.pageNumber}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 line-clamp-1 font-serif">
+                          {page.storyBengali.replace(/\*\*/g, '')}
                         </p>
                       </div>
                     ))}
