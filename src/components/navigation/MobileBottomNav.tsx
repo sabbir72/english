@@ -7,19 +7,22 @@ import {
   Layers,
   Dumbbell,
 } from 'lucide-react';
-import { NavigationTab } from '../../types';
+import { NavigationTab, LanguageMode } from '../../types';
 
 export interface MobileBottomNavProps {
   activeTab: NavigationTab;
   onNavigate: (tab: NavigationTab) => void;
   onOpenLearnDrawer: () => void;
+  languageMode?: LanguageMode;
 }
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   activeTab,
   onNavigate,
   onOpenLearnDrawer,
+  languageMode = 'bn',
 }) => {
+  const isBn = languageMode === 'bn';
   const isLearnActive = [
     'learn',
     'vocabulary',
@@ -45,14 +48,16 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('home')}
-          className={`flex flex-col items-center justify-center py-1 px-1.5 min-w-[46px] min-h-[44px] rounded-xl transition-colors cursor-pointer ${
+          className={`flex flex-col items-center justify-center py-1 px-1.5 min-w-[48px] min-h-[46px] rounded-xl transition-all cursor-pointer ${
             activeTab === 'home'
-              ? 'text-cyan-600 dark:text-cyan-400 font-black'
+              ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50/80 dark:bg-indigo-950/60 font-black'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium'
           }`}
         >
           <Home className="h-5 w-5" />
-          <span className="text-[10px] mt-0.5 tracking-tight">Home</span>
+          <span className="text-[10px] mt-0.5 tracking-tight font-sans">
+            {isBn ? 'হোম' : 'Home'}
+          </span>
         </button>
 
         {/* 2. Learn (Opens sub-modules drawer) */}
@@ -65,75 +70,85 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               onNavigate('learn');
             }
           }}
-          className={`relative flex flex-col items-center justify-center py-1 px-1.5 min-w-[46px] min-h-[44px] rounded-xl transition-colors cursor-pointer ${
+          className={`relative flex flex-col items-center justify-center py-1 px-1.5 min-w-[48px] min-h-[46px] rounded-xl transition-all cursor-pointer ${
             isLearnActive
-              ? 'text-cyan-600 dark:text-cyan-400 font-black'
+              ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50/80 dark:bg-indigo-950/60 font-black'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium'
           }`}
         >
           <BookOpen className="h-5 w-5" />
-          <span className="text-[10px] mt-0.5 tracking-tight">Learn</span>
+          <span className="text-[10px] mt-0.5 tracking-tight font-sans">
+            {isBn ? 'পদ্ধতি' : 'Learn'}
+          </span>
         </button>
 
-        {/* 3. 100-Page Spoken Book */}
+        {/* 3. 100-Page Smart Book */}
         <button
           type="button"
-          onClick={() => onNavigate('book')}
-          className={`relative flex flex-col items-center justify-center py-1 px-1.5 min-w-[46px] min-h-[44px] rounded-xl transition-colors cursor-pointer ${
-            activeTab === 'book'
-              ? 'text-cyan-600 dark:text-cyan-400 font-black'
+          onClick={() => onNavigate('smart-book')}
+          className={`relative flex flex-col items-center justify-center py-1 px-1.5 min-w-[48px] min-h-[46px] rounded-xl transition-all cursor-pointer ${
+            activeTab === 'smart-book' || activeTab === 'book'
+              ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50/80 dark:bg-indigo-950/60 font-black'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium'
           }`}
         >
           <div className="relative">
             <BookMarked className="h-5 w-5" />
-            <span className="absolute -top-1.5 -right-2 rounded-full bg-cyan-600 px-1 py-0.2 text-[8px] font-black text-white leading-none">
+            <span className="absolute -top-1.5 -right-2 rounded-full bg-indigo-600 px-1 py-0.2 text-[8px] font-black text-white leading-none">
               100
             </span>
           </div>
-          <span className="text-[10px] mt-0.5 font-bangla">স্পোকেন বই</span>
+          <span className="text-[10px] mt-0.5 font-sans">
+            {isBn ? 'স্মার্ট বই' : 'Book'}
+          </span>
         </button>
 
         {/* 4. Reading & Audio Stories */}
         <button
           type="button"
           onClick={() => onNavigate('reading')}
-          className={`flex flex-col items-center justify-center py-1 px-1.5 min-w-[46px] min-h-[44px] rounded-xl transition-colors cursor-pointer ${
+          className={`flex flex-col items-center justify-center py-1 px-1.5 min-w-[48px] min-h-[46px] rounded-xl transition-all cursor-pointer ${
             activeTab === 'reading'
-              ? 'text-cyan-600 dark:text-cyan-400 font-black'
+              ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50/80 dark:bg-indigo-950/60 font-black'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium'
           }`}
         >
           <Headphones className="h-5 w-5" />
-          <span className="text-[10px] mt-0.5 font-bangla">রিডিং</span>
+          <span className="text-[10px] mt-0.5 font-sans">
+            {isBn ? 'রিডিং' : 'Reading'}
+          </span>
         </button>
 
         {/* 5. Sentence Builder */}
         <button
           type="button"
           onClick={() => onNavigate('builder')}
-          className={`flex flex-col items-center justify-center py-1 px-1.5 min-w-[46px] min-h-[44px] rounded-xl transition-colors cursor-pointer ${
+          className={`flex flex-col items-center justify-center py-1 px-1.5 min-w-[48px] min-h-[46px] rounded-xl transition-all cursor-pointer ${
             activeTab === 'builder'
-              ? 'text-cyan-600 dark:text-cyan-400 font-black'
+              ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50/80 dark:bg-indigo-950/60 font-black'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium'
           }`}
         >
           <Layers className="h-5 w-5" />
-          <span className="text-[10px] mt-0.5 tracking-tight">Builder</span>
+          <span className="text-[10px] mt-0.5 tracking-tight font-sans">
+            {isBn ? 'বিল্ডার' : 'Builder'}
+          </span>
         </button>
 
         {/* 6. Practice & Quizzes */}
         <button
           type="button"
           onClick={() => onNavigate('practice')}
-          className={`flex flex-col items-center justify-center py-1 px-1.5 min-w-[46px] min-h-[44px] rounded-xl transition-colors cursor-pointer ${
+          className={`flex flex-col items-center justify-center py-1 px-1.5 min-w-[48px] min-h-[46px] rounded-xl transition-all cursor-pointer ${
             activeTab === 'practice'
-              ? 'text-cyan-600 dark:text-cyan-400 font-black'
+              ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50/80 dark:bg-indigo-950/60 font-black'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium'
           }`}
         >
           <Dumbbell className="h-5 w-5" />
-          <span className="text-[10px] mt-0.5 tracking-tight">Quiz</span>
+          <span className="text-[10px] mt-0.5 tracking-tight font-sans">
+            {isBn ? 'কুইজ' : 'Quiz'}
+          </span>
         </button>
       </nav>
     </div>

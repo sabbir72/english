@@ -10,9 +10,12 @@ import {
   ChevronUp,
   BookOpen,
   ArrowRight,
+  Search,
+  Filter,
 } from 'lucide-react';
 import { GrammarLesson, NavigationTab } from '../types';
 import { speakText } from '../utils/speech';
+import { GRAMMAR_TOPIC_SECTIONS } from '../data/grammarData';
 
 interface GrammarSectionProps {
   grammarLessons: GrammarLesson[];
@@ -28,14 +31,21 @@ export const GrammarSection: React.FC<GrammarSectionProps> = ({
   onNavigate,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedLessonId, setExpandedLessonId] = useState<string>(grammarLessons[0]?.id || '');
   const [quizAnswers, setQuizAnswers] = useState<{ [lessonId: string]: number | null }>({});
   const [quizSubmitted, setQuizSubmitted] = useState<{ [lessonId: string]: boolean }>({});
 
-  const categories = ['all', 'Parts of Speech', 'Tenses', 'Syntax & Grammar Rules', 'Prepositions', 'Advanced Sentence Types'];
-
   const filteredLessons = grammarLessons.filter((item) => {
     if (selectedCategory !== 'all' && item.category !== selectedCategory) return false;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const matchesTitle =
+        item.title.toLowerCase().includes(q) ||
+        item.titleBangla.toLowerCase().includes(q) ||
+        item.rule.toLowerCase().includes(q);
+      if (!matchesTitle) return false;
+    }
     return true;
   });
 
@@ -47,37 +57,73 @@ export const GrammarSection: React.FC<GrammarSectionProps> = ({
   return (
     <div id="grammar-section" className="max-w-4xl mx-auto space-y-6">
       {/* Header & Categories */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-200/80 pb-4 dark:border-slate-800">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-[#0F172A] dark:text-white">
-            Grammar Lessons &amp; Rules
-          </h2>
-          <p className="text-xs sm:text-sm text-[#475569] dark:text-slate-400 font-bangla mt-0.5">
-            সহজ বাংলা ব্যাখ্যা, উদাহরণ ও প্র্যাকটিস সহ ইংরেজি ব্যাকরণ শেখার ডিজিটাল বই।
-          </p>
+      <div className="space-y-4 border-b border-slate-200/80 pb-5 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-[#0F172A] dark:text-white">
+              Grammar Lessons &amp; Rules
+            </h2>
+            <p className="text-xs sm:text-sm text-[#475569] dark:text-slate-400 font-bangla mt-0.5">
+              টপিক অনুযায়ী সাজানো সহজ বাংলা ব্যাখ্যা, ফর্মুলা, উদাহরণ ও কুইজ সহ ডিজিটাল বই।
+            </p>
+          </div>
+
+          {/* Quick Search Input */}
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="গ্রামার টপিক বা নিয়ম খুঁজুন..."
+              className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+          </div>
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 rounded-xl bg-slate-100/90 p-1 dark:bg-slate-800/80">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                selectedCategory === cat
-                  ? 'bg-white text-[#4F46E5] shadow-xs dark:bg-[#1E293B] dark:text-[#818CF8]'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-            >
-              {cat === 'all' ? 'All Lessons' : cat}
-            </button>
-          ))}
+        {/* Topic Section Filter Pills */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mr-1 flex items-center gap-1">
+            <Filter className="h-3.5 w-3.5 text-indigo-500" />
+            টপিক বিভাগ:
+          </span>
+          {GRAMMAR_TOPIC_SECTIONS.map((section) => {
+            const count = section.id === 'all'
+              ? grammarLessons.length
+              : grammarLessons.filter((l) => l.category === section.id).length;
+            const isActive = selectedCategory === section.id;
+            return (
+              <button
+                key={section.id}
+                onClick={() => setSelectedCategory(section.id)}
+                className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-[#4F46E5] text-white shadow-xs'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                }`}
+              >
+                <span>{section.nameBn}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                    isActive ? 'bg-indigo-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Grammar Lessons List - Digital Textbook Styling */}
       <div className="space-y-4">
-        {filteredLessons.map((lesson) => {
+        {filteredLessons.length === 0 ? (
+          <div className="py-12 text-center rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 text-slate-400 text-xs">
+            কোনো ব্যাকরণ পাঠ পাওয়া যায়নি। ফিল্টার রিসেট করতে "সকল ব্যাকরণ পাঠ" নির্বাচন করুন।
+          </div>
+        ) : (
+          filteredLessons.map((lesson) => {
           const isExpanded = expandedLessonId === lesson.id;
           const userQuizAnswer = quizAnswers[lesson.id];
           const isQuizChecked = quizSubmitted[lesson.id];
@@ -304,7 +350,8 @@ export const GrammarSection: React.FC<GrammarSectionProps> = ({
               )}
             </div>
           );
-        })}
+        })
+      )}
       </div>
     </div>
   );

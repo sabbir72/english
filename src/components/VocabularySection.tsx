@@ -51,8 +51,9 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
   // Daily Engine State
   const [dailyState, setDailyState] = useState<DailyVocabState>(() => getStoredDailyVocabState());
 
-  // Active tab: default to 'daily' for instant engagement with suggestions, supports 'oxford3000' for the full 3000 regular word list
-  const [activeTab, setActiveTab] = useState<'daily' | 'oxford3000' | 'all' | 'review' | 'learned' | 'favorites' | 'quiz'>('daily');
+  // Active tab: supports 'daily', 'topics' for categorized topic sections, 'oxford3000', 'all', etc.
+  const [activeTab, setActiveTab] = useState<'daily' | 'topics' | 'oxford3000' | 'all' | 'review' | 'learned' | 'favorites' | 'quiz'>('daily');
+  const [selectedTopicSection, setSelectedTopicSection] = useState<string>('all');
 
   // Local storage sets for Oxford 3000 items
   const [oxfordFavIds, setOxfordFavIds] = useState<Set<string>>(() => {
@@ -232,6 +233,40 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
     }));
     showToast(`🎯 দৈনিক টার্গেট সেট করা হয়েছে: ${newGoal}টি শব্দ`);
   };
+
+  const CATEGORY_META_MAP: Record<string, { bn: string; icon: string }> = {
+    'all': { bn: 'সকল টপিক বিভাগ', icon: '🌟' },
+    'Daily Life & Routine': { bn: 'দৈনন্দিন জীবন ও অভ্যাস', icon: '☀️' },
+    'Communication & Speech': { bn: 'কথোপকথন ও সাবলীলতা', icon: '💬' },
+    'Mindset & Feelings': { bn: 'মনস্তত্ত্ব ও অনুভূতি', icon: '🧘' },
+    'Workplace & Career': { bn: 'অফিস ও কর্মক্ষেত্র', icon: '💼' },
+    'Travel & Hospitality': { bn: 'ভ্রমণ ও যাতায়াত', icon: '✈️' },
+    'Food & Dining': { bn: 'খাদ্য ও রেস্তোরাঁ', icon: '🍽️' },
+    'Health & Fitness': { bn: 'স্বাস্থ্য ও ফিটনেস', icon: '💪' },
+    'Education & Learning': { bn: 'শিক্ষা ও অ্যাকাডেমিক', icon: '📚' },
+    'Technology & Digital Life': { bn: 'প্রযুক্তি ও ডিজিটাল জীবন', icon: '💻' },
+    'Shopping & Money': { bn: 'অর্থ ও কেনাকাটা', icon: '🛒' },
+    'Emergency & Problem Solving': { bn: 'জরুরি অবস্থা ও সমাধান', icon: '🛡️' },
+    'Reading & Literature': { bn: 'সাহিত্য ও গল্প', icon: '📖' },
+  };
+
+  // Filtered vocabulary for Topic Sections tab
+  const topicWords = useMemo(() => {
+    return vocabulary.filter((item) => {
+      if (selectedTopicSection !== 'all' && item.category !== selectedTopicSection) return false;
+      if (levelFilter !== 'all' && item.difficulty !== levelFilter) return false;
+      if (posFilter !== 'all' && item.partOfSpeech !== posFilter) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const matchesWord = item.word.toLowerCase().includes(q);
+        const matchesMeaning = item.banglaMeaning.toLowerCase().includes(q);
+        const matchesPron = item.pronunciation?.toLowerCase().includes(q);
+        const matchesSynonym = item.synonyms?.some((s) => s.toLowerCase().includes(q));
+        if (!matchesWord && !matchesMeaning && !matchesPron && !matchesSynonym) return false;
+      }
+      return true;
+    });
+  }, [vocabulary, selectedTopicSection, levelFilter, posFilter, searchQuery]);
 
   // Filtered vocabulary for "All Words" tab
   const filteredVocabulary = useMemo(() => {
@@ -545,6 +580,18 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
           >
             <Flame className="h-3.5 w-3.5 text-amber-300" />
             আজকের সাজেশন ({batches.readTodayCount}/{batches.dailyGoal})
+          </button>
+
+          <button
+            onClick={() => setActiveTab('topics')}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+              activeTab === 'topics'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'text-indigo-800 bg-indigo-50/90 hover:bg-indigo-100 dark:text-indigo-300 dark:bg-indigo-950/70'
+            }`}
+          >
+            <Layers className="h-3.5 w-3.5 text-indigo-400" />
+            টপিক বিভাগ (Topic Sections)
           </button>
 
           <button
@@ -875,6 +922,112 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
           userFavorites={new Set([...vocabulary.filter((v) => v.isFavorite).map((v) => v.id), ...oxfordFavIds])}
           userLearned={new Set([...vocabulary.filter((v) => v.isLearned).map((v) => v.id), ...oxfordLearnedIds])}
         />
+      )}
+
+      {/* =========================================================================
+          TAB: TOPIC SECTIONS (Categorized vocabulary drawers with deep cards)
+         ========================================================================= */}
+      {activeTab === 'topics' && (
+        <div className="space-y-6">
+          {/* Topic Header & Overview */}
+          <div className="rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50/90 via-white to-sky-50/50 p-6 shadow-xs dark:border-indigo-950/60 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/30">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 dark:bg-indigo-950 px-3 py-0.5 text-xs font-bold text-indigo-700 dark:text-indigo-300">
+                  <Layers className="h-3.5 w-3.5" />
+                  <span>Topic-Based Vocabulary Hub • {categories.filter((c) => c !== 'all').length} টি বিষয়ভিত্তিক অধ্যায়</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1.5">
+                  টপিক ও পরিস্থিতি অনুযায়ী সাজানো শব্দভাণ্ডার
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-xl font-sans">
+                  প্রতিদিনের নির্দিষ্ট পরিস্থিতি অনুযায়ী প্রয়োজনীয় শব্দগুলো আলাদা সেকশনে পড়ুন—উচ্চারণ, বাংলা অর্থ, সমার্থক-বিপরীত শব্দ ও উদাহরণ সহ।
+                </p>
+              </div>
+
+              {/* Search Inside Topic Hub */}
+              <div className="relative w-full sm:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="টপিকের ভেতর শব্দ খুঁজুন..."
+                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+
+            {/* Topic Filter Pills */}
+            <div className="mt-5 flex flex-wrap items-center gap-2 pt-4 border-t border-slate-200/70 dark:border-slate-800">
+              {categories.map((cat) => {
+                const count = cat === 'all'
+                  ? vocabulary.length
+                  : vocabulary.filter((v) => v.category === cat).length;
+                const isActive = selectedTopicSection === cat;
+                const meta = CATEGORY_META_MAP[cat];
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedTopicSection(cat)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-indigo-600 text-white shadow-xs'
+                        : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
+                    }`}
+                  >
+                    <span>{meta ? meta.icon : '📌'}</span>
+                    <span>{meta ? meta.bn : (cat === 'all' ? 'সকল টপিক' : cat)}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                        isActive ? 'bg-indigo-700 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Quick Filter Bar (Level + POS) */}
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/60 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400">লেভেল:</span>
+                <div className="flex items-center gap-1">
+                  {['all', 'Beginner', 'Intermediate', 'Advanced'].map((lvl) => (
+                    <button
+                      key={lvl}
+                      onClick={() => setLevelFilter(lvl)}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                        levelFilter === lvl
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400'
+                      }`}
+                    >
+                      {lvl === 'all' ? 'সকল' : lvl}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-slate-400">
+                প্রদর্শিত শব্দ: <span className="font-bold text-indigo-600 dark:text-indigo-400">{topicWords.length}</span>টি
+              </div>
+            </div>
+          </div>
+
+          {/* Words Grid inside Active Topic */}
+          {topicWords.length === 0 ? (
+            <div className="py-16 text-center rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 text-slate-400 text-xs">
+              এই টপিকে কোনো শব্দ পাওয়া যায়নি। "সকল টপিক বিভাগ" নির্বাচন করে আবার চেষ্টা করুন।
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+              {topicWords.map((item) => renderWordCard(item))}
+            </div>
+          )}
+        </div>
       )}
 
       {/* =========================================================================

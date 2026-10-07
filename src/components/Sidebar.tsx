@@ -15,13 +15,15 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import { NavigationTab } from '../types';
+import { NavigationTab, LanguageMode } from '../types';
 
 interface SidebarProps {
   activeTab: NavigationTab;
   onSelectTab: (tab: NavigationTab) => void;
   mobileMenuOpen: boolean;
   onCloseMobileMenu: () => void;
+  languageMode?: LanguageMode;
+  onToggleLanguage?: (lang?: LanguageMode) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -29,6 +31,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectTab,
   mobileMenuOpen,
   onCloseMobileMenu,
+  languageMode = 'bn',
+  onToggleLanguage,
 }) => {
   const handleNav = (tab: NavigationTab) => {
     onSelectTab(tab);
@@ -176,24 +180,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 activeTab === item.id ||
                 (item.id === 'builder' && activeTab === 'builder');
 
+              const isBn = languageMode === 'bn';
+              const displayLabel = isBn ? item.labelBn : item.label;
+              const subLabel = isBn ? item.label : item.labelBn;
+
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNav(item.id)}
-                  className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-bold transition-all ${
+                  className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-bold transition-all cursor-pointer ${
                     isActive
                       ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-2xs dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/60 font-black'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-white'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className={isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400'}>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={isActive ? 'text-indigo-600 dark:text-indigo-400 shrink-0' : 'text-slate-400 shrink-0'}>
                       {item.icon}
                     </span>
-                    <span>{item.label}</span>
+                    <span className="truncate">{displayLabel}</span>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     {item.badge && (
                       <span
                         className={`rounded-full px-1.5 py-0.2 text-[9px] font-bold ${
@@ -205,8 +213,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         {item.badge}
                       </span>
                     )}
-                    <span className="text-[10px] text-slate-400 font-bangla font-normal hidden lg:inline">
-                      {item.labelBn}
+                    <span className="text-[10px] text-slate-400 font-normal hidden lg:inline truncate max-w-[70px]">
+                      {subLabel}
                     </span>
                   </div>
                 </button>
@@ -217,12 +225,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Footer info in sidebar */}
         <div className="border-t border-slate-100 pt-3 dark:border-slate-800 space-y-2">
+          {/* Quick Language Switcher widget */}
+          {onToggleLanguage && (
+            <div className="flex items-center justify-between px-2 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-xs">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                {languageMode === 'bn' ? 'ভাষা নির্বাচন:' : 'Language:'}
+              </span>
+              <div className="flex items-center rounded-lg bg-white dark:bg-slate-900 p-0.5 border border-slate-200/80 dark:border-slate-700/80">
+                <button
+                  type="button"
+                  onClick={() => onToggleLanguage('en')}
+                  className={`px-2 py-0.5 text-[10px] font-black rounded-md transition-all cursor-pointer ${
+                    languageMode === 'en'
+                      ? 'bg-indigo-600 text-white shadow-2xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  }`}
+                >
+                  ENG
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onToggleLanguage('bn')}
+                  className={`px-2 py-0.5 text-[10px] font-black rounded-md transition-all cursor-pointer font-bangla ${
+                    languageMode === 'bn'
+                      ? 'bg-emerald-600 text-white shadow-2xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  }`}
+                >
+                  বাং
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-2.5 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
               <div className="text-[11px]">
-                <span className="font-bold text-slate-800 dark:text-slate-200 block">দৈনিক চর্চা</span>
-                <span className="text-slate-500 font-bangla">১০ মিনিট বাকি</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200 block">
+                  {languageMode === 'bn' ? 'দৈনিক চর্চা' : 'Daily Fluency'}
+                </span>
+                <span className="text-slate-500 font-bangla">
+                  {languageMode === 'bn' ? '১০ মিনিট বাকি' : '10 min left'}
+                </span>
               </div>
             </div>
             <span className="text-xs font-black text-indigo-600 dark:text-indigo-400">75%</span>

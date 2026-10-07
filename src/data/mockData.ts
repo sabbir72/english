@@ -8,6 +8,7 @@ import {
   UserProfile,
 } from '../types';
 import { COMPREHENSIVE_VOCABULARY_LIST } from './vocabularyData';
+import { COMPREHENSIVE_GRAMMAR_LESSONS } from './grammarData';
 
 export const INITIAL_VOCABULARY: VocabularyItem[] = COMPREHENSIVE_VOCABULARY_LIST;
 
@@ -355,7 +356,9 @@ export const INITIAL_SENTENCE_STRUCTURES: SentenceStructureItem[] = [
   },
 ];
 
-export const INITIAL_GRAMMAR_LESSONS: GrammarLesson[] = [
+export const INITIAL_GRAMMAR_LESSONS: GrammarLesson[] = COMPREHENSIVE_GRAMMAR_LESSONS;
+
+export const LEGACY_GRAMMAR_LESSONS: GrammarLesson[] = [
   {
     id: 'gram-1',
     title: 'Parts of Speech: Noun, Pronoun & Verb',

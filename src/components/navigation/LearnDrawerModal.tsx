@@ -9,13 +9,14 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Modal } from '../ui/Modal';
-import { NavigationTab, LearnSubTab } from '../../types';
+import { NavigationTab, LearnSubTab, LanguageMode } from '../../types';
 
 export interface LearnDrawerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectSubTab: (subTab: LearnSubTab) => void;
   activeSubTab?: LearnSubTab;
+  languageMode?: LanguageMode;
 }
 
 export const LearnDrawerModal: React.FC<LearnDrawerModalProps> = ({
@@ -23,7 +24,9 @@ export const LearnDrawerModal: React.FC<LearnDrawerModalProps> = ({
   onClose,
   onSelectSubTab,
   activeSubTab,
+  languageMode = 'bn',
 }) => {
+  const isBn = languageMode === 'bn';
   const items = [
     {
       id: 'patterns' as LearnSubTab,
@@ -119,13 +122,16 @@ export const LearnDrawerModal: React.FC<LearnDrawerModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Learn English Modules"
-      subtitle="কী শিখতে চান বেছে নিন"
+      title={isBn ? 'ইংরেজি শেখার পদ্ধতি ও মডিউল' : 'Learn English Modules'}
+      subtitle={isBn ? 'কী শিখতে চান বেছে নিন' : 'Choose a core learning pathway'}
       maxWidth="md"
     >
       <div className="space-y-2.5">
         {items.map((item) => {
           const isSelected = activeSubTab === item.id;
+          const primaryTitle = isBn ? item.titleBn : item.title;
+          const secondaryTitle = isBn ? item.title : item.titleBn;
+
           return (
             <button
               key={item.id}
@@ -134,7 +140,7 @@ export const LearnDrawerModal: React.FC<LearnDrawerModalProps> = ({
                 onSelectSubTab(item.id);
                 onClose();
               }}
-              className={`flex w-full items-center justify-between rounded-2xl p-3.5 text-left transition-all duration-150 ${
+              className={`flex w-full items-center justify-between rounded-2xl p-3.5 text-left transition-all duration-150 cursor-pointer ${
                 isSelected
                   ? 'border-2 border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40'
                   : 'border border-slate-100 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-700 dark:hover:bg-slate-800'
@@ -149,10 +155,10 @@ export const LearnDrawerModal: React.FC<LearnDrawerModalProps> = ({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">
-                      {item.title}
+                      {primaryTitle}
                     </span>
                     <span className="text-xs text-slate-400 font-sans font-medium">
-                      ({item.titleBn})
+                      ({secondaryTitle})
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 font-sans mt-0.5">

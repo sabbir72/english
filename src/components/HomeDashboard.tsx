@@ -22,6 +22,7 @@ import {
   UserProfile,
   NavigationTab,
   LearnSubTab,
+  LanguageMode,
 } from '../types';
 
 export interface HomeDashboardProps {
@@ -30,6 +31,7 @@ export interface HomeDashboardProps {
   onNavigate: (tab: NavigationTab) => void;
   onSelectLearnSubTab?: (subTab: LearnSubTab) => void;
   onAwardXP?: (amount: number) => void;
+  languageMode?: LanguageMode;
 }
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
@@ -38,6 +40,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onNavigate,
   onSelectLearnSubTab,
   onAwardXP,
+  languageMode = 'bn',
 }) => {
   const [dailyRoutineOpen, setDailyRoutineOpen] = useState(false);
 
@@ -178,7 +181,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
       />
 
       {/* 3.5. 100-Page Smart Story Immersion Book Spotlight */}
-      <SmartBookSpotlightCard onOpenBook={() => onNavigate('book')} />
+      <SmartBookSpotlightCard onOpenBook={() => onNavigate('smart-book')} />
 
       {/* 4. Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -186,6 +189,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <div className="lg:col-span-7 xl:col-span-8 space-y-7">
           {/* Learning Cards (Vocabulary, Grammar, Sentence Builder, Pronunciation, Reading, AI Conversation) */}
           <QuickActionsGrid
+            languageMode={languageMode}
             onSelectAction={(tab) => {
               if (tab === 'vocabulary' && onSelectLearnSubTab) onSelectLearnSubTab('vocabulary');
               if (tab === 'sentences' && onSelectLearnSubTab) onSelectLearnSubTab('sentences');

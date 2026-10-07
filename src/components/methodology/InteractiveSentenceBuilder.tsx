@@ -13,201 +13,15 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { speakText } from '../../utils/speech';
+import {
+  SlotOption,
+  TemplateSlot,
+  SentenceTemplate,
+  BUILDER_TOPIC_CATEGORIES,
+  ALL_SENTENCE_TEMPLATES,
+} from '../../data/builderTemplatesData';
 
-interface SlotOption {
-  value: string;
-  bangla: string;
-  thirdPersonValue?: string;
-}
-
-interface TemplateSlot {
-  role: string;
-  roleBangla: string;
-  color: string;
-  options: SlotOption[];
-}
-
-interface SentenceTemplate {
-  id: string;
-  name: string;
-  nameBangla: string;
-  description: string;
-  slots: TemplateSlot[];
-  computeSentence: (selected: SlotOption[]) => {
-    english: string;
-    bangla: string;
-  };
-}
-
-const TEMPLATES: SentenceTemplate[] = [
-  {
-    id: 'subject-verb-object-place-time',
-    name: 'Block Builder: Subject + Verb + Object + Place + Time',
-    nameBangla: 'প্রধান ব্লক: কর্তা + ক্রিয়া + কর্ম + স্থান + সময়',
-    description: '[Subject] + [Verb] + [Object] + [Place] + [Time]',
-    slots: [
-      {
-        role: 'Subject',
-        roleBangla: 'কর্তা (কে?)',
-        color: 'indigo',
-        options: [
-          { value: 'I', bangla: 'আমি' },
-          { value: 'You', bangla: 'তুমি / আপনি' },
-          { value: 'We', bangla: 'আমরা' },
-          { value: 'They', bangla: 'তারা' },
-          { value: 'He', bangla: 'সে (ছেলে)', thirdPersonValue: 'He' },
-          { value: 'She', bangla: 'সে (মেয়ে)', thirdPersonValue: 'She' },
-          { value: 'Rahim', bangla: 'রহিম', thirdPersonValue: 'Rahim' },
-        ],
-      },
-      {
-        role: 'Verb',
-        roleBangla: 'ক্রিয়া (কি করে?)',
-        color: 'sky',
-        options: [
-          { value: 'eat', bangla: 'খাই', thirdPersonValue: 'eats' },
-          { value: 'practice', bangla: 'চর্চা করি', thirdPersonValue: 'practices' },
-          { value: 'learn', bangla: 'শিখি', thirdPersonValue: 'learns' },
-          { value: 'read', bangla: 'পড়ি', thirdPersonValue: 'reads' },
-          { value: 'drink', bangla: 'পান করি', thirdPersonValue: 'drinks' },
-          { value: 'cook', bangla: 'রান্না করি', thirdPersonValue: 'cooks' },
-          { value: 'watch', bangla: 'দেখি', thirdPersonValue: 'watches' },
-        ],
-      },
-      {
-        role: 'Object',
-        roleBangla: 'কর্ম (কি জিনিস?)',
-        color: 'emerald',
-        options: [
-          { value: 'rice', bangla: 'ভাত' },
-          { value: 'English', bangla: 'ইংরেজি' },
-          { value: 'books', bangla: 'বই' },
-          { value: 'tea', bangla: 'চা' },
-          { value: 'delicious food', bangla: 'সুস্বাদু খাবার' },
-          { value: 'news stories', bangla: 'খবরের গল্প' },
-          { value: 'grammar rules', bangla: 'ব্যাকরণের নিয়ম' },
-        ],
-      },
-      {
-        role: 'Place',
-        roleBangla: 'স্থান (কোথায়?)',
-        color: 'amber',
-        options: [
-          { value: 'at home', bangla: 'বাড়িতে' },
-          { value: 'online', bangla: 'অনলাইনে' },
-          { value: 'in the library', bangla: 'লাইব্রেরিতে' },
-          { value: 'in my room', bangla: 'আমার ঘরে' },
-          { value: 'at the cafe', bangla: 'ক্যাফেতে' },
-          { value: 'at university', bangla: 'বিশ্ববিদ্যালয়ে' },
-        ],
-      },
-      {
-        role: 'Time',
-        roleBangla: 'সময় (কখন?)',
-        color: 'purple',
-        options: [
-          { value: 'in the morning', bangla: 'সকালে' },
-          { value: 'every day', bangla: 'প্রতিদিন' },
-          { value: 'in the evening', bangla: 'সন্ধ্যায়' },
-          { value: 'at night', bangla: 'রাতে' },
-          { value: 'on weekends', bangla: 'ছুটির দিনে' },
-          { value: 'after work', bangla: 'কাজের পরে' },
-        ],
-      },
-    ],
-    computeSentence: (selected) => {
-      const [sSub, sVerb, sObj, sPlace, sTime] = selected;
-      const is3rd = ['He', 'She', 'Rahim'].includes(sSub.value);
-      const engVerb = is3rd ? sVerb.thirdPersonValue || sVerb.value : sVerb.value;
-
-      let bVerb = sVerb.bangla;
-      if (is3rd) {
-        if (bVerb === 'খাই') bVerb = 'খায়';
-        else if (bVerb === 'চর্চা করি') bVerb = 'চর্চা করে';
-        else if (bVerb === 'শিখি') bVerb = 'শেখে';
-        else if (bVerb === 'পড়ি') bVerb = 'পড়ে';
-        else if (bVerb === 'পান করি') bVerb = 'পান করে';
-        else if (bVerb === 'রান্না করি') bVerb = 'রান্না করে';
-        else if (bVerb === 'দেখি') bVerb = 'দেখে';
-      } else if (sSub.value === 'You') {
-        if (bVerb === 'খাই') bVerb = 'খাও';
-        else if (bVerb === 'চর্চা করি') bVerb = 'চর্চা করো';
-        else if (bVerb === 'শিখি') bVerb = 'শেখ';
-        else if (bVerb === 'পড়ি') bVerb = 'পড়';
-        else if (bVerb === 'পান করি') bVerb = 'পান করো';
-        else if (bVerb === 'রান্না করি') bVerb = 'রান্না করো';
-        else if (bVerb === 'দেখি') bVerb = 'দেখো';
-      }
-
-      const english = `${sSub.value} ${engVerb} ${sObj.value} ${sPlace.value} ${sTime.value}.`;
-      const bangla = `${sSub.bangla} ${sTime.bangla} ${sPlace.bangla} ${sObj.bangla} ${bVerb}।`;
-
-      return { english, bangla };
-    },
-  },
-  {
-    id: 'desires-plans',
-    name: 'Desires & Plans (want to / need to / plan to)',
-    nameBangla: 'ইচ্ছা ও পরিকল্পনা (করতে চাই / প্রয়োজন / পরিকল্পনা)',
-    description: '[Subject] + [Need/Want] + [Action] + [Target]',
-    slots: [
-      {
-        role: 'Subject',
-        roleBangla: 'কর্তা',
-        color: 'indigo',
-        options: [
-          { value: 'I', bangla: 'আমি' },
-          { value: 'You', bangla: 'তুমি' },
-          { value: 'We', bangla: 'আমরা' },
-          { value: 'They', bangla: 'তারা' },
-          { value: 'He', bangla: 'সে (ছেলে)', thirdPersonValue: 'He' },
-        ],
-      },
-      {
-        role: 'Anchor',
-        roleBangla: 'ইচ্ছা/প্রয়োজন',
-        color: 'sky',
-        options: [
-          { value: 'want to', bangla: 'করতে চাই', thirdPersonValue: 'wants to' },
-          { value: 'need to', bangla: 'করা দরকার', thirdPersonValue: 'needs to' },
-          { value: 'plan to', bangla: 'করার পরিকল্পনা করছি', thirdPersonValue: 'plans to' },
-          { value: 'would like to', bangla: 'করতে আগ্রহী', thirdPersonValue: 'would like to' },
-          { value: 'love to', bangla: 'করতে ভালোবাসি', thirdPersonValue: 'loves to' },
-        ],
-      },
-      {
-        role: 'Action',
-        roleBangla: 'কোন কাজ?',
-        color: 'emerald',
-        options: [
-          { value: 'speak', bangla: 'কথা বলতে' },
-          { value: 'learn', bangla: 'শিখতে' },
-          { value: 'improve', bangla: 'উন্নত করতে' },
-          { value: 'practice', bangla: 'অনুশীলন করতে' },
-        ],
-      },
-      {
-        role: 'Target',
-        roleBangla: 'কি লক্ষ্য?',
-        color: 'purple',
-        options: [
-          { value: 'English fluently', bangla: 'অনর্গল ইংরেজি' },
-          { value: 'my pronunciation', bangla: 'আমার উচ্চারণ' },
-          { value: 'new words every day', bangla: 'প্রতিদিন নতুন শব্দ' },
-          { value: 'without fear', bangla: 'ভয় ছাড়া' },
-        ],
-      },
-    ],
-    computeSentence: (selected) => {
-      const [sSub, sAnchor, sAct, sTgt] = selected;
-      const is3rd = sSub.value === 'He';
-      const verbPart = is3rd ? sAnchor.thirdPersonValue || sAnchor.value : sAnchor.value;
-      const english = `${sSub.value} ${verbPart} ${sAct.value} ${sTgt.value}.`;
-      const bangla = `${sSub.bangla} ${sTgt.bangla} ${sAct.bangla} ${sAnchor.bangla}।`;
-      return { english, bangla };
-    },
-  },
-];
+export type { SlotOption, TemplateSlot, SentenceTemplate };
 
 interface InteractiveSentenceBuilderProps {
   onSaveSentence?: (sentence: { english: string; bangla: string }) => void;
@@ -220,8 +34,15 @@ export const InteractiveSentenceBuilder: React.FC<InteractiveSentenceBuilderProp
   onSendToAITutor,
   onAwardXP,
 }) => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [templateIdx, setTemplateIdx] = useState(0);
-  const currentTemplate = TEMPLATES[templateIdx];
+
+  const filteredTemplates = useMemo(() => {
+    if (selectedCategory === 'all') return ALL_SENTENCE_TEMPLATES;
+    return ALL_SENTENCE_TEMPLATES.filter((t) => t.category === selectedCategory);
+  }, [selectedCategory]);
+
+  const currentTemplate = filteredTemplates[templateIdx] || filteredTemplates[0] || ALL_SENTENCE_TEMPLATES[0];
 
   // Store selected index for each slot of the current template
   const [slotIndices, setSlotIndices] = useState<number[]>([0, 0, 0, 0, 0]);
@@ -330,24 +151,62 @@ export const InteractiveSentenceBuilder: React.FC<InteractiveSentenceBuilderProp
           </div>
         </div>
 
-        {/* Template Selector */}
-        <div className="mt-5 flex flex-wrap gap-2 pt-4 border-t border-slate-200/70 dark:border-slate-800">
-          {TEMPLATES.map((tmpl, idx) => (
-            <button
-              key={tmpl.id}
-              onClick={() => {
-                setTemplateIdx(idx);
-                setSlotIndices(tmpl.slots.map(() => 0));
-              }}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition-all border ${
-                templateIdx === idx
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
-                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
-              }`}
-            >
-              <span>{tmpl.name}</span>
-            </button>
-          ))}
+        {/* Topic Category Sections Pills */}
+        <div className="mt-5 pt-4 border-t border-slate-200/70 dark:border-slate-800 space-y-3">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mr-1">
+              টপিক বিভাগ:
+            </span>
+            {BUILDER_TOPIC_CATEGORIES.map((cat) => {
+              const count = cat.id === 'all'
+                ? ALL_SENTENCE_TEMPLATES.length
+                : ALL_SENTENCE_TEMPLATES.filter((t) => t.category === cat.id).length;
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setSelectedCategory(cat.id);
+                    setTemplateIdx(0);
+                  }}
+                  className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  <span>{cat.labelBn}</span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                      isActive ? 'bg-indigo-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Template Selector Pills */}
+          <div className="flex flex-wrap gap-2 pt-2">
+            {filteredTemplates.map((tmpl, idx) => (
+              <button
+                key={tmpl.id}
+                onClick={() => {
+                  setTemplateIdx(idx);
+                  setSlotIndices(tmpl.slots.map(() => 0));
+                }}
+                className={`rounded-xl px-3.5 py-2 text-xs font-bold transition-all border cursor-pointer ${
+                  templateIdx === idx
+                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
+                }`}
+              >
+                <span>{tmpl.nameBangla || tmpl.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

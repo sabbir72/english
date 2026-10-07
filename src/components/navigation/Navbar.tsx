@@ -20,7 +20,7 @@ import {
   SpellCheck,
   BookMarked,
 } from 'lucide-react';
-import { NavigationTab, LearnSubTab, UserProfile } from '../../types';
+import { NavigationTab, LearnSubTab, UserProfile, LanguageMode } from '../../types';
 
 export interface NavbarProps {
   activeTab: NavigationTab;
@@ -32,6 +32,8 @@ export interface NavbarProps {
   streak?: number;
   profile: UserProfile;
   onOpenMobileMenu?: () => void;
+  languageMode?: LanguageMode;
+  onToggleLanguage?: (lang?: LanguageMode) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -43,6 +45,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   streak = 3,
   profile,
   onOpenMobileMenu,
+  languageMode = 'bn',
+  onToggleLanguage,
 }) => {
   // Derive breadcrumb context for the top bar
   const getBreadcrumb = () => {
@@ -299,6 +303,40 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Flame className="h-3.5 w-3.5 fill-amber-500 text-amber-500 shrink-0" />
             <span>{streak}d</span>
           </div>
+
+          {/* Global Language Switcher Pill (ENG / বাং) */}
+          {onToggleLanguage && (
+            <div
+              className="flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200/80 dark:border-slate-700/80 shrink-0 shadow-2xs"
+              role="group"
+              aria-label="Language Switcher"
+            >
+              <button
+                type="button"
+                onClick={() => onToggleLanguage('en')}
+                className={`px-2 py-1 text-[11px] font-black rounded-lg transition-all cursor-pointer ${
+                  languageMode === 'en'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Switch UI to English"
+              >
+                ENG
+              </button>
+              <button
+                type="button"
+                onClick={() => onToggleLanguage('bn')}
+                className={`px-2 py-1 text-[11px] font-black rounded-lg transition-all cursor-pointer font-bangla ${
+                  languageMode === 'bn'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="বাংলা ইন্টারফেসে পরিবর্তন করুন"
+              >
+                বাং
+              </button>
+            </div>
+          )}
 
           {/* Dark Mode Toggle */}
           <button

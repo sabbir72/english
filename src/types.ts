@@ -209,6 +209,8 @@ export interface UserProfile {
   joinedDate: string;
 }
 
+export type LanguageMode = 'bn' | 'en';
+
 export type MainNavTab = 'home' | 'learn' | 'practice' | 'ai-tutor' | 'progress';
 
 export type LearnSubTab =

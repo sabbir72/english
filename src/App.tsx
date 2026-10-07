@@ -28,6 +28,7 @@ import {
   SentenceStructureItem,
   GrammarLesson,
   PracticeQuestion,
+  LanguageMode,
 } from './types';
 
 import {
@@ -69,6 +70,22 @@ export function App() {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('boli_dark_mode') === 'true';
   });
+
+  // Global Language Switcher Mode ('bn' = Bengali, 'en' = English)
+  const [languageMode, setLanguageMode] = useState<LanguageMode>(() => {
+    const saved = localStorage.getItem('boli_language_mode');
+    return saved === 'en' || saved === 'bn' ? saved : 'bn';
+  });
+
+  const handleToggleLanguage = (lang?: LanguageMode) => {
+    const nextLang = lang || (languageMode === 'bn' ? 'en' : 'bn');
+    setLanguageMode(nextLang);
+    localStorage.setItem('boli_language_mode', nextLang);
+    setProfile((prev) => ({
+      ...prev,
+      showBanglaExplanation: nextLang === 'bn',
+    }));
+  };
 
   // Data state
   const [profile, setProfile] = useState<UserProfile>(getStoredProfile);
@@ -384,6 +401,8 @@ export function App() {
         streak={progress.currentStreak || 3}
         profile={profile}
         onOpenMobileMenu={() => setMobileMenuOpen(true)}
+        languageMode={languageMode}
+        onToggleLanguage={handleToggleLanguage}
       />
 
       {/* 2. Main Workspace Layout: Desktop Sidebar + Content */}
@@ -393,11 +412,13 @@ export function App() {
           onSelectTab={handleNavigate}
           mobileMenuOpen={mobileMenuOpen}
           onCloseMobileMenu={() => setMobileMenuOpen(false)}
+          languageMode={languageMode}
+          onToggleLanguage={handleToggleLanguage}
         />
 
         <main
           id="main-app-content"
-          className="flex-1 w-full min-w-0 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 md:pb-12"
+          className="flex-1 w-full min-w-0 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 md:pb-12"
         >
           {activeTab === 'home' && (
             <HomeDashboard
@@ -406,6 +427,7 @@ export function App() {
               onNavigate={handleNavigate}
               onSelectLearnSubTab={handleSelectLearnSubTab}
               onAwardXP={handleAwardXP}
+              languageMode={languageMode}
             />
           )}
 
@@ -605,6 +627,7 @@ export function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenLearnDrawer={() => setLearnDrawerOpen(true)}
+        languageMode={languageMode}
       />
 
       {/* 4. Mobile Learn Sub-Menu Sheet Modal */}
@@ -613,6 +636,7 @@ export function App() {
         onClose={() => setLearnDrawerOpen(false)}
         onSelectSubTab={handleSelectLearnSubTab}
         activeSubTab={activeLearnSubTab}
+        languageMode={languageMode}
       />
 
       {/* 5. Global Search Modal (Ctrl+K / ⌘K) */}
