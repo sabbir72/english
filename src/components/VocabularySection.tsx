@@ -20,10 +20,12 @@ import {
   Eye,
   Star,
   Info,
+  BookMarked,
 } from 'lucide-react';
 import { VocabularyItem, PartOfSpeech } from '../types';
 import { speakText } from '../utils/speech';
 import { Oxford3000Explorer } from './Oxford3000Explorer';
+import { VocabularyBookPages } from './VocabularyBookPages';
 import {
   DailyVocabState,
   DailyBatchesResult,
@@ -51,8 +53,8 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
   // Daily Engine State
   const [dailyState, setDailyState] = useState<DailyVocabState>(() => getStoredDailyVocabState());
 
-  // Active tab: supports 'daily', 'topics' for categorized topic sections, 'oxford3000', 'all', etc.
-  const [activeTab, setActiveTab] = useState<'daily' | 'topics' | 'oxford3000' | 'all' | 'review' | 'learned' | 'favorites' | 'quiz'>('daily');
+  // Active tab: supports 'bookPages', 'daily', 'topics', 'oxford3000', 'all', etc.
+  const [activeTab, setActiveTab] = useState<'bookPages' | 'daily' | 'topics' | 'oxford3000' | 'all' | 'review' | 'learned' | 'favorites' | 'quiz'>('bookPages');
   const [selectedTopicSection, setSelectedTopicSection] = useState<string>('all');
 
   // Local storage sets for Oxford 3000 items
@@ -571,6 +573,18 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
         {/* Tab Switcher */}
         <div className="flex flex-wrap items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
           <button
+            onClick={() => setActiveTab('bookPages')}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+              activeTab === 'bookPages'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'text-indigo-900 bg-indigo-100 hover:bg-indigo-200/90 dark:text-indigo-200 dark:bg-indigo-950/80'
+            }`}
+          >
+            <BookMarked className="h-3.5 w-3.5 text-amber-300" />
+            <span>📖 বইয়ের পাতা (Book Pages)</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('daily')}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
               activeTab === 'daily'
@@ -667,6 +681,20 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
           </button>
         </div>
       </div>
+
+      {/* =========================================================================
+          TAB 0: DIGITAL VOCABULARY BOOK PAGES (Page-by-page reader layout)
+         ========================================================================= */}
+      {activeTab === 'bookPages' && (
+        <VocabularyBookPages
+          vocabulary={vocabulary}
+          onToggleFavorite={onToggleFavorite}
+          onToggleLearned={onToggleLearned}
+          onPracticeWord={onPracticeWord}
+          onAwardXP={onAwardXP}
+          initialCategory={selectedTopicSection}
+        />
+      )}
 
       {/* =========================================================================
           TAB 1: DAILY SUGGESTIONS & SMART ROTATION QUEUE
@@ -945,16 +973,27 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
                 </p>
               </div>
 
-              {/* Search Inside Topic Hub */}
-              <div className="relative w-full sm:w-72">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="টপিকের ভেতর শব্দ খুঁজুন..."
-                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-                />
+              {/* Search & Book Switch Inside Topic Hub */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('bookPages')}
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0"
+                >
+                  <BookMarked className="h-4 w-4" />
+                  <span>বইয়ের পাতায় পড়ুন</span>
+                </button>
+
+                <div className="relative w-full sm:w-60">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="টপিকের ভেতর শব্দ খুঁজুন..."
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  />
+                </div>
               </div>
             </div>
 
@@ -1037,16 +1076,27 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
         <div className="space-y-6">
           {/* Filters Bar */}
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-3">
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="শব্দ খুঁজুন (যেমন: Achieve, Improve, ইত্যাদি বা বাংলা অর্থ)..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-4 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/60 dark:text-white"
-              />
+            {/* Search Input & Book Page Switch */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="শব্দ খুঁজুন (যেমন: Achieve, Improve, ইত্যাদি বা বাংলা অর্থ)..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-4 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/60 dark:text-white"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('bookPages')}
+                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0"
+              >
+                <BookMarked className="h-4 w-4" />
+                <span>বইয়ের পাতায় পড়ুন</span>
+              </button>
             </div>
 
             {/* Category and filter pills */}

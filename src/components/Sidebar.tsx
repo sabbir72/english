@@ -55,9 +55,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'vocabulary' as NavigationTab,
-      label: 'Vocabulary',
-      labelBn: 'শব্দভাণ্ডার',
+      label: 'Vocabulary Book',
+      labelBn: 'শব্দভাণ্ডার বই',
       icon: <SpellCheck className="h-4 w-4" />,
+      badge: 'বইয়ের পাতা',
     },
     {
       id: 'grammar' as NavigationTab,
