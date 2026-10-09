@@ -20,6 +20,9 @@ import {
   Calendar,
   Award,
   HelpCircle,
+  ChevronLeft,
+  ChevronsLeft,
+  ChevronsRight,
 } from 'lucide-react';
 import { OxfordWordItem, VocabularyItem, PartOfSpeech } from '../types';
 import { OXFORD_PREVIEW_LIST, OXFORD_STATS } from '../data/oxford3000Meta';
@@ -59,8 +62,12 @@ export const Oxford3000Explorer: React.FC<Oxford3000ExplorerProps> = ({
   const [flashcardIndex, setFlashcardIndex] = useState(0);
   const [showMeaning, setShowMeaning] = useState(false);
 
-  // Pagination
+  // Pagination & Display Mode
+  const [paginationMode, setPaginationMode] = useState<'pages' | 'loadMore'>('pages');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(30);
   const [displayCount, setDisplayCount] = useState(48);
+  const [jumpPageInput, setJumpPageInput] = useState('');
   const [copiedNotification, setCopiedNotification] = useState(false);
   const [slowAudioId, setSlowAudioId] = useState<string | null>(null);
 
@@ -151,16 +158,51 @@ export const Oxford3000Explorer: React.FC<Oxford3000ExplorerProps> = ({
     });
   }, [allWords, searchQuery, selectedCefr, selectedTier, selectedPos, selectedLetter, showTodayBatchOnly, dailyPace]);
 
+  // Pagination calculations
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filteredWords.length / pageSize));
+  }, [filteredWords.length, pageSize]);
+
   // Reset pagination when filters change
   useEffect(() => {
-    setDisplayCount(48);
+    setCurrentPage(1);
+    setDisplayCount(pageSize);
     setFlashcardIndex(0);
     setShowMeaning(false);
-  }, [searchQuery, selectedCefr, selectedTier, selectedPos, selectedLetter, showTodayBatchOnly]);
+  }, [searchQuery, selectedCefr, selectedTier, selectedPos, selectedLetter, showTodayBatchOnly, pageSize]);
+
+  // Clamp current page if total pages decreases
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
 
   const displayedList = useMemo(() => {
+    if (paginationMode === 'pages') {
+      const startIndex = (currentPage - 1) * pageSize;
+      return filteredWords.slice(startIndex, startIndex + pageSize);
+    }
     return filteredWords.slice(0, displayCount);
-  }, [filteredWords, displayCount]);
+  }, [filteredWords, paginationMode, currentPage, pageSize, displayCount]);
+
+  const handlePageChange = (newPage: number) => {
+    const pageClamped = Math.max(1, Math.min(newPage, totalPages));
+    setCurrentPage(pageClamped);
+    const explorerEl = document.getElementById('oxford-3000-explorer');
+    if (explorerEl) {
+      explorerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleJumpToPage = (e: React.FormEvent) => {
+    e.preventDefault();
+    const p = parseInt(jumpPageInput.trim(), 10);
+    if (!isNaN(p) && p >= 1 && p <= totalPages) {
+      handlePageChange(p);
+      setJumpPageInput('');
+    }
+  };
 
   // Helper to convert OxfordWordItem to VocabularyItem
   const toVocabItem = (ox: OxfordWordItem): VocabularyItem => {
@@ -523,26 +565,73 @@ export const Oxford3000Explorer: React.FC<Oxford3000ExplorerProps> = ({
           ))}
         </div>
 
-        {/* Row 4: Secondary Filters (POS & Active Filter Count) */}
+        {/* Row 4: Secondary Filters (POS & Active Filter Count) + Pagination Size Selector */}
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-t border-slate-100 dark:border-slate-800 pt-2.5 text-slate-600 dark:text-slate-400">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5" /> পদ (POS):
-            </span>
-            <select
-              value={selectedPos}
-              onChange={(e) => setSelectedPos(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-2.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
-            >
-              <option value="all">সকল পদ (All Parts of Speech)</option>
-              <option value="noun">Noun (বিশেষ্য)</option>
-              <option value="verb">Verb (ক্রিয়া)</option>
-              <option value="adjective">Adjective (বিশেষণ)</option>
-              <option value="adverb">Adverb (ক্রিয়াবিশেষণ)</option>
-              <option value="preposition">Preposition (পদান্বয়ী অব্যয়)</option>
-              <option value="conjunction">Conjunction (সংযোজক অব্যয়)</option>
-              <option value="pronoun">Pronoun (সর্বনাম)</option>
-            </select>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                <Filter className="w-3.5 h-3.5" /> পদ (POS):
+              </span>
+              <select
+                value={selectedPos}
+                onChange={(e) => setSelectedPos(e.target.value)}
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-2.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium cursor-pointer"
+              >
+                <option value="all">সকল পদ (All Parts of Speech)</option>
+                <option value="noun">Noun (বিশেষ্য)</option>
+                <option value="verb">Verb (ক্রিয়া)</option>
+                <option value="adjective">Adjective (বিশেষণ)</option>
+                <option value="adverb">Adverb (ক্রিয়াবিশেষণ)</option>
+                <option value="preposition">Preposition (পদান্বয়ী অব্যয়)</option>
+                <option value="conjunction">Conjunction (সংযোজক অব্যয়)</option>
+                <option value="pronoun">Pronoun (সর্বনাম)</option>
+              </select>
+            </div>
+
+            {/* Pagination Mode Selector */}
+            {viewMode !== 'flashcard' && (
+              <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-slate-700">
+                <span className="text-slate-400 font-medium">ভিউ টাইপ:</span>
+                <div className="inline-flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 text-[11px]">
+                  <button
+                    onClick={() => setPaginationMode('pages')}
+                    className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                      paginationMode === 'pages'
+                        ? 'bg-emerald-600 text-white shadow-2xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    }`}
+                  >
+                    পেজিনেশন (পৃষ্ঠা)
+                  </button>
+                  <button
+                    onClick={() => setPaginationMode('loadMore')}
+                    className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                      paginationMode === 'loadMore'
+                        ? 'bg-emerald-600 text-white shadow-2xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    }`}
+                  >
+                    স্ক্রোল লোড
+                  </button>
+                </div>
+
+                {paginationMode === 'pages' && (
+                  <div className="flex items-center gap-1 ml-1">
+                    <span className="text-slate-400 text-[11px]">প্রতি পেজে:</span>
+                    <select
+                      value={pageSize}
+                      onChange={(e) => setPageSize(Number(e.target.value))}
+                      className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-1.5 py-0.5 text-xs font-bold cursor-pointer"
+                    >
+                      <option value={20}>২০টি</option>
+                      <option value={30}>৩০টি</option>
+                      <option value={50}>৫০টি</option>
+                      <option value={100}>১০০টি</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -568,6 +657,11 @@ export const Oxford3000Explorer: React.FC<Oxford3000ExplorerProps> = ({
             )}
             <span className="text-slate-400">
               ফলাফল: <strong className="text-slate-800 dark:text-slate-200 font-bold">{filteredWords.length}</strong> টি শব্দ
+              {paginationMode === 'pages' && viewMode !== 'flashcard' && (
+                <span className="ml-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                  (পেজ {currentPage}/{totalPages})
+                </span>
+              )}
             </span>
           </div>
         </div>
@@ -980,14 +1074,137 @@ export const Oxford3000Explorer: React.FC<Oxford3000ExplorerProps> = ({
         </div>
       )}
 
-      {/* Load More Pagination Bar */}
-      {viewMode !== 'flashcard' && displayCount < filteredWords.length && (
+      {/* Pagination Bar (Page numbers, Next/Prev, First/Last, Jump to page) */}
+      {viewMode !== 'flashcard' && filteredWords.length > 0 && paginationMode === 'pages' && (
+        <div className="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Left: Summary Info */}
+          <div className="text-xs text-slate-500 dark:text-slate-400 font-medium text-center sm:text-left">
+            মোট <span className="font-bold text-slate-800 dark:text-slate-200">{filteredWords.length}</span> টি শব্দের মধ্যে{' '}
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filteredWords.length)}
+            </span>{' '}
+            নম্বর শব্দ দেখানো হচ্ছে (পৃষ্ঠা {currentPage} / {totalPages})
+          </div>
+
+          {/* Center: Pagination Button Group */}
+          <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap justify-center">
+            {/* First Page */}
+            <button
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+              className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              title="প্রথম পৃষ্ঠা"
+            >
+              <ChevronsLeft className="w-4 h-4" />
+            </button>
+
+            {/* Prev Page */}
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">পূর্ববর্তী</span>
+            </button>
+
+            {/* Page Number Pills */}
+            {(() => {
+              const pages: (number | string)[] = [];
+              const maxVisible = 5;
+
+              if (totalPages <= maxVisible + 2) {
+                for (let i = 1; i <= totalPages; i++) pages.push(i);
+              } else {
+                pages.push(1);
+                const start = Math.max(2, currentPage - 1);
+                const end = Math.min(totalPages - 1, currentPage + 1);
+
+                if (start > 2) pages.push('...');
+                for (let i = start; i <= end; i++) {
+                  if (i !== 1 && i !== totalPages) pages.push(i);
+                }
+                if (end < totalPages - 1) pages.push('...');
+                pages.push(totalPages);
+              }
+
+              return pages.map((item, idx) => {
+                if (typeof item === 'string') {
+                  return (
+                    <span key={`dots-${idx}`} className="px-2 py-1 text-slate-400 text-xs select-none">
+                      ...
+                    </span>
+                  );
+                }
+
+                const isActive = item === currentPage;
+                return (
+                  <button
+                    key={`page-${item}`}
+                    onClick={() => handlePageChange(item)}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-xs font-bold transition-all ${
+                      isActive
+                        ? 'bg-emerald-600 text-white shadow-xs scale-105'
+                        : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                );
+              });
+            })()}
+
+            {/* Next Page */}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+            >
+              <span className="hidden sm:inline">পরবর্তী</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Last Page */}
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              title="সর্বশেষ পৃষ্ঠা"
+            >
+              <ChevronsRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Right: Jump to Page Form */}
+          <form onSubmit={handleJumpToPage} className="flex items-center gap-1.5">
+            <span className="text-xs text-slate-400">পৃষ্ঠায় যান:</span>
+            <input
+              type="number"
+              min={1}
+              max={totalPages}
+              value={jumpPageInput}
+              onChange={(e) => setJumpPageInput(e.target.value)}
+              placeholder={`${currentPage}`}
+              className="w-14 px-2 py-1 text-xs text-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            />
+            <button
+              type="submit"
+              className="px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+            >
+              যান
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* Alternative: Load More Pagination Bar */}
+      {viewMode !== 'flashcard' && paginationMode === 'loadMore' && displayCount < filteredWords.length && (
         <div className="text-center pt-4">
           <button
-            onClick={() => setDisplayCount((prev) => prev + 48)}
+            onClick={() => setDisplayCount((prev) => prev + pageSize)}
             className="px-6 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:text-emerald-700 dark:hover:text-emerald-300 font-bold text-sm shadow-xs transition-all inline-flex items-center gap-2"
           >
-            <span>আরও ৪৮টি শব্দ দেখুন (বাকি {filteredWords.length - displayCount}টি)</span>
+            <span>আরও {pageSize}টি শব্দ দেখুন (বাকি {filteredWords.length - displayCount}টি)</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>

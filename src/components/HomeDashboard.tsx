@@ -191,6 +191,9 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           <QuickActionsGrid
             languageMode={languageMode}
             onSelectAction={(tab) => {
+              if (tab === 'oxford-3000' as unknown as NavigationTab && onSelectLearnSubTab) {
+                onSelectLearnSubTab('vocabulary');
+              }
               if (tab === 'vocabulary' && onSelectLearnSubTab) onSelectLearnSubTab('vocabulary');
               if (tab === 'sentences' && onSelectLearnSubTab) onSelectLearnSubTab('sentences');
               if (tab === 'grammar' && onSelectLearnSubTab) onSelectLearnSubTab('grammar');
@@ -219,6 +222,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             onNavigateToLearn={() => {
               if (onSelectLearnSubTab) onSelectLearnSubTab('vocabulary');
               onNavigate('learn');
+            }}
+            onNavigateTo3000={() => {
+              if (onSelectLearnSubTab) onSelectLearnSubTab('vocabulary');
+              onNavigate('oxford-3000' as unknown as NavigationTab);
             }}
             onAwardXP={onAwardXP}
           />

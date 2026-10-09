@@ -62,6 +62,7 @@ export function App() {
   // Navigation
   const [activeTab, setActiveTab] = useState<NavigationTab>('home');
   const [activeLearnSubTab, setActiveLearnSubTab] = useState<LearnSubTab>('vocabulary');
+  const [vocabInitialSubTab, setVocabInitialSubTab] = useState<'bookPages' | 'daily' | 'topics' | 'oxford3000' | 'all' | 'review' | 'learned' | 'favorites' | 'quiz'>('bookPages');
   const [learnDrawerOpen, setLearnDrawerOpen] = useState(false);
   const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -321,8 +322,16 @@ export function App() {
   };
 
   // Centralized Navigation Handler
-  const handleNavigate = (t: NavigationTab) => {
-    if (t === 'reading') {
+  const handleNavigate = (t: NavigationTab | string) => {
+    if (t === 'oxford-3000' || t === 'oxford3000') {
+      setVocabInitialSubTab('oxford3000');
+      setActiveLearnSubTab('vocabulary');
+      setActiveTab('learn');
+    } else if (t === 'vocabulary') {
+      setVocabInitialSubTab('bookPages');
+      setActiveLearnSubTab('vocabulary');
+      setActiveTab('learn');
+    } else if (t === 'reading') {
       setActiveTab('reading');
     } else if (t === 'habit' || t === 'settings') {
       setActiveTab('habit');
@@ -352,7 +361,7 @@ export function App() {
         setActiveLearnSubTab(learnTabsMap[t]);
         setActiveTab('learn');
       } else {
-        setActiveTab(t);
+        setActiveTab(t as NavigationTab);
       }
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -538,8 +547,9 @@ export function App() {
 
           {isLearnModule && (
             <LearnMainSection
-              key={activeLearnSubTab}
+              key={`${activeLearnSubTab}-${vocabInitialSubTab}`}
               initialSubTab={activeLearnSubTab}
+              initialVocabTab={vocabInitialSubTab}
               vocabulary={vocabulary}
               sentences={sentences}
               sentenceStructures={structures}

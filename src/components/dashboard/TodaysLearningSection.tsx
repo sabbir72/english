@@ -9,12 +9,14 @@ import { VocabularyItem } from '../../types';
 export interface TodaysLearningSectionProps {
   onPractice: () => void;
   onNavigateToLearn: () => void;
+  onNavigateTo3000?: () => void;
   onAwardXP?: (amount: number) => void;
 }
 
 export const TodaysLearningSection: React.FC<TodaysLearningSectionProps> = ({
   onPractice,
   onNavigateToLearn,
+  onNavigateTo3000,
   onAwardXP,
 }) => {
   const [isSaved, setIsSaved] = useState(false);
@@ -58,14 +60,26 @@ export const TodaysLearningSection: React.FC<TodaysLearningSectionProps> = ({
             প্রতিদিন একটি নতুন শব্দ ও বাস্তব উদাহরণ
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onNavigateToLearn}
-          className="group flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors"
-        >
-          <span>সব শব্দ দেখুন</span>
-          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-        </button>
+        <div className="flex items-center gap-2">
+          {onNavigateTo3000 && (
+            <button
+              type="button"
+              onClick={onNavigateTo3000}
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 hover:bg-emerald-100 transition-colors"
+            >
+              <Sparkles className="h-3 w-3 text-amber-500" />
+              <span>৩০০০ স্পেশাল শব্দ</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onNavigateToLearn}
+            className="group flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors"
+          >
+            <span>সব শব্দ দেখুন</span>
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </button>
+        </div>
       </div>
 
       {/* Interactive Learning Card */}

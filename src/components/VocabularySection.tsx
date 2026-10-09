@@ -41,6 +41,7 @@ interface VocabularySectionProps {
   onToggleLearned: (id: string) => void;
   onPracticeWord: (word: VocabularyItem) => void;
   onAwardXP?: (amount: number) => void;
+  initialVocabTab?: 'bookPages' | 'daily' | 'topics' | 'oxford3000' | 'all' | 'review' | 'learned' | 'favorites' | 'quiz';
 }
 
 export const VocabularySection: React.FC<VocabularySectionProps> = ({
@@ -49,12 +50,13 @@ export const VocabularySection: React.FC<VocabularySectionProps> = ({
   onToggleLearned,
   onPracticeWord,
   onAwardXP,
+  initialVocabTab = 'bookPages',
 }) => {
   // Daily Engine State
   const [dailyState, setDailyState] = useState<DailyVocabState>(() => getStoredDailyVocabState());
 
   // Active tab: supports 'bookPages', 'daily', 'topics', 'oxford3000', 'all', etc.
-  const [activeTab, setActiveTab] = useState<'bookPages' | 'daily' | 'topics' | 'oxford3000' | 'all' | 'review' | 'learned' | 'favorites' | 'quiz'>('bookPages');
+  const [activeTab, setActiveTab] = useState<'bookPages' | 'daily' | 'topics' | 'oxford3000' | 'all' | 'review' | 'learned' | 'favorites' | 'quiz'>(initialVocabTab);
   const [selectedTopicSection, setSelectedTopicSection] = useState<string>('all');
 
   // Local storage sets for Oxford 3000 items

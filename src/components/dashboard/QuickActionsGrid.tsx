@@ -7,6 +7,7 @@ import {
   BookMarked,
   Dumbbell,
   ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 import { NavigationTab, LanguageMode } from '../../types';
 
@@ -53,6 +54,17 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
       icon: <BookOpen className="h-5 w-5 text-[#4F46E5] dark:text-[#818CF8]" />,
       iconBg: 'bg-indigo-50 dark:bg-indigo-950/50',
       badgeColor: 'text-[#4F46E5] bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300',
+    },
+    {
+      id: 'oxford-3000' as unknown as NavigationTab,
+      title: '3000 Essential Words',
+      titleBn: '৩০০০ স্পেশাল শব্দ (Oxford 3000)',
+      description: 'ইংরেজি যোগাযোগের ৯০% প্রয়োজনীয় ৩০০০ মৌলিক শব্দ, পৃষ্ঠা নম্বর ও সার্চসহ সাজানো।',
+      badge: '৩০০০ শব্দ • পেজিনেশন',
+      emoji: '🌟',
+      icon: <Sparkles className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />,
+      iconBg: 'bg-emerald-50 dark:bg-emerald-950/50',
+      badgeColor: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300',
     },
     {
       id: 'grammar' as NavigationTab,

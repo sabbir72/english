@@ -65,6 +65,7 @@ interface LearnMainSectionProps {
   onIncrementSpeakingMinutes: (minutes: number) => void;
   onNavigate: (tab: NavigationTab) => void;
   onAwardXP?: (amount: number) => void;
+  initialVocabTab?: 'bookPages' | 'daily' | 'topics' | 'oxford3000' | 'all' | 'review' | 'learned' | 'favorites' | 'quiz';
 }
 
 export const LearnMainSection: React.FC<LearnMainSectionProps> = ({
@@ -85,6 +86,7 @@ export const LearnMainSection: React.FC<LearnMainSectionProps> = ({
   onIncrementSpeakingMinutes,
   onNavigate,
   onAwardXP,
+  initialVocabTab,
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<LearnSubTab>(initialSubTab);
   const [activeLearnWord, setActiveLearnWord] = useState<VocabularyItem | null>(null);
@@ -333,6 +335,7 @@ export const LearnMainSection: React.FC<LearnMainSectionProps> = ({
               onPracticeVocabWord(word);
             }}
             onAwardXP={onAwardXP}
+            initialVocabTab={initialVocabTab}
           />
         )}
 

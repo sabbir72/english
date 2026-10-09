@@ -61,6 +61,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: 'বইয়ের পাতা',
     },
     {
+      id: 'oxford-3000' as unknown as NavigationTab,
+      label: '3000 Special Vocab',
+      labelBn: '৩০০০ স্পেশাল শব্দ',
+      icon: <Sparkles className="h-4 w-4 text-emerald-500" />,
+      badge: 'Oxford 3000',
+    },
+    {
       id: 'grammar' as NavigationTab,
       label: 'Grammar',
       labelBn: 'সহজ ব্যাকরণ',
