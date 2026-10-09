@@ -15,6 +15,8 @@ import {
   ContinueLearningCard,
   MethodologySpotlightCard,
   SmartBookSpotlightCard,
+  ModernHeroDashboard,
+  ModernStudyStrip,
 } from './dashboard';
 import { DailyFluencyRoutineModal } from './methodology/DailyFluencyRoutineModal';
 import {
@@ -74,35 +76,25 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   const weeklyGoalPercent = 82;
 
   return (
-    <div id="home-dashboard-view" className="space-y-7 pb-12 animate-in fade-in duration-300">
-      {/* 1. Top Greeting Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-1 border-b border-slate-200/60 dark:border-slate-800/60">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-white tracking-tight flex items-center gap-2">
-            <span>{timeGreeting} 👋</span>
-            {profile.name && (
-              <span className="text-lg font-bold text-[#475569] dark:text-slate-400 hidden md:inline">
-                ({profile.name})
-              </span>
-            )}
-          </h2>
-          <p className="text-sm text-[#475569] dark:text-slate-400 font-sans mt-0.5">
-            Let&apos;s continue your English journey.
-          </p>
-        </div>
+    <div id="home-dashboard-view" className="space-y-6 pb-12 animate-in fade-in duration-300">
+      {/* 1. New Modern Hero Dashboard with Audio, Daily Word & Instant CTAs */}
+      <ModernHeroDashboard
+        profile={profile}
+        progress={progress}
+        onNavigate={onNavigate}
+        onOpenRoutine={() => setDailyRoutineOpen(true)}
+        languageMode={languageMode}
+        streakCount={streakCount}
+      />
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setDailyRoutineOpen(true)}
-            className="inline-flex items-center gap-2 text-xs font-bold px-3.5 py-2 rounded-xl bg-indigo-50 text-[#4F46E5] hover:bg-indigo-100/70 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200/70 dark:border-indigo-800/50 transition-colors cursor-pointer"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span className="font-bangla">দৈনিক ১৫ মিনিট রুটিন</span>
-          </button>
-        </div>
-      </div>
+      {/* 2. Quick Study Shortcut Strip */}
+      <ModernStudyStrip
+        onNavigate={onNavigate}
+        onOpenRoutine={() => setDailyRoutineOpen(true)}
+        languageMode={languageMode}
+      />
 
-      {/* 2. 4 Compact Statistics */}
+      {/* 3. 4 Compact Learning Statistics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         {/* Stat 1: 7 Day Streak */}
         <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#1E293B] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
@@ -173,14 +165,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         </div>
       </div>
 
-      {/* 3. Hero Banner (Learn English Smarter. Speak Better.) */}
-      <HeroBanner
-        onStartLearning={handleStartLearning}
-        onPracticeNow={handlePracticeNow}
-        streak={streakCount}
-      />
-
-      {/* 3.5. 100-Page Smart Story Immersion Book Spotlight */}
+      {/* 4. 100-Page Smart Story Immersion Book Spotlight */}
       <SmartBookSpotlightCard onOpenBook={() => onNavigate('smart-book')} />
 
       {/* 4. Main Content Grid */}
