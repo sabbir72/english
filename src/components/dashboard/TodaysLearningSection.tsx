@@ -88,8 +88,8 @@ export const TodaysLearningSection: React.FC<TodaysLearningSectionProps> = ({
         word="Improve"
         pronunciation="/ɪmˈpruːv/"
         bengaliMeaning="উন্নতি করা / উন্নত করা"
-        exampleEnglish="I want to improve my English."
-        exampleBengali="আমি আমার ইংরেজি উন্নত করতে চাই।"
+        exampleEnglish="Consistent structured practice empowers us to improve our business communication skills."
+        exampleBengali="ধারাবাহিক ও সুনির্দিষ্ট অনুশীলন আমাদের ব্যবসায়িক যোগাযোগ দক্ষতা উন্নত করতে সহায়তা করে।"
         isSaved={isSaved}
         isLearned={isLearned}
         onToggleSave={() => setIsSaved(!isSaved)}
@@ -165,21 +165,21 @@ export const TodaysLearningSection: React.FC<TodaysLearningSectionProps> = ({
             <div className="space-y-2">
               <div className="rounded-xl border border-slate-200/60 p-2.5 dark:border-slate-800 text-xs">
                 <div className="flex items-center justify-between font-semibold text-slate-800 dark:text-slate-200">
-                  <span>"Regular practice will improve your fluency."</span>
-                  <AudioButton text="Regular practice will improve your fluency." size="sm" variant="ghost" />
+                  <span>&ldquo;Regular professional practice will significantly improve our cross-functional collaboration.&rdquo;</span>
+                  <AudioButton text="Regular professional practice will significantly improve our cross-functional collaboration." size="sm" variant="ghost" />
                 </div>
                 <div className="text-slate-500 font-sans text-[11px] mt-0.5">
-                  নিয়মিত চর্চা আপনার সাবলীলতা বাড়াবে।
+                  নিয়মিত পেশাদার চর্চা আমাদের আন্তঃবিভাগীয় সহযোগিতা লক্ষণীয়ভাবে উন্নত করবে।
                 </div>
               </div>
 
               <div className="rounded-xl border border-slate-200/60 p-2.5 dark:border-slate-800 text-xs">
                 <div className="flex items-center justify-between font-semibold text-slate-800 dark:text-slate-200">
-                  <span>"His health is improving every day."</span>
-                  <AudioButton text="His health is improving every day." size="sm" variant="ghost" />
+                  <span>&ldquo;Our team is continuously improving customer satisfaction through agile workflows.&rdquo;</span>
+                  <AudioButton text="Our team is continuously improving customer satisfaction through agile workflows." size="sm" variant="ghost" />
                 </div>
                 <div className="text-slate-500 font-sans text-[11px] mt-0.5">
-                  তার স্বাস্থ্য দিন দিন ভালো হচ্ছে।
+                  আমাদের দল এজাইল ওয়ার্কফ্লোর মাধ্যমে গ্রাহক সন্তুষ্টি দিন দিন উন্নত করছে।
                 </div>
               </div>
             </div>

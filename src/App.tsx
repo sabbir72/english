@@ -18,6 +18,7 @@ import { ArabicSection, ArabicSubTab } from './components/ArabicSection';
 import { LanguageHubSection } from './components/LanguageHubSection';
 import { SpokenBookSection } from './components/book/SpokenBookSection';
 import { DailyHabitSection } from './components/DailyHabitSection';
+import { StudyBacktrackSection } from './components/StudyBacktrackSection';
 import { Sidebar } from './components/Sidebar';
 
 import {
@@ -617,6 +618,13 @@ export function App() {
               onAwardXP={handleAwardXP}
               onNavigateHome={() => setActiveTab('home')}
               onNavigateTab={(tab) => setActiveTab(tab)}
+            />
+          )}
+
+          {activeTab === 'backtrack' && (
+            <StudyBacktrackSection
+              onNavigate={(tab) => setActiveTab(tab as NavigationTab)}
+              onAwardXP={handleAwardXP}
             />
           )}
 

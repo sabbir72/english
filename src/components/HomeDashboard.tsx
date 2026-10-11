@@ -22,6 +22,7 @@ import {
   ModernStudyStrip,
   ArabicDashboardView,
   JapaneseDashboardView,
+  StudyBacktrackSpotlightCard,
 } from './dashboard';
 import { DailyFluencyRoutineModal } from './methodology/DailyFluencyRoutineModal';
 import {
@@ -421,7 +422,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
           </div>
 
-          {/* 4. 100-Page Smart Story Immersion Book Spotlight */}
+          {/* 4. Study Backtrack & Next-Day Study Queue Spotlight */}
+          <StudyBacktrackSpotlightCard onOpenBacktrack={() => onNavigate('backtrack')} />
+
+          {/* 5. 100-Page Smart Story Immersion Book Spotlight */}
           <SmartBookSpotlightCard onOpenBook={() => onNavigate('smart-book')} />
 
           {/* 5. Main Content Grid */}

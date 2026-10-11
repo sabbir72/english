@@ -47,22 +47,22 @@ export const PronunciationSection: React.FC<PronunciationSectionProps> = ({
   const targetText =
     selectedTargetType === 'word'
       ? (currentItem as VocabularyItem)?.word || 'Improve'
-      : (currentItem as SentenceItem)?.english || 'I am learning English.';
+      : (currentItem as SentenceItem)?.english || 'Could you please walk us through the primary deliverables outlined in the Q3 roadmap?';
 
   const targetBangla =
     selectedTargetType === 'word'
       ? (currentItem as VocabularyItem)?.banglaMeaning
-      : (currentItem as SentenceItem)?.bangla;
+      : (currentItem as SentenceItem)?.bangla || 'আপনি কি অনুগ্রহ করে তৃতীয় প্রান্তিকের রোডম্যাপে উল্লেখিত প্রধান কাজগুলো আমাদের বুঝিয়ে বলবেন?';
 
   const targetIpa =
     selectedTargetType === 'word'
       ? (currentItem as VocabularyItem)?.ipa || '/ɪmˈpruːv/'
-      : '/aɪ æm ˈlɜːrnɪŋ ˈɪŋɡlɪʃ/';
+      : (currentItem as SentenceItem)?.english ? '' : '/kʊd juː pliːz wɔːk ʌs θruː ðə ˈpraɪməri dɪˈlɪvərəbəlz/';
 
   const targetPhoneticBangla =
     selectedTargetType === 'word'
       ? (currentItem as VocabularyItem)?.pronunciation
-      : 'আই অ্যাম লার্নিং ইংলিশ';
+      : 'কুড ইউ প্লিজ ওয়াক আস থ্রু দ্য প্রাইমারি ডেলিভারেবলস';
 
   // Handle switching items
   const handleNext = () => {

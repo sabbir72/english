@@ -67,12 +67,12 @@ export const AITutorToolsSection: React.FC<AITutorToolsSectionProps> = ({
       setAskResponse({
         explanationBangla:
           'ইংরেজি ব্যাকরণের এই বিষয়টি খুবই গুরুত্বপূর্ণ। সাধারণত ক্রিয়ার রূপ ও কাল অনুযায়ী বাক্য তৈরি হয়।',
-        keyRule: 'Always use subject and matching verb agreement.',
+        keyRule: 'Always use subject and matching verb agreement (Singular Subject + Singular Verb).',
         examples: [
-          { english: 'He plays cricket.', bangla: 'সে ক্রিকেট খেলে।' },
-          { english: 'They play cricket.', bangla: 'তারা ক্রিকেট খেলে।' },
+          { english: 'He manages enterprise client relations with diligence.', bangla: 'তিনি নিষ্ঠার সাথে করপোরেট ক্লায়েন্ট সম্পর্ক পরিচালনা করেন।' },
+          { english: 'They manage enterprise client relations with diligence.', bangla: 'তারা নিষ্ঠার সাথে করপোরেট ক্লায়েন্ট সম্পর্ক পরিচালনা করে।' },
         ],
-        commonMistakeAvoid: 'Do not say: He play cricket.',
+        commonMistakeAvoid: 'Do not say: He manage client relations.',
       });
     } finally {
       setAskLoading(false);

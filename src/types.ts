@@ -55,6 +55,7 @@ export interface SentenceItem {
   similarExamples?: { english: string; bangla: string }[];
   isSaved?: boolean;
   isPracticed?: boolean;
+  category?: string;
 }
 
 export interface SentenceStructureItem {
@@ -260,10 +261,45 @@ export type NavigationTab =
   | 'progress'
   | 'saved'
   | 'word-bank'
+  | 'backtrack'
   | 'habit'
   | 'settings'
   | 'profile'
   | 'admin';
+
+export interface BacktrackItem {
+  id: string;
+  type: 'word' | 'sentence' | 'grammar' | 'reading' | 'custom';
+  title: string;
+  subtitle?: string;
+  language?: 'english' | 'arabic' | 'japanese';
+  studiedAt: string; // ISO date or YYYY-MM-DD
+  timeString?: string;
+  category?: string;
+  mastered?: boolean;
+  notes?: string;
+}
+
+export interface NextStudyQueueItem {
+  id: string;
+  type: 'word' | 'sentence' | 'grammar' | 'reading' | 'custom';
+  title: string;
+  subtitle?: string;
+  targetDate?: string; // YYYY-MM-DD
+  priority?: 'high' | 'normal' | 'low';
+  category?: string;
+  language?: 'english' | 'arabic' | 'japanese';
+  notes?: string;
+  addedAt: string;
+}
+
+export interface DailyStudyLog {
+  date: string; // YYYY-MM-DD
+  formattedDateBn: string;
+  items: BacktrackItem[];
+  minutesSpent: number;
+  xpEarned: number;
+}
 
 // ==========================================
 // CORE METHODOLOGY TYPES (Bengali -> English)

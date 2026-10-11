@@ -98,7 +98,13 @@ export function saveStoredVocabulary(items: VocabularyItem[]): void {
 export function getStoredSentences(): SentenceItem[] {
   try {
     const raw = localStorage.getItem(KEYS.SENTENCES);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Auto-upgrade if previous storage had legacy sentences (e.g. < 20 items or old 'sent-1')
+      if (Array.isArray(parsed) && parsed.length >= INITIAL_SENTENCES.length && parsed[0]?.english?.includes('deliverables')) {
+        return parsed;
+      }
+    }
   } catch {}
   return INITIAL_SENTENCES;
 }
@@ -112,7 +118,12 @@ export function saveStoredSentences(items: SentenceItem[]): void {
 export function getStoredStructures(): SentenceStructureItem[] {
   try {
     const raw = localStorage.getItem(KEYS.STRUCTURES);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length >= INITIAL_SENTENCE_STRUCTURES.length && parsed[0]?.examples?.[0]?.english?.includes('engineering')) {
+        return parsed;
+      }
+    }
   } catch {}
   return INITIAL_SENTENCE_STRUCTURES;
 }

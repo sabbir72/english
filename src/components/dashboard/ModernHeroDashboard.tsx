@@ -72,9 +72,9 @@ export const ModernHeroDashboard: React.FC<ModernHeroDashboardProps> = ({
       featuredWordIpa: '/kənˈsɪstənt/',
       featuredWordBnPronunciation: 'কনসিসটেন্ট',
       featuredMeaning: 'ধারাবাহিক / অবিচল',
-      featuredSentence: 'Consistent practice makes English natural.',
-      featuredSentencePronunciationBn: 'কনসিসটেন্ট প্র্যাকটিস মেকস ইংলিশ ন্যাচারাল।',
-      featuredSentenceBn: 'ধারাবাহিক অনুশীলনে ইংরেজি বলা সহজ ও স্বতঃস্ফূর্ত হয়।',
+      featuredSentence: 'Consistent structured practice empowers professionals to communicate with clarity and confidence.',
+      featuredSentencePronunciationBn: 'কনসিসটেন্ট স্ট্রাকচার্ড প্র্যাকটিস এমপাওয়ার্স প্রফেশনালস টু কমিউনিকেট উইথ ক্ল্যারিটি অ্যান্ড কনফিডেন্স।',
+      featuredSentenceBn: 'ধারাবাহিক ও সুনির্দিষ্ট অনুশীলন পেশাজীবীদের আত্মবিশ্বাস ও স্পষ্টতার সাথে কথা বলতে সক্ষম করে।',
       speakLocale: 'en-US',
       audioRate: 0.95,
       interestTips: [

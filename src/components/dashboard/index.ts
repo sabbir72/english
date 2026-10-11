@@ -10,3 +10,4 @@ export * from './ModernHeroDashboard';
 export * from './ModernStudyStrip';
 export * from './ArabicDashboardView';
 export * from './JapaneseDashboardView';
+export * from './StudyBacktrackSpotlightCard';

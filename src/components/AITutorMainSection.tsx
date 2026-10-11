@@ -194,15 +194,20 @@ export const AITutorMainSection: React.FC<AITutorMainSectionProps> = ({
         answer: `In English, "${q}" is an essential concept. Using it correctly enhances your spoken and written fluency.`,
         banglaExplanation: `"${q}" সম্পর্কে সহজ বাংলায়: এটি কথোপকথনে নিয়মিত ব্যবহৃত হয়। ব্যাকরণগত সূত্র অনুযায়ী সাবজেক্ট ও সঠিক ভার্ব রূপ ব্যবহার করতে হবে।`,
         examples: [
-          { english: 'I practice English every morning to improve.', bangla: 'উন্নতি করার জন্য আমি প্রতিদিন সকালে ইংরেজি চর্চা করি।' },
-          { english: 'Consistency is key to mastering any language.', bangla: 'যেকোনো ভাষা আয়ত্ত করার চাবিকাঠি হলো ধারাবাহিকতা।' },
+          { english: 'Our engineering team conducts daily synchronization standups.', bangla: 'আমাদের প্রকৌশল দল প্রতিদিন কাজের সমন্বয়মূলক স্ট্যান্ডআপ মিটিং পরিচালনা করে।' },
+          { english: 'Structured practice empowers professionals to communicate with confidence.', bangla: 'পরিকল্পিত অনুশীলন পেশাজীবীদের আত্মবিশ্বাসের সাথে যোগাযোগ করতে সক্ষম করে।' },
         ],
-        grammarRule: 'Subject + Verb + Object rule applies to standard indicative clauses.',
+        grammarRule: 'Subject + Verb + Object structure in professional workplace communication.',
         practiceQuestion: {
-          question: 'Which of the following is grammatically correct?',
-          options: ['I am go to school', 'I go to school', 'I goes to school', 'I going to school'],
-          correctIndex: 1,
-          explanationBangla: "Present Indefinite tense-এ 'I'-এর পর verb-এর base form বসে।",
+          question: 'Which of the following professional statements is grammatically correct?',
+          options: [
+            'Our team conducts weekly performance reviews.',
+            'Our team conduct weekly performance reviews.',
+            'Our team is conduct weekly performance reviews.',
+            'Our team conducting weekly performance reviews.',
+          ],
+          correctIndex: 0,
+          explanationBangla: "Collective noun হিসেবে 'Our team' একবচন, তাই Verb-এ 'conducts' হবে।",
         },
       });
     } finally {

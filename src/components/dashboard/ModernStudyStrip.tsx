@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Flame,
   Zap,
+  History,
 } from 'lucide-react';
 import { NavigationTab, LanguageMode } from '../../types';
 
@@ -84,13 +85,22 @@ export const ModernStudyStrip: React.FC<ModernStudyStripProps> = ({
           </span>
         </div>
 
-        <button
-          onClick={onOpenRoutine}
-          className="self-start sm:self-auto text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
-        >
-          <Clock className="h-3.5 w-3.5" />
-          <span>দৈনিক ১৫ মিনিট রুটিন চার্ট খুলুন</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => onNavigate('backtrack')}
+            className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer"
+          >
+            <History className="h-3.5 w-3.5 text-amber-500" />
+            <span>পড়ার ব্যাকট্র্যাক ও কিউ</span>
+          </button>
+          <button
+            onClick={onOpenRoutine}
+            className="self-start sm:self-auto text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
+          >
+            <Clock className="h-3.5 w-3.5" />
+            <span>১৫ মিনিট রুটিন চার্ট</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">

@@ -32,10 +32,12 @@ export const SentenceSection: React.FC<SentenceSectionProps> = ({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [filterDifficulty, setFilterDifficulty] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
 
   const filteredSentences = sentences.filter((s) => {
     if (filterDifficulty !== 'all' && s.difficulty !== filterDifficulty) return false;
     if (filterType !== 'all' && s.sentenceType !== filterType) return false;
+    if (filterCategory !== 'all' && s.category !== filterCategory) return false;
     return true;
   });
 
@@ -45,43 +47,92 @@ export const SentenceSection: React.FC<SentenceSectionProps> = ({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const categories = [
+    { id: 'all', label: 'সকল ক্যাটাগরি (All)' },
+    { id: 'Meetings & Strategy', label: '💼 মিটিং ও কৌশল (Meetings)' },
+    { id: 'Email & Client Relations', label: '✉️ ইমেইল ও ক্লায়েন্ট (Email)' },
+    { id: 'Project & Workflow', label: '⚡ প্রজেক্ট ও ডেলিভারি (Workflow)' },
+    { id: 'Negotiation & Decisions', label: '🤝 নেগোশিয়েশন ও ডিল (Deals)' },
+    { id: 'Teamwork & Diplomacy', label: '👥 টিমওয়ার্ক ও কূটনীতি (Teamwork)' },
+    { id: 'Tech & Quality', label: '🛡️ টেক ও কমপ্লায়েন্স (Tech/QA)' },
+  ];
+
   return (
     <div id="sentence-section" className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* Header banner */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50/80 via-white to-sky-50/60 p-5 sm:p-6 shadow-xs dark:border-indigo-950/60 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/30">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Sentence Learning Module / বাক্য ও প্রয়োগ
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-100/80 px-2.5 py-0.5 text-[11px] font-bold text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 mb-1.5">
+            <Sparkles className="h-3 w-3 text-amber-500 fill-amber-500" />
+            <span>Executive & Workplace English Curriculum</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+            Professional Sentence Lab / কর্মক্ষেত্রের পেশাদার বাক্য
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            গঠনপ্রণালী, ব্যাকরণগত ব্যাখ্যা এবং সদৃশ উদাহরণসহ ইংরেজি বাক্য শিখুন।
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+            আন্তর্জাতিক মানের বিজনেস মিটিং, ক্লায়েন্ট ইমেইল, টিম লিডারশিপ ও প্রজেক্ট ম্যানেজমেন্টের বাস্তবসম্মত ইংরেজি বাক্য ও গঠনরীতি।
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Difficulty filter */}
-          <select
-            value={filterDifficulty}
-            onChange={(e) => setFilterDifficulty(e.target.value)}
-            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-          >
-            <option value="all">All Difficulties</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-          </select>
-
-          {/* Sentence Type filter */}
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-          >
-            <option value="all">All Sentence Types</option>
-            <option value="Affirmative">Affirmative (হ্যাঁ-বোধক)</option>
-            <option value="Negative">Negative (না-বোধক)</option>
-            <option value="Interrogative">Interrogative (প্রশ্নবোধক)</option>
-          </select>
+          <span className="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 shadow-2xs">
+            মোট {filteredSentences.length}টি বাক্য উপলব্ধ
+          </span>
         </div>
+      </div>
+
+      {/* Filter Toolbar */}
+      <div className="flex flex-wrap items-center gap-2.5 p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+        {/* Category filter */}
+        <select
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+          className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs font-bold text-slate-700 shadow-2xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+
+        {/* Difficulty filter */}
+        <select
+          value={filterDifficulty}
+          onChange={(e) => setFilterDifficulty(e.target.value)}
+          className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs font-bold text-slate-700 shadow-2xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          <option value="all">All Difficulties (সব পর্যায়)</option>
+          <option value="Beginner">Beginner (প্রাথমিক)</option>
+          <option value="Intermediate">Intermediate (মধ্যবর্তী)</option>
+          <option value="Advanced">Advanced (উন্নত/এক্সিকিউটিভ)</option>
+        </select>
+
+        {/* Sentence Type filter */}
+        <select
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+          className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs font-bold text-slate-700 shadow-2xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          <option value="all">All Sentence Types</option>
+          <option value="Affirmative">Affirmative (হ্যাঁ-বোধক)</option>
+          <option value="Negative">Negative (না-বোধক)</option>
+          <option value="Interrogative">Interrogative (প্রশ্নবোধক)</option>
+          <option value="Imperative">Imperative (নির্দেশ বা অনুরোধ)</option>
+        </select>
+
+        {(filterCategory !== 'all' || filterDifficulty !== 'all' || filterType !== 'all') && (
+          <button
+            onClick={() => {
+              setFilterCategory('all');
+              setFilterDifficulty('all');
+              setFilterType('all');
+            }}
+            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline px-2 py-1"
+          >
+            ফিল্টার রিসেট
+          </button>
+        )}
       </div>
 
       {/* Sentence Cards Grid */}
@@ -90,12 +141,17 @@ export const SentenceSection: React.FC<SentenceSectionProps> = ({
           <div
             key={item.id}
             id={`sentence-card-${item.id}`}
-            className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-blue-400 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-500"
+            className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-indigo-400 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500"
           >
             <div className="space-y-4">
               {/* Header tags */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {item.category && (
+                    <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-[10px] font-black text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/50">
+                      {item.category}
+                    </span>
+                  )}
                   <span className="rounded bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-800 dark:bg-blue-950/80 dark:text-blue-300">
                     {item.tense || item.sentenceType}
                   </span>
