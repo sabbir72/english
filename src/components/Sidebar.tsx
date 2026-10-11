@@ -13,6 +13,7 @@ import {
   Settings2,
   ShieldCheck,
   Sparkles,
+  Globe2,
   X,
 } from 'lucide-react';
 import { NavigationTab, LanguageMode } from '../types';
@@ -96,10 +97,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'reading' as NavigationTab,
-      label: 'Reading',
-      labelBn: 'রিডিং ও অর্থ',
+      label: 'Reading Studio',
+      labelBn: 'রিডিং ও শ্যাডোয়িং',
       icon: <Headphones className="h-4 w-4" />,
-      badge: 'Audio',
+      badge: '৪৮+ পাঠ',
+    },
+    {
+      id: 'languages' as NavigationTab,
+      label: 'Languages Hub',
+      labelBn: 'আন্তর্জাতিক ভাষা হাব',
+      icon: <Globe2 className="h-4 w-4 text-indigo-500" />,
+      badge: '৩টি ভাষা',
+    },
+    {
+      id: 'japanese' as NavigationTab,
+      label: 'Japanese (日本語)',
+      labelBn: 'জাপানি ভাষা শিক্ষা',
+      icon: <Sparkles className="h-4 w-4 text-rose-500" />,
+      badge: '🇯🇵 নিহঙ্গো',
+    },
+    {
+      id: 'arabic' as NavigationTab,
+      label: 'Arabic (العربية)',
+      labelBn: 'আরবি ভাষা শিক্ষা',
+      icon: <Globe2 className="h-4 w-4 text-emerald-500" />,
+      badge: '🇸🇦 নতুন',
     },
     {
       id: 'practice' as NavigationTab,

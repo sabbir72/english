@@ -8,4 +8,5 @@ export * from './MethodologySpotlightCard';
 export * from './SmartBookSpotlightCard';
 export * from './ModernHeroDashboard';
 export * from './ModernStudyStrip';
-
+export * from './ArabicDashboardView';
+export * from './JapaneseDashboardView';

@@ -13,6 +13,9 @@ import { SavedContentSection } from './components/SavedContentSection';
 import { ProfileSection } from './components/ProfileSection';
 import { AdminPanelSection } from './components/AdminPanelSection';
 import { ReadingSection } from './components/ReadingSection';
+import { JapaneseSection } from './components/JapaneseSection';
+import { ArabicSection } from './components/ArabicSection';
+import { LanguageHubSection } from './components/LanguageHubSection';
 import { SpokenBookSection } from './components/book/SpokenBookSection';
 import { DailyHabitSection } from './components/DailyHabitSection';
 import { Sidebar } from './components/Sidebar';
@@ -29,6 +32,7 @@ import {
   GrammarLesson,
   PracticeQuestion,
   LanguageMode,
+  AppLanguage,
 } from './types';
 
 import {
@@ -77,6 +81,17 @@ export function App() {
     const saved = localStorage.getItem('boli_language_mode');
     return saved === 'en' || saved === 'bn' ? saved : 'bn';
   });
+
+  // Selected Target Learning Language ('english' | 'arabic' | 'japanese')
+  const [dashboardLanguage, setDashboardLanguage] = useState<AppLanguage>(() => {
+    const saved = localStorage.getItem('boli_selected_dashboard_lang');
+    return saved === 'arabic' || saved === 'japanese' || saved === 'english' ? saved : 'english';
+  });
+
+  const handleSelectDashboardLanguage = (lang: AppLanguage) => {
+    setDashboardLanguage(lang);
+    localStorage.setItem('boli_selected_dashboard_lang', lang);
+  };
 
   const handleToggleLanguage = (lang?: LanguageMode) => {
     const nextLang = lang || (languageMode === 'bn' ? 'en' : 'bn');
@@ -323,7 +338,16 @@ export function App() {
 
   // Centralized Navigation Handler
   const handleNavigate = (t: NavigationTab | string) => {
-    if (t === 'oxford-3000' || t === 'oxford3000') {
+    if (t === 'english') {
+      handleSelectDashboardLanguage('english');
+      setActiveTab('home');
+    } else if (t === 'arabic') {
+      handleSelectDashboardLanguage('arabic');
+      setActiveTab('arabic');
+    } else if (t === 'japanese') {
+      handleSelectDashboardLanguage('japanese');
+      setActiveTab('japanese');
+    } else if (t === 'oxford-3000' || t === 'oxford3000') {
       setVocabInitialSubTab('oxford3000');
       setActiveLearnSubTab('vocabulary');
       setActiveTab('learn');
@@ -412,6 +436,8 @@ export function App() {
         onOpenMobileMenu={() => setMobileMenuOpen(true)}
         languageMode={languageMode}
         onToggleLanguage={handleToggleLanguage}
+        activeDashboardLanguage={dashboardLanguage}
+        onSelectDashboardLanguage={handleSelectDashboardLanguage}
       />
 
       {/* 2. Main Workspace Layout: Desktop Sidebar + Content */}
@@ -437,6 +463,8 @@ export function App() {
               onSelectLearnSubTab={handleSelectLearnSubTab}
               onAwardXP={handleAwardXP}
               languageMode={languageMode}
+              activeLanguage={dashboardLanguage}
+              onSelectLanguage={handleSelectDashboardLanguage}
             />
           )}
 
@@ -533,6 +561,29 @@ export function App() {
                   });
                 }
               }}
+            />
+          )}
+
+          {activeTab === 'japanese' && (
+            <JapaneseSection
+              onAwardXP={handleAwardXP}
+              onNavigateHome={() => setActiveTab('home')}
+            />
+          )}
+
+          {activeTab === 'arabic' && (
+            <ArabicSection
+              onAwardXP={handleAwardXP}
+              onNavigateHome={() => setActiveTab('home')}
+            />
+          )}
+
+          {activeTab === 'languages' && (
+            <LanguageHubSection
+              initialLanguage={dashboardLanguage}
+              onAwardXP={handleAwardXP}
+              onNavigateHome={() => setActiveTab('home')}
+              onNavigateTab={(tab) => setActiveTab(tab)}
             />
           )}
 

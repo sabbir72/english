@@ -227,8 +227,11 @@ export type LearnSubTab =
   | 'grammar'
   | 'pronunciation';
 
+export type AppLanguage = 'english' | 'arabic' | 'japanese';
+
 export type NavigationTab =
   | 'home'
+  | 'english'
   | 'learn'
   | 'patterns'
   | 'builder'
@@ -246,6 +249,9 @@ export type NavigationTab =
   | 'reading'
   | 'smart-book'
   | 'book'
+  | 'languages'
+  | 'japanese'
+  | 'arabic'
   | 'conversation'
   | 'practice'
   | 'ai-tutor'

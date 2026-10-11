@@ -8,6 +8,7 @@ import {
   Dumbbell,
   ArrowRight,
   Sparkles,
+  Globe2,
 } from 'lucide-react';
 import { NavigationTab, LanguageMode } from '../../types';
 
@@ -21,7 +22,7 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
   languageMode = 'bn',
 }) => {
   const isBn = languageMode === 'bn';
-  const [filterCategory, setFilterCategory] = React.useState<'all' | 'books' | 'vocab' | 'grammar' | 'practice'>('all');
+  const [filterCategory, setFilterCategory] = React.useState<'all' | 'languages' | 'books' | 'vocab' | 'grammar' | 'practice'>('all');
 
   const cards = [
     {
@@ -111,14 +112,38 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
     {
       id: 'reading' as NavigationTab,
       category: 'books',
-      title: 'Reading',
-      titleBn: 'রিডিং বুক',
-      description: 'Digital textbook stories with instant click-to-translate & audio.',
-      badge: 'Stories & Quizzes',
-      emoji: '📖',
+      title: 'Reading Studio',
+      titleBn: 'ডাইনামিক রিডিং ও শ্যাডোয়িং',
+      description: '৪৮+ আধুনিক টপিক (IELTS, স্টার্টআপ, মহাকাশ, রিমোট জব), স্পিকিং শ্যাডোয়িং ও কাস্টম পাঠ নির্মাতা।',
+      badge: '৪৮+ পাঠ • শ্যাডোয়িং ল্যাব',
+      emoji: '🎧',
       icon: <BookMarked className="h-5 w-5 text-[#0EA5E9] dark:text-sky-400" />,
       iconBg: 'bg-sky-50 dark:bg-sky-950/60',
       badgeColor: 'text-[#0EA5E9] bg-sky-50 dark:bg-sky-950/70 dark:text-sky-300',
+    },
+    {
+      id: 'japanese' as NavigationTab,
+      category: 'languages',
+      title: 'Japanese Studio',
+      titleBn: 'জাপানি ভাষা শিক্ষা (日本語)',
+      description: 'হিরাগানা, কাতাকানা বর্ণমালা, JLPT N5 শব্দভাণ্ডার, বাস্তব কথোপকথন ও অডিও উচ্চারণ।',
+      badge: 'হিরাগানা ও N5 🇯🇵',
+      emoji: '🎌',
+      icon: <Sparkles className="h-5 w-5 text-rose-500 dark:text-rose-400" />,
+      iconBg: 'bg-rose-50 dark:bg-rose-950/60',
+      badgeColor: 'text-rose-600 bg-rose-50 dark:bg-rose-950/70 dark:text-rose-300',
+    },
+    {
+      id: 'arabic' as NavigationTab,
+      category: 'languages',
+      title: 'Arabic Studio',
+      titleBn: 'আরবি ভাষা শিক্ষা (العربية)',
+      description: '২৮টি হরফ, কোরআনিক ও স্পোকেন শব্দভাণ্ডার, কথোপকথন, অডিও ও ব্যাকরণ।',
+      badge: '২৮ হরফ ও স্পোকেন 🇸🇦',
+      emoji: '🌙',
+      icon: <Globe2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />,
+      iconBg: 'bg-emerald-50 dark:bg-emerald-950/60',
+      badgeColor: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/70 dark:text-emerald-300',
     },
     {
       id: 'practice' as NavigationTab,
@@ -140,6 +165,7 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
 
   const filterTabs = [
     { id: 'all', label: isBn ? 'সকল মডিউল' : 'All Modules', count: cards.length },
+    { id: 'languages', label: isBn ? '🌍 অন্যান্য ভাষা (Language Hub)' : 'Languages', count: cards.filter(c => c.category === 'languages').length },
     { id: 'books', label: isBn ? '📖 বইসমূহ' : 'Books', count: cards.filter(c => c.category === 'books').length },
     { id: 'vocab', label: isBn ? '🌟 শব্দভাণ্ডার' : 'Vocabulary', count: cards.filter(c => c.category === 'vocab').length },
     { id: 'grammar', label: isBn ? '✍️ ব্যাকরণ ও বাক্য' : 'Grammar & Sentences', count: cards.filter(c => c.category === 'grammar').length },

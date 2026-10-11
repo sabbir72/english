@@ -19,8 +19,9 @@ import {
   GraduationCap,
   SpellCheck,
   BookMarked,
+  Globe2,
 } from 'lucide-react';
-import { NavigationTab, LearnSubTab, UserProfile, LanguageMode } from '../../types';
+import { NavigationTab, LearnSubTab, UserProfile, LanguageMode, AppLanguage } from '../../types';
 
 export interface NavbarProps {
   activeTab: NavigationTab;
@@ -34,6 +35,8 @@ export interface NavbarProps {
   onOpenMobileMenu?: () => void;
   languageMode?: LanguageMode;
   onToggleLanguage?: (lang?: LanguageMode) => void;
+  activeDashboardLanguage?: AppLanguage;
+  onSelectDashboardLanguage?: (lang: AppLanguage) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -47,6 +50,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenMobileMenu,
   languageMode = 'bn',
   onToggleLanguage,
+  activeDashboardLanguage = 'english',
+  onSelectDashboardLanguage,
 }) => {
   // Derive breadcrumb context for the top bar
   const getBreadcrumb = () => {
@@ -193,12 +198,26 @@ export const Navbar: React.FC<NavbarProps> = ({
           page: 'Habits & Goals',
           pageBn: 'দৈনিক লক্ষ্য ও অভ্যাস',
         };
-      case 'profile':
+      case 'japanese':
         return {
-          icon: <User className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
-          section: 'User',
-          page: 'Profile & Settings',
-          pageBn: 'প্রোফাইল সেটিংস',
+          icon: <Sparkles className="h-4 w-4 text-rose-500" />,
+          section: 'Languages',
+          page: 'Japanese Studio (日本語)',
+          pageBn: 'জাপানি ভাষা শিক্ষা ও শ্যাডোয়িং',
+        };
+      case 'arabic':
+        return {
+          icon: <Globe2 className="h-4 w-4 text-emerald-500" />,
+          section: 'Languages',
+          page: 'Arabic Studio (العربية)',
+          pageBn: 'আরবি ভাষা শিক্ষা ও বর্ণমালা',
+        };
+      case 'languages':
+        return {
+          icon: <Globe2 className="h-4 w-4 text-indigo-500" />,
+          section: 'Languages',
+          page: 'Language Hub',
+          pageBn: 'আন্তর্জাতিক ভাষা একাডেমি',
         };
       default:
         return {
@@ -293,6 +312,64 @@ export const Navbar: React.FC<NavbarProps> = ({
               ⌘K
             </kbd>
           </button>
+
+          {/* 3-Language Base Switcher Tabs (English / Arabic / Japanese) */}
+          {onSelectDashboardLanguage && (
+            <div
+              className="flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200/80 dark:border-slate-700/80 shrink-0 shadow-2xs"
+              role="group"
+              aria-label="Learning Language Switcher"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectDashboardLanguage('english');
+                  if (activeTab === 'japanese' || activeTab === 'arabic') onNavigate('home');
+                }}
+                className={`flex items-center gap-1 px-2 py-1 text-[11px] font-black rounded-lg transition-all cursor-pointer ${
+                  activeDashboardLanguage === 'english' && activeTab !== 'japanese' && activeTab !== 'arabic'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="English Learning (ইংরেজি)"
+              >
+                <span>🇬🇧</span>
+                <span className="hidden lg:inline">English</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectDashboardLanguage('arabic');
+                  if (activeTab === 'japanese' || activeTab === 'arabic') onNavigate('home');
+                }}
+                className={`flex items-center gap-1 px-2 py-1 text-[11px] font-black rounded-lg transition-all cursor-pointer ${
+                  activeDashboardLanguage === 'arabic' || activeTab === 'arabic'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Arabic Learning (আরবি)"
+              >
+                <span>🇸🇦</span>
+                <span className="hidden lg:inline">العربية</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectDashboardLanguage('japanese');
+                  if (activeTab === 'japanese' || activeTab === 'arabic') onNavigate('home');
+                }}
+                className={`flex items-center gap-1 px-2 py-1 text-[11px] font-black rounded-lg transition-all cursor-pointer ${
+                  activeDashboardLanguage === 'japanese' || activeTab === 'japanese'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Japanese Learning (জাপানি)"
+              >
+                <span>🇯🇵</span>
+                <span className="hidden lg:inline">日本語</span>
+              </button>
+            </div>
+          )}
 
           {/* Learning Streak Pill */}
           <div

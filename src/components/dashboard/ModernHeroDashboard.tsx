@@ -182,11 +182,14 @@ export const ModernHeroDashboard: React.FC<ModernHeroDashboardProps> = ({
                   </span>
                   <span className="text-[10px] text-slate-400 font-mono">#DailyWord</span>
                 </div>
-                <div className="mt-1.5 flex items-baseline gap-2">
+                <div className="mt-1.5 flex flex-wrap items-baseline gap-2">
                   <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
                     {featuredWord}
                   </h3>
                   <span className="text-xs font-mono text-slate-400">/kənˈsɪstənt/</span>
+                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-bangla bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-800/60">
+                    উচ্চারণ: কনসিসটেন্ট
+                  </span>
                 </div>
                 <div className="mt-1 text-xs font-bold text-emerald-700 dark:text-emerald-400 font-bangla">
                   বাংলা অর্থ: {featuredMeaning}

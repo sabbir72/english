@@ -82,6 +82,92 @@ export function stopSpeaking(): void {
   }
 }
 
+export function speakJapaneseText(
+  text: string,
+  rate: number = 0.95,
+  onEnd?: () => void,
+  onError?: (e: any) => void
+): void {
+  if (!isSpeechSynthesisSupported()) {
+    console.warn('Speech synthesis not supported in this browser.');
+    onEnd?.();
+    return;
+  }
+
+  try {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ja-JP';
+    utterance.rate = Math.max(0.6, Math.min(1.4, rate));
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const jpVoice = voices.find(
+      (v) => v.lang === 'ja-JP' || v.lang.startsWith('ja')
+    );
+    if (jpVoice) {
+      utterance.voice = jpVoice;
+    }
+
+    utterance.onend = () => {
+      onEnd?.();
+    };
+
+    utterance.onerror = (e) => {
+      console.error('Japanese speech error:', e);
+      onError?.(e);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  } catch (err) {
+    console.error('Failed to invoke Japanese speech synthesis:', err);
+    onEnd?.();
+  }
+}
+
+export function speakArabicText(
+  text: string,
+  rate: number = 0.9,
+  onEnd?: () => void,
+  onError?: (e: any) => void
+): void {
+  if (!isSpeechSynthesisSupported()) {
+    console.warn('Speech synthesis not supported in this browser.');
+    onEnd?.();
+    return;
+  }
+
+  try {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ar-SA';
+    utterance.rate = Math.max(0.6, Math.min(1.4, rate));
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const arVoice = voices.find(
+      (v) => v.lang === 'ar-SA' || v.lang.startsWith('ar')
+    );
+    if (arVoice) {
+      utterance.voice = arVoice;
+    }
+
+    utterance.onend = () => {
+      onEnd?.();
+    };
+
+    utterance.onerror = (e) => {
+      console.error('Arabic speech error:', e);
+      onError?.(e);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  } catch (err) {
+    console.error('Failed to invoke Arabic speech synthesis:', err);
+    onEnd?.();
+  }
+}
+
 export interface SpeechRecognitionResultPayload {
   transcript: string;
   isFinal: boolean;
@@ -91,7 +177,8 @@ export interface SpeechRecognitionResultPayload {
 export function startSpeechRecognition(
   onResult: (payload: SpeechRecognitionResultPayload) => void,
   onError: (error: string) => void,
-  onEnd: () => void
+  onEnd: () => void,
+  lang: string = 'en-US'
 ): { stop: () => void } | null {
   if (!isSpeechRecognitionSupported()) {
     onError('Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.');
@@ -103,7 +190,7 @@ export function startSpeechRecognition(
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognitionConstructor();
 
-    recognition.lang = 'en-US';
+    recognition.lang = lang;
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
