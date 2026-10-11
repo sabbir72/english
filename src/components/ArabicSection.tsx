@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Volume2,
   Sparkles,
@@ -41,6 +41,7 @@ import {
 } from '../data/arabicLanguageData';
 import {
   speakArabicText,
+  playQuranAyahAudio,
   startSpeechRecognition,
   isSpeechRecognitionSupported,
 } from '../utils/speech';
@@ -48,6 +49,7 @@ import {
 interface ArabicSectionProps {
   onAwardXP?: (amount: number, reason: string) => void;
   onNavigateHome?: () => void;
+  initialSubTab?: ArabicSubTab;
 }
 
 export type ArabicSubTab =
@@ -64,8 +66,15 @@ export type ArabicSubTab =
 export const ArabicSection: React.FC<ArabicSectionProps> = ({
   onAwardXP,
   onNavigateHome,
+  initialSubTab,
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<ArabicSubTab>('starter');
+  const [activeSubTab, setActiveSubTab] = useState<ArabicSubTab>(initialSubTab || 'starter');
+
+  useEffect(() => {
+    if (initialSubTab) {
+      setActiveSubTab(initialSubTab);
+    }
+  }, [initialSubTab]);
   const [selectedChar, setSelectedChar] = useState<ArabicAlphabetChar>(ARABIC_ALPHABET_DATA[0]);
   const [audioSpeed, setAudioSpeed] = useState<number>(0.85);
 
@@ -571,11 +580,24 @@ export const ArabicSection: React.FC<ArabicSectionProps> = ({
                         {verse.surahNameBn} • আয়াত নং {verse.ayahNumber}
                       </span>
                       <button
-                        onClick={() => handlePlayVoice(verse.fullVerseAr, true)}
+                        onClick={() => {
+                          const surahNum = 1; // Surah Al-Fatiha
+                          const stopFn = playQuranAyahAudio(
+                            surahNum,
+                            verse.ayahNumber,
+                            () => {
+                              if (onAwardXP) onAwardXP(5, 'Quran Ayah Recitation Practice');
+                            },
+                            () => {
+                              // If CDN audio is unavailable, speak with Arabic TTS
+                              handlePlayVoice(verse.fullVerseAr, true);
+                            }
+                          );
+                        }}
                         className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition-all cursor-pointer"
                       >
                         <Volume2 className="h-3.5 w-3.5 text-emerald-300" />
-                        <span>পুরো আয়াত শুনুন</span>
+                        <span>তিলাওয়াত শুনুন</span>
                       </button>
                     </div>
                     <div className="text-2xl sm:text-3xl font-black font-serif text-right leading-relaxed" dir="rtl">

@@ -7,6 +7,8 @@ import {
   Globe2,
   Sparkles,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
   TodaysLearningSection,
@@ -87,6 +89,19 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   const practiceMinutes = (progress.speakingMinutes || 0) + 42;
   const weeklyGoalPercent = 82;
 
+  // Collapsible Language Selector Bar state
+  const [isLangBarCollapsed, setIsLangBarCollapsed] = useState<boolean>(() => {
+    return localStorage.getItem('boli_lang_bar_collapsed') === 'true';
+  });
+
+  const toggleLangBarCollapsed = () => {
+    setIsLangBarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('boli_lang_bar_collapsed', String(next));
+      return next;
+    });
+  };
+
   return (
     <div id="home-dashboard-view" className="space-y-6 pb-12 animate-in fade-in duration-300">
       {/* 3-Language Master Selector Tab Bar */}
@@ -104,14 +119,86 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 </span>
               </h2>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                নিচের যেকোনো ভাষা বেছে নিন; বাছাইকৃত ভাষার বিস্তারিত ড্যাশবোর্ড ও পাঠ নিচে প্রদর্শিত হবে
+                {isLangBarCollapsed
+                  ? `বর্তমানে সক্রিয়: ${selectedLanguage === 'arabic' ? '🇸🇦 আরবি (العربية)' : selectedLanguage === 'japanese' ? '🇯🇵 জাপানি (日本語)' : '🇬🇧 English (ইংরেজি)'}`
+                  : 'নিচের যেকোনো ভাষা বেছে নিন; বাছাইকৃত ভাষার বিস্তারিত ড্যাশবোর্ড ও পাঠ নিচে প্রদর্শিত হবে'}
               </p>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={toggleLangBarCollapsed}
+            className="flex items-center gap-1.5 self-start sm:self-auto px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold transition-all cursor-pointer shadow-2xs"
+            title={isLangBarCollapsed ? 'ভাষা বার বিস্তারিত দেখুন' : 'ভাষা বার সংকুচিত করুন'}
+          >
+            {isLangBarCollapsed ? (
+              <>
+                <span>বার বিস্তারিত দেখুন</span>
+                <ChevronDown className="h-4 w-4 text-indigo-500" />
+              </>
+            ) : (
+              <>
+                <span>সংকুচিত করুন</span>
+                <ChevronUp className="h-4 w-4 text-slate-500" />
+              </>
+            )}
+          </button>
         </div>
 
-        {/* 3 Interactive Language Tabs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        {isLangBarCollapsed ? (
+          /* Compact Collapsed View with Quick One-Click Switchers */
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 font-bangla">
+                সরাসরি ভাষা পরিবর্তন:
+              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleLanguageChange('english')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    selectedLanguage === 'english'
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  <span>🇬🇧</span>
+                  <span>English</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleLanguageChange('arabic')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    selectedLanguage === 'arabic'
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  <span>🇸🇦</span>
+                  <span>العربية</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleLanguageChange('japanese')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    selectedLanguage === 'japanese'
+                      ? 'bg-rose-600 text-white border-rose-600 shadow-2xs'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  <span>🇯🇵</span>
+                  <span>日本語</span>
+                </button>
+              </div>
+            </div>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-bangla">
+              (ক্লিক করলেই সম্পূর্ণ ড্যাশবোর্ড সেই ভাষায় আপডেট হবে)
+            </span>
+          </div>
+        ) : (
+          /* 3 Interactive Detailed Language Tabs */
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           {/* Tab 1: English */}
           <button
             type="button"
@@ -220,7 +307,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
           </button>
         </div>
-      </div>
+      )}
+    </div>
 
       {/* Dynamic View: Whichever language is chosen, show its in-depth details */}
       {selectedLanguage === 'arabic' && (
@@ -251,6 +339,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             onOpenRoutine={() => setDailyRoutineOpen(true)}
             languageMode={languageMode}
             streakCount={streakCount}
+            activeLanguage={selectedLanguage}
+            onSelectLanguage={handleLanguageChange}
           />
 
           {/* 2. Quick Study Shortcut Strip */}

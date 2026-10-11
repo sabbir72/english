@@ -13,8 +13,8 @@ import { SavedContentSection } from './components/SavedContentSection';
 import { ProfileSection } from './components/ProfileSection';
 import { AdminPanelSection } from './components/AdminPanelSection';
 import { ReadingSection } from './components/ReadingSection';
-import { JapaneseSection } from './components/JapaneseSection';
-import { ArabicSection } from './components/ArabicSection';
+import { JapaneseSection, JapaneseSubTab } from './components/JapaneseSection';
+import { ArabicSection, ArabicSubTab } from './components/ArabicSection';
 import { LanguageHubSection } from './components/LanguageHubSection';
 import { SpokenBookSection } from './components/book/SpokenBookSection';
 import { DailyHabitSection } from './components/DailyHabitSection';
@@ -87,6 +87,23 @@ export function App() {
     const saved = localStorage.getItem('boli_selected_dashboard_lang');
     return saved === 'arabic' || saved === 'japanese' || saved === 'english' ? saved : 'english';
   });
+
+  // Sidebar Collapsible state - persists to localStorage
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    return localStorage.getItem('boli_sidebar_collapsed') === 'true';
+  });
+
+  const handleToggleSidebarCollapse = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('boli_sidebar_collapsed', String(next));
+      return next;
+    });
+  };
+
+  // Subtab targeting for Japanese and Arabic modules from sidebar
+  const [japaneseSubTab, setJapaneseSubTab] = useState<JapaneseSubTab>('starter');
+  const [arabicSubTab, setArabicSubTab] = useState<ArabicSubTab>('starter');
 
   const handleSelectDashboardLanguage = (lang: AppLanguage) => {
     setDashboardLanguage(lang);
@@ -338,15 +355,25 @@ export function App() {
 
   // Centralized Navigation Handler
   const handleNavigate = (t: NavigationTab | string) => {
-    if (t === 'english') {
-      handleSelectDashboardLanguage('english');
-      setActiveTab('home');
-    } else if (t === 'arabic') {
-      handleSelectDashboardLanguage('arabic');
-      setActiveTab('arabic');
+    if (t.startsWith('japanese-')) {
+      const sub = t.replace('japanese-', '') as JapaneseSubTab;
+      setJapaneseSubTab(sub);
+      handleSelectDashboardLanguage('japanese');
+      setActiveTab('japanese');
     } else if (t === 'japanese') {
       handleSelectDashboardLanguage('japanese');
       setActiveTab('japanese');
+    } else if (t.startsWith('arabic-')) {
+      const sub = t.replace('arabic-', '') as ArabicSubTab;
+      setArabicSubTab(sub);
+      handleSelectDashboardLanguage('arabic');
+      setActiveTab('arabic');
+    } else if (t === 'arabic') {
+      handleSelectDashboardLanguage('arabic');
+      setActiveTab('arabic');
+    } else if (t === 'english') {
+      handleSelectDashboardLanguage('english');
+      setActiveTab('home');
     } else if (t === 'oxford-3000' || t === 'oxford3000') {
       setVocabInitialSubTab('oxford3000');
       setActiveLearnSubTab('vocabulary');
@@ -449,6 +476,10 @@ export function App() {
           onCloseMobileMenu={() => setMobileMenuOpen(false)}
           languageMode={languageMode}
           onToggleLanguage={handleToggleLanguage}
+          selectedLanguage={dashboardLanguage}
+          onSelectLanguage={handleSelectDashboardLanguage}
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={handleToggleSidebarCollapse}
         />
 
         <main
@@ -566,6 +597,7 @@ export function App() {
 
           {activeTab === 'japanese' && (
             <JapaneseSection
+              initialSubTab={japaneseSubTab}
               onAwardXP={handleAwardXP}
               onNavigateHome={() => setActiveTab('home')}
             />
@@ -573,6 +605,7 @@ export function App() {
 
           {activeTab === 'arabic' && (
             <ArabicSection
+              initialSubTab={arabicSubTab}
               onAwardXP={handleAwardXP}
               onNavigateHome={() => setActiveTab('home')}
             />

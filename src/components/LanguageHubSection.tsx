@@ -94,24 +94,28 @@ const POLYGLOT_COMPARISONS: PolyglotPhrase[] = [
 const ENGLISH_DAILY_IDIOMS = [
   {
     idiom: 'Piece of cake',
+    pronunciationBn: 'পিস অব কেক',
     meaningBn: 'খুবই সহজ বা দুধভাত কোনো কাজ (Very easy)',
     example: 'Learning English with this app is a piece of cake!',
     exampleBn: 'এই অ্যাপে ইংরেজি শেখা একদম সহজ দুধভাত ব্যাপার!',
   },
   {
     idiom: 'Break a leg',
+    pronunciationBn: 'ব্রেক আ লেগ',
     meaningBn: 'শুভকামনা বা শুভলক্ষণ (Good luck)',
     example: 'You have a presentation today? Break a leg!',
     exampleBn: 'আজ তোমার প্রেজেন্টেশন আছে? অনেক শুভকামনা রইল!',
   },
   {
     idiom: 'Call it a day',
+    pronunciationBn: 'কল ইট আ ডে',
     meaningBn: 'আজকের মতো কাজ সমাপ্ত করা (Stop working)',
     example: 'We have studied 5 chapters, let’s call it a day.',
     exampleBn: 'আমরা ৫টি চ্যাপ্টার পড়েছি, আজকের মতো ইতি টানি।',
   },
   {
     idiom: 'Hit the books',
+    pronunciationBn: 'হিট দ্য বুকস',
     meaningBn: 'মনোযোগ দিয়ে পড়া শুরু করা (To study hard)',
     example: 'Exam is near, I must hit the books tonight.',
     exampleBn: 'পরীক্ষা সন্নিকটে, আজ রাতে মন দিয়ে পড়তে হবে।',
@@ -445,6 +449,9 @@ export const LanguageHubSection: React.FC<LanguageHubSectionProps> = ({
                     </div>
                     <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-1">
                       বাংলা অর্থ: {item.meaningBn}
+                    </div>
+                    <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 mt-1">
+                      বাংলা উচ্চারণ: {item.pronunciationBn}
                     </div>
                   </div>
 

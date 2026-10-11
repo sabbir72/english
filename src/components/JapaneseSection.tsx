@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Volume2,
   Sparkles,
@@ -57,6 +57,7 @@ import {
 interface JapaneseSectionProps {
   onAwardXP?: (amount: number, reason: string) => void;
   onNavigateHome?: () => void;
+  initialSubTab?: JapaneseSubTab;
 }
 
 export type JapaneseSubTab =
@@ -77,9 +78,16 @@ export type JapaneseSubTab =
 export const JapaneseSection: React.FC<JapaneseSectionProps> = ({
   onAwardXP,
   onNavigateHome,
+  initialSubTab,
 }) => {
-  // Default to the easiest 'starter' tab
-  const [activeSubTab, setActiveSubTab] = useState<JapaneseSubTab>('starter');
+  // Default to the easiest 'starter' tab or passed initialSubTab
+  const [activeSubTab, setActiveSubTab] = useState<JapaneseSubTab>(initialSubTab || 'starter');
+
+  useEffect(() => {
+    if (initialSubTab) {
+      setActiveSubTab(initialSubTab);
+    }
+  }, [initialSubTab]);
   const [kanaType, setKanaType] = useState<'hiragana' | 'katakana'>('hiragana');
   const [selectedKana, setSelectedKana] = useState<KanaCharacter | null>(HIRAGANA_DATA[0].chars[0]);
   const [currentlyPlayingText, setCurrentlyPlayingText] = useState<string | null>(null);

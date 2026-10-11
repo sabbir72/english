@@ -24,6 +24,8 @@ export interface ModernHeroDashboardProps {
   onOpenRoutine: () => void;
   languageMode?: LanguageMode;
   streakCount: number;
+  activeLanguage?: 'english' | 'arabic' | 'japanese';
+  onSelectLanguage?: (lang: 'english' | 'arabic' | 'japanese') => void;
 }
 
 export const ModernHeroDashboard: React.FC<ModernHeroDashboardProps> = ({
@@ -33,6 +35,8 @@ export const ModernHeroDashboard: React.FC<ModernHeroDashboardProps> = ({
   onOpenRoutine,
   languageMode = 'bn',
   streakCount = 7,
+  activeLanguage = 'english',
+  onSelectLanguage,
 }) => {
   const isBn = languageMode === 'bn';
 
@@ -49,47 +53,156 @@ export const ModernHeroDashboard: React.FC<ModernHeroDashboardProps> = ({
   }
 
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const featuredWord = 'Consistent';
-  const featuredMeaning = 'ধারাবাহিক / অবিচল';
-  const featuredSentence = 'Consistent practice makes English natural.';
-  const featuredSentenceBn = 'ধারাবাহিক অনুশীলনে ইংরেজি বলা সহজ ও স্বতঃস্ফূর্ত হয়।';
+
+  // Dynamic curated daily word & sentence based on activeLanguage
+  const languageContent = {
+    english: {
+      langName: 'English (ইংরেজি)',
+      badge: 'Boli Spoken English',
+      flag: '🇬🇧',
+      accentColor: 'indigo',
+      gradient: 'from-indigo-600 to-indigo-700',
+      borderAccent: 'border-indigo-200/90 dark:border-indigo-800/80',
+      bgGlow: 'bg-indigo-500/10',
+      pitchTitle: isBn ? 'ইংরেজি ফ্লুয়েন্সি অর্জন করুন' : 'Master Real-World English',
+      pitchDesc: isBn
+        ? 'প্রতিদিন মাত্র ১৫ মিনিটে বাস্তব জীবনের ইংরেজি বাক্য, সঠিক উচ্চারণ ও ৩০০০ প্রয়োজনীয় শব্দে আত্মবিশ্বাসী হয়ে উঠুন।'
+        : 'Build effortless English fluency with practical sentence patterns, native pronunciation, and essential vocabulary in just 15 minutes a day.',
+      featuredWord: 'Consistent',
+      featuredWordIpa: '/kənˈsɪstənt/',
+      featuredWordBnPronunciation: 'কনসিসটেন্ট',
+      featuredMeaning: 'ধারাবাহিক / অবিচল',
+      featuredSentence: 'Consistent practice makes English natural.',
+      featuredSentencePronunciationBn: 'কনসিসটেন্ট প্র্যাকটিস মেকস ইংলিশ ন্যাচারাল।',
+      featuredSentenceBn: 'ধারাবাহিক অনুশীলনে ইংরেজি বলা সহজ ও স্বতঃস্ফূর্ত হয়।',
+      speakLocale: 'en-US',
+      audioRate: 0.95,
+      interestTips: [
+        { title: '১ কাঠামোর ম্যাজিক', desc: 'একটি বাক্য কাঠামো শিখে প্রতিদিন ৫০+ নতুন বাস্তব বাক্য সাজান।' },
+        { title: 'প্রতিটি শব্দের উচ্চারণ', desc: 'ইংরেজি অক্ষরের সাথে সুস্পষ্ট বাংলা উচ্চারণ ও ক্লিক-টু-লিসেন অডিও।' },
+        { title: 'দৈনন্দিন লাইফ হ্যাক', desc: 'অফিস, ট্রাভেল ও আড্ডার প্রয়োজনীয় সব বাস্তব বাক্য।' },
+      ],
+      primaryCta: {
+        label: isBn ? '১০০ পাতার বই পড়ুন' : 'Open 100-Page Book',
+        target: 'smart-book',
+        icon: 'book',
+      },
+      secondaryCta: {
+        label: isBn ? '৩০০০ স্পেশাল শব্দ' : 'Oxford 3000 Words',
+        target: 'oxford-3000',
+      },
+    },
+    arabic: {
+      langName: 'العربية (আরবি)',
+      badge: 'Boli Arabic Studio',
+      flag: '🇸🇦',
+      accentColor: 'emerald',
+      gradient: 'from-emerald-600 to-teal-700',
+      borderAccent: 'border-emerald-200/90 dark:border-emerald-800/80',
+      bgGlow: 'bg-emerald-500/10',
+      pitchTitle: isBn ? 'সহজ নিয়মে আরবি শিখুন' : 'Learn Arabic with Ease',
+      pitchDesc: isBn
+        ? 'কোরআনিক অর্থবোধ এবং মধ্যপ্রাচ্যে কথা বলার জন্য বিশুদ্ধ উচ্চারণ (মাখরাজ), নিত্যদিনের ডায়লগ ও ২৮টি হরফের চমৎকার সহজ গাইড।'
+        : 'Master Arabic alphabet with authentic pronunciation, practical expat dialogues, and Quranic root vocabulary made super friendly.',
+      featuredWord: 'شُكْرًا جَزِيلًا',
+      featuredWordIpa: 'Shukran Jazeelan',
+      featuredWordBnPronunciation: 'শুকরান জাযিলান',
+      featuredMeaning: 'আপনাকে অনেক ধন্যবাদ (Thank you very much)',
+      featuredSentence: 'كَيْفَ حَالُكَ الْيَوْمَ؟ أَنَا بِخَيْرٍ، وَالْحَمْدُ لِلَّهِ.',
+      featuredSentencePronunciationBn: 'কাইফা হালুকা আল-ইয়াওম? আনা বিখাইরিন, ওয়ালহামদুলিল্লাহ।',
+      featuredSentenceBn: 'আজ আপনি কেমন আছেন? আলহামদুলিল্লাহ, আমি ভালো আছি।',
+      speakLocale: 'ar-SA',
+      audioRate: 0.85,
+      interestTips: [
+        { title: '২৮টি হরফের সঠিক মাখরাজ', desc: 'হরকতের নিয়ম ও বাংলা ধ্বনি নির্দেশিকা দিয়ে সহজে হরফ চেনা।' },
+        { title: 'প্রবাসীদের বাস্তব ডায়লগ', desc: 'বিমানবন্দর, বাজার, হাসপাতাল ও কর্মক্ষেত্রে দরকারি সব বাক্য।' },
+        { title: 'বাংলা উচ্চারণ গ্যারান্টি', desc: 'প্রতিটি আরবি বাক্যের নিচে বড় অক্ষরে বাংলা উচ্চারণ যোগ করা।' },
+      ],
+      primaryCta: {
+        label: isBn ? 'সম্পূর্ণ আরবি স্টুডিও' : 'Open Arabic Studio',
+        target: 'arabic',
+        icon: 'globe',
+      },
+      secondaryCta: {
+        label: isBn ? '২৮ হরফ সাউন্ডবোর্ড' : '28 Alphabet Chart',
+        target: 'arabic',
+      },
+    },
+    japanese: {
+      langName: '日本語 (জাপানি)',
+      badge: 'Boli Japanese Studio',
+      flag: '🇯🇵',
+      accentColor: 'rose',
+      gradient: 'from-rose-600 to-amber-700',
+      borderAccent: 'border-rose-200/90 dark:border-rose-800/80',
+      bgGlow: 'bg-rose-500/10',
+      pitchTitle: isBn ? 'অ্যানিমে ও ক্যারিয়ার জাপানি' : 'Master Japanese & JLPT',
+      pitchDesc: isBn
+        ? 'হিরাগানা, কাতাকানা ও কাঞ্জি দিয়ে জাপানি ভাষা শুরু করুন সবচেয়ে সহজে। রোমাজি, বাংলা উচ্চারণ এবং শ্যাডোয়িং মাইক ল্যাব।'
+        : 'Learn Japanese effortlessly through Hiragana, Katakana, JLPT N5 vocabulary, Romaji, and clear Bengali pronunciation.',
+      featuredWord: 'ありがとうございます',
+      featuredWordIpa: 'Arigatou gozaimasu',
+      featuredWordBnPronunciation: 'আরিগাতো গোজাইমাস',
+      featuredMeaning: 'আপনাকে অনেক ধন্যবাদ (Thank you very much)',
+      featuredSentence: 'お元気ですか？ はい、元気です。',
+      featuredSentencePronunciationBn: 'ওগেনকি দেস কা? হাই, গেনকি দেস।',
+      featuredSentenceBn: 'আপনি কেমন আছেন? হ্যাঁ, আমি ভালো আছি।',
+      speakLocale: 'ja-JP',
+      audioRate: 0.9,
+      interestTips: [
+        { title: 'হিরাগানা ও কাতাকানা', desc: 'বর্ণমালার নিখুঁত ছক, বাংলা উচ্চারণ ও ক্লিক করলেই জাপানি অডিও।' },
+        { title: 'শ্যাডোয়িং ও অ্যানিমে কথা', desc: 'শুনে মুখে রিপিট করার সহজ টেকনিকে কথা বলা আয়ত্ত করুন।' },
+        { title: 'JLPT N5 বেসিক শব্দ', desc: 'প্রতিদিনের ব্যবহার্য ১০০+ শব্দ ও বাস্তব জীবনযাপনের বাক্য।' },
+      ],
+      primaryCta: {
+        label: isBn ? 'সম্পূর্ণ জাপানি স্টুডিও' : 'Open Japanese Studio',
+        target: 'japanese',
+        icon: 'sparkles',
+      },
+      secondaryCta: {
+        label: isBn ? 'হিরাগানা বর্ণমালা' : 'Kana Lab',
+        target: 'japanese',
+      },
+    },
+  };
+
+  const currentLang = languageContent[activeLanguage] || languageContent.english;
 
   const handleSpeakWord = (e: React.MouseEvent) => {
     e.stopPropagation();
     stopSpeaking();
     setIsPlayingAudio(true);
-    speakText(featuredWord, 'en-US', 0.95);
-    setTimeout(() => setIsPlayingAudio(false), 1200);
+    speakText(currentLang.featuredWord, currentLang.speakLocale, currentLang.audioRate);
+    setTimeout(() => setIsPlayingAudio(false), 1400);
   };
 
   const handleSpeakSentence = (e: React.MouseEvent) => {
     e.stopPropagation();
     stopSpeaking();
     setIsPlayingAudio(true);
-    speakText(featuredSentence, 'en-US', 0.95);
-    setTimeout(() => setIsPlayingAudio(false), 2400);
+    speakText(currentLang.featuredSentence, currentLang.speakLocale, currentLang.audioRate);
+    setTimeout(() => setIsPlayingAudio(false), 2600);
   };
 
-  const wordsLearned = progress.vocabularyLearned || 128;
   const targetDailyGoal = 10;
   const todayDone = 8;
   const progressPercent = Math.min(100, Math.round((todayDone / targetDailyGoal) * 100));
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 dark:border-slate-800/80 bg-gradient-to-br from-white via-indigo-50/20 to-emerald-50/25 dark:from-[#0F172A] dark:via-[#1E293B] dark:to-slate-900 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-8 lg:p-9 transition-all">
+    <div className={`relative overflow-hidden rounded-3xl border ${currentLang.borderAccent} bg-gradient-to-br from-white via-slate-50/70 to-slate-100/50 dark:from-[#0F172A] dark:via-[#1E293B] dark:to-slate-900 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-8 lg:p-9 transition-all`}>
       {/* Background visual accents */}
-      <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl dark:bg-indigo-500/15" />
+      <div className={`pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full ${currentLang.bgGlow} blur-3xl`} />
       <div className="pointer-events-none absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/15" />
       <div className="pointer-events-none absolute right-1/3 bottom-0 h-48 w-48 rounded-full bg-sky-500/5 blur-2xl" />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-center">
-        {/* Left Column: Greeting, Big Pitch, Main CTAs, Quick Badges */}
+        {/* Left Column: Greeting, Pitch, Main CTAs, Quick Badges */}
         <div className="lg:col-span-7 space-y-5">
           {/* Top Pill with Level & Daily Habit badge */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-xs">
-              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-              <span>Boli Spoken English</span>
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-gradient-to-r ${currentLang.gradient} text-white shadow-xs`}>
+              <span className="text-sm">{currentLang.flag}</span>
+              <span>{currentLang.badge}</span>
             </span>
 
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60 font-bangla">
@@ -112,27 +225,22 @@ export const ModernHeroDashboard: React.FC<ModernHeroDashboardProps> = ({
                 <span>!</span>
               )}
             </h1>
-            <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl font-sans">
-              {isBn ? (
-                <>
-                  প্রতিদিন মাত্র <strong className="text-indigo-600 dark:text-indigo-400 font-bold">১৫ মিনিটে</strong> বাস্তব জীবনের ইংরেজি বাক্য, সঠিক উচ্চারণ ও ৩০০০ প্রয়োজনীয় শব্দে ফ্লুয়েন্সি অর্জন করুন।
-                </>
-              ) : (
-                <>
-                  Build real-world fluency with practical sentence patterns, native pronunciation, and essential vocabulary in just 15 minutes a day.
-                </>
-              )}
+            <h2 className="mt-1 text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200">
+              {currentLang.pitchTitle}
+            </h2>
+            <p className="mt-1.5 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl font-sans">
+              {currentLang.pitchDesc}
             </p>
           </div>
 
           {/* Primary Action Buttons */}
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <button
-              onClick={() => onNavigate('smart-book')}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-bold text-sm shadow-md hover:from-indigo-700 hover:to-indigo-800 hover:shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 active:scale-[0.98] cursor-pointer"
+              onClick={() => onNavigate(currentLang.primaryCta.target)}
+              className={`inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r ${currentLang.gradient} text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.98] cursor-pointer`}
             >
               <BookOpen className="h-4 w-4" />
-              <span>{isBn ? '১০০ পাতার বই পড়ুন' : 'Open 100-Page Book'}</span>
+              <span>{currentLang.primaryCta.label}</span>
               <ArrowRight className="h-4 w-4" />
             </button>
 
@@ -145,54 +253,58 @@ export const ModernHeroDashboard: React.FC<ModernHeroDashboardProps> = ({
             </button>
 
             <button
-              onClick={() => onNavigate('oxford-3000')}
+              onClick={() => onNavigate(currentLang.secondaryCta.target)}
               className="inline-flex items-center gap-1.5 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 font-bold text-sm hover:bg-emerald-100/80 transition-all cursor-pointer"
             >
               <Sparkles className="h-4 w-4 text-amber-500" />
-              <span>{isBn ? '৩০০০ স্পেশাল শব্দ' : 'Oxford 3000 Words'}</span>
+              <span>{currentLang.secondaryCta.label}</span>
             </button>
           </div>
 
-          {/* Quick Value Points */}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-              <span>সহজ বাংলা উচ্চারণ ও ভাবার্থ</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-              <span>১ কাঠামো দিয়ে ৫০+ বাক্য তৈরি</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-              <span>ক্লিক-টু-লিসেন অডিও উচ্চারণ</span>
-            </div>
+          {/* 3 Interactive Learning Interest Badges */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2">
+            {currentLang.interestTips.map((tip, idx) => (
+              <div
+                key={idx}
+                className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/60 shadow-2xs text-left"
+              >
+                <div className="flex items-center gap-1.5 text-xs font-black text-slate-900 dark:text-white">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                  <span className="truncate">{tip.title}</span>
+                </div>
+                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 font-bangla leading-snug">
+                  {tip.desc}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Right Column: Hero Interactive Spotlight Card (Smart Word + Mini Daily Goal) */}
         <div className="lg:col-span-5 space-y-3.5">
           {/* 1. Daily Smart Word Spotlight */}
-          <div className="rounded-2xl border border-indigo-200/80 dark:border-slate-800 bg-white/95 dark:bg-[#1E293B] p-4.5 shadow-sm transition-all hover:border-indigo-300 dark:hover:border-indigo-600/50">
+          <div className={`rounded-2xl border ${currentLang.borderAccent} bg-white/95 dark:bg-[#1E293B] p-4.5 shadow-sm transition-all`}>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 font-sans">
-                    আজকের ফোকাস শব্দ
+                    আজকের ফোকাস শব্দ ({currentLang.langName})
                   </span>
                   <span className="text-[10px] text-slate-400 font-mono">#DailyWord</span>
                 </div>
                 <div className="mt-1.5 flex flex-wrap items-baseline gap-2">
-                  <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                    {featuredWord}
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight font-sans">
+                    {currentLang.featuredWord}
                   </h3>
-                  <span className="text-xs font-mono text-slate-400">/kənˈsɪstənt/</span>
-                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-bangla bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-800/60">
-                    উচ্চারণ: কনসিসটেন্ট
-                  </span>
+                  <span className="text-xs font-mono text-slate-400">{currentLang.featuredWordIpa}</span>
                 </div>
-                <div className="mt-1 text-xs font-bold text-emerald-700 dark:text-emerald-400 font-bangla">
-                  বাংলা অর্থ: {featuredMeaning}
+                <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-bangla bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-800/60">
+                    উচ্চারণ: {currentLang.featuredWordBnPronunciation}
+                  </span>
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 font-bangla">
+                    অর্থ: {currentLang.featuredMeaning}
+                  </span>
                 </div>
               </div>
 
@@ -212,18 +324,21 @@ export const ModernHeroDashboard: React.FC<ModernHeroDashboardProps> = ({
             {/* Sentence with audio */}
             <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
               <div className="flex items-center justify-between text-xs">
-                <span className="italic font-medium text-slate-700 dark:text-slate-300">
-                  &ldquo;{featuredSentence}&rdquo;
+                <span className="italic font-medium text-slate-800 dark:text-slate-200">
+                  &ldquo;{currentLang.featuredSentence}&rdquo;
                 </span>
                 <button
                   onClick={handleSpeakSentence}
-                  className="text-indigo-600 dark:text-indigo-400 hover:underline font-bold shrink-0 ml-2 text-[11px]"
+                  className="text-indigo-600 dark:text-indigo-400 hover:underline font-bold shrink-0 ml-2 text-[11px] cursor-pointer"
                 >
-                  শুনুন
+                  শুনুন 🔊
                 </button>
               </div>
-              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400 font-bangla">
-                {featuredSentenceBn}
+              <p className="mt-1 text-[11px] text-indigo-600 dark:text-indigo-400 font-bold font-bangla">
+                বাংলা উচ্চারণ: {currentLang.featuredSentencePronunciationBn}
+              </p>
+              <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-400 font-bangla">
+                বাংলা অর্থ: {currentLang.featuredSentenceBn}
               </p>
             </div>
           </div>
