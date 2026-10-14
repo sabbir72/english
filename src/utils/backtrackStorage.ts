@@ -327,3 +327,94 @@ export function saveStoredNextDayTarget(target: NextDayTarget): void {
     localStorage.setItem(STORAGE_KEYS.NEXT_TARGETS, JSON.stringify(target));
   } catch {}
 }
+
+/**
+ * Automatically logs a newly studied word, sentence, or lesson into Today's Backtrack log.
+ * Avoids duplicate entries on the same day.
+ */
+export function logStudiedItem(item: {
+  type: 'word' | 'sentence' | 'grammar' | 'reading' | 'custom';
+  title: string;
+  subtitle?: string;
+  language?: 'english' | 'arabic' | 'japanese';
+  category?: string;
+  notes?: string;
+}): void {
+  try {
+    const logs = getStoredStudyLogs();
+    const todayStr = getTodayDateStr();
+    const currentTime = new Date().toLocaleTimeString('bn-BD', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const cleanTitle = item.title.trim();
+    if (!cleanTitle) return;
+
+    const newItem: BacktrackItem = {
+      id: `auto-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      type: item.type,
+      title: cleanTitle,
+      subtitle: item.subtitle?.trim(),
+      language: item.language || 'english',
+      studiedAt: todayStr,
+      timeString: currentTime,
+      category: item.category || 'General Practice',
+      mastered: true,
+      notes: item.notes?.trim(),
+    };
+
+    let todayFound = false;
+    const updatedLogs = logs.map((l) => {
+      if (l.date === todayStr) {
+        todayFound = true;
+        // Check if already in today's items to avoid duplicate
+        const exists = l.items.some(
+          (it) => it.title.trim().toLowerCase() === cleanTitle.toLowerCase()
+        );
+        if (exists) return l;
+        return {
+          ...l,
+          items: [newItem, ...l.items],
+          minutesSpent: l.minutesSpent + 2,
+          xpEarned: l.xpEarned + 10,
+        };
+      }
+      return l;
+    });
+
+    if (!todayFound) {
+      updatedLogs.unshift({
+        date: todayStr,
+        formattedDateBn: 'আজকের পড়ার রেকর্ড (Today)',
+        minutesSpent: 5,
+        xpEarned: 10,
+        items: [newItem],
+      });
+    }
+
+    saveStoredStudyLogs(updatedLogs);
+  } catch {}
+}
+
+/**
+ * Checks whether a word or sentence has been studied in past logs or today.
+ * Returns information on when it was studied so the user knows if they are studying fresh new content.
+ */
+export function findStudiedItemRecord(title: string): { found: boolean; date?: string; formattedDateBn?: string } {
+  try {
+    const logs = getStoredStudyLogs();
+    const clean = title.trim().toLowerCase();
+    for (const log of logs) {
+      const match = log.items.find((it) => it.title.trim().toLowerCase() === clean);
+      if (match) {
+        return {
+          found: true,
+          date: log.date,
+          formattedDateBn: log.formattedDateBn,
+        };
+      }
+    }
+  } catch {}
+  return { found: false };
+}

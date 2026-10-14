@@ -24,7 +24,12 @@ import {
   Languages,
   ChevronRight,
   Edit3,
+  ArrowLeftRight,
+  CheckCheck,
+  Lightbulb,
+  Search,
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import {
   BacktrackItem,
   NextStudyQueueItem,
@@ -42,7 +47,10 @@ import {
   getYesterdayDateStr,
   getTomorrowDateStr,
   NextDayTarget,
+  findStudiedItemRecord,
 } from '../utils/backtrackStorage';
+import { PROFESSIONAL_SENTENCES } from '../data/professionalSentencesData';
+import { COMPREHENSIVE_VOCABULARY_LIST } from '../data/vocabularyData';
 import { speakText, speakArabicText, speakJapaneseText } from '../utils/speech';
 
 interface StudyBacktrackSectionProps {
@@ -59,8 +67,18 @@ export const StudyBacktrackSection: React.FC<StudyBacktrackSectionProps> = ({
   const [nextQueue, setNextQueue] = useState<NextStudyQueueItem[]>(getStoredNextQueue);
   const [nextTarget, setNextTarget] = useState<NextDayTarget>(getStoredNextDayTarget);
 
-  // Active sub-tab: 'today' | 'history' | 'queue'
-  const [activeSubTab, setActiveSubTab] = useState<'today' | 'history' | 'queue'>('today');
+  // Active sub-tab: 'today' | 'history' | 'queue' | 'matrix'
+  const [activeSubTab, setActiveSubTab] = useState<'today' | 'history' | 'queue' | 'matrix'>('matrix');
+
+  // Word verifier search tool ("আমি কি অমুক শব্দটা আগে পড়েছি?")
+  const [verifierQuery, setVerifierQuery] = useState('');
+  const [verifierResult, setVerifierResult] = useState<{
+    searched: boolean;
+    found: boolean;
+    title?: string;
+    date?: string;
+    formattedDateBn?: string;
+  } | null>(null);
 
   // Selected date for history review
   const [selectedHistoryDate, setSelectedHistoryDate] = useState<string>(getYesterdayDateStr());
@@ -312,6 +330,94 @@ export const StudyBacktrackSection: React.FC<StudyBacktrackSectionProps> = ({
     showToast('আগামীকালের পড়ার লক্ষ্যমাত্রা সফলভাবে হালনাগাদ হয়েছে!');
   };
 
+  // Check if a word or phrase has been studied in past records
+  const handleVerifyWord = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!verifierQuery.trim()) return;
+
+    const res = findStudiedItemRecord(verifierQuery);
+    setVerifierResult({
+      searched: true,
+      found: res.found,
+      title: verifierQuery.trim(),
+      date: res.date,
+      formattedDateBn: res.formattedDateBn,
+    });
+  };
+
+  // Smart Auto-Queue Generator: Adds fresh unread vocabulary and professional sentences to tomorrow's queue
+  const handleSmartAutoQueue = () => {
+    const allStudiedTitles = new Set<string>();
+    logs.forEach((log) => {
+      log.items.forEach((it) => allStudiedTitles.add(it.title.trim().toLowerCase()));
+    });
+    nextQueue.forEach((q) => allStudiedTitles.add(q.title.trim().toLowerCase()));
+
+    // 1. Pick 3 fresh words from vocabulary list
+    const candidateWords = COMPREHENSIVE_VOCABULARY_LIST.filter(
+      (v) => !allStudiedTitles.has(v.word.trim().toLowerCase())
+    );
+    const selectedWords = candidateWords.slice(0, 3);
+
+    // 2. Pick 2 fresh professional sentences
+    const candidateSentences = PROFESSIONAL_SENTENCES.filter(
+      (s) => !allStudiedTitles.has(s.english.trim().toLowerCase())
+    );
+    const selectedSentences = candidateSentences.slice(0, 2);
+
+    const newItems: NextStudyQueueItem[] = [];
+
+    selectedWords.forEach((w, idx) => {
+      newItems.push({
+        id: `auto-word-${Date.now()}-${idx}`,
+        type: 'word',
+        title: w.word,
+        subtitle: `${w.ipa ? w.ipa + ' • ' : ''}${w.banglaMeaning} (${w.category || 'High-Frequency'})`,
+        targetDate: getTomorrowDateStr(),
+        priority: idx === 0 ? 'high' : 'normal',
+        category: w.category || 'Vocabulary',
+        language: 'english',
+        notes: w.example ? `Example: ${w.example}` : 'আগামীকাল নতুন শব্দ হিসেবে আয়ত্ত করা হবে',
+        addedAt: todayDateStr,
+      });
+    });
+
+    selectedSentences.forEach((s, idx) => {
+      newItems.push({
+        id: `auto-sent-${Date.now()}-${idx}`,
+        type: 'sentence',
+        title: s.english,
+        subtitle: `${s.bangla} • ${s.category || 'Corporate'}`,
+        targetDate: getTomorrowDateStr(),
+        priority: 'high',
+        category: s.category || 'Professional Sentences',
+        language: 'english',
+        notes: s.grammarExplanationBangla || 'কাজের ক্ষেত্রে সরাসরি ব্যবহারোপযোগী বাক্য',
+        addedAt: todayDateStr,
+      });
+    });
+
+    if (newItems.length === 0) {
+      showToast('সব শব্দ ও বাক্য ইতোমধ্যে আপনার তালিকায় রয়েছে!');
+      return;
+    }
+
+    const updatedQueue = [...newItems, ...nextQueue];
+    setNextQueue(updatedQueue);
+    saveStoredNextQueue(updatedQueue);
+
+    try {
+      confetti({
+        particleCount: 40,
+        spread: 50,
+        origin: { y: 0.7 },
+      });
+    } catch {}
+
+    onAwardXP?.(15);
+    showToast(`স্বয়ংক্রিয়ভাবে ${newItems.length}টি নতুন প্রফেশনাল শব্দ ও বাক্য আগামীকালের কিউতে যোগ করা হয়েছে! (+15 XP)`);
+  };
+
   return (
     <div id="study-backtrack-section" className="space-y-6 pb-12 animate-in fade-in duration-300">
       {/* Toast Notification */}
@@ -340,6 +446,14 @@ export const StudyBacktrackSection: React.FC<StudyBacktrackSectionProps> = ({
 
           {/* Quick Action Buttons */}
           <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              onClick={handleSmartAutoQueue}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              title="নতুন ৩টি শব্দ ও ২টি বাক্য স্বয়ংক্রিয়ভাবে আগামীকালের কিউতে যোগ করুন"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span>স্মার্ট নতুন কিউ সাজান</span>
+            </button>
             <button
               onClick={() => setAddTodayOpen(true)}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
@@ -451,10 +565,115 @@ export const StudyBacktrackSection: React.FC<StudyBacktrackSectionProps> = ({
         </div>
       </div>
 
+      {/* Word & Sentence Verifier: Check if a word was studied yesterday or previously */}
+      <div className="rounded-2xl border border-indigo-100 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-0.5">
+            <h4 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+              <Search className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>শব্দ যাচাইকারী (Word & Topic Verifier)</span>
+            </h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              কোনো শব্দ পূর্বে পড়েছেন কিনা জানতে এখানে লিখুন—যাতে পুনরাবৃত্তি না হয়ে প্রতিদিন সম্পূর্ণ নতুন শব্দ শিখতে পারেন।
+            </p>
+          </div>
+
+          <form onSubmit={handleVerifyWord} className="flex items-center gap-2 max-w-md w-full sm:w-auto">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={verifierQuery}
+                onChange={(e) => {
+                  setVerifierQuery(e.target.value);
+                  if (verifierResult) setVerifierResult(null);
+                }}
+                placeholder="যেমন: Consistent, Impeccable..."
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 text-white dark:text-slate-900 text-xs font-bold transition-all cursor-pointer shrink-0"
+            >
+              যাচাই করুন
+            </button>
+          </form>
+        </div>
+
+        {/* Verification Result Feedback */}
+        {verifierResult && (
+          <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 animate-in fade-in">
+            {verifierResult.found ? (
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 text-xs">
+                <div className="flex items-center gap-2">
+                  <CheckCheck className="h-4 w-4 text-amber-600 shrink-0" />
+                  <span className="font-bold text-amber-900 dark:text-amber-200">
+                    "{verifierResult.title}" শব্দটি আপনার ব্যাকট্র্যাক রেকর্ডে রয়েছে!
+                  </span>
+                  <span className="text-amber-700 dark:text-amber-300">
+                    (পড়া হয়েছিল: {verifierResult.formattedDateBn || verifierResult.date})
+                  </span>
+                </div>
+                <span className="text-[11px] font-bold text-amber-800 dark:text-amber-300">
+                  পরামর্শ: আজকে নতুন শব্দ পড়ুন
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 text-xs">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span className="font-bold text-emerald-900 dark:text-emerald-200">
+                    "{verifierResult.title}" এখনো পড়া হয়নি—এটি সম্পূর্ণ নতুন শব্দ!
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newItem: NextStudyQueueItem = {
+                      id: `queue-${Date.now()}`,
+                      type: 'word',
+                      title: verifierResult.title || verifierQuery,
+                      subtitle: 'নতুন যাচাইকৃত শব্দ',
+                      targetDate: getTomorrowDateStr(),
+                      priority: 'high',
+                      category: 'Verified Fresh Word',
+                      language: 'english',
+                      notes: 'যাচাই করে কালকের কিউতে যুক্ত করা হয়েছে',
+                      addedAt: todayDateStr,
+                    };
+                    const updated = [newItem, ...nextQueue];
+                    setNextQueue(updated);
+                    saveStoredNextQueue(updated);
+                    showToast(`"${newItem.title}" আগামীকালের কিউতে যোগ হয়েছে!`);
+                    setVerifierResult(null);
+                    setVerifierQuery('');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs transition-all cursor-pointer"
+                >
+                  + কালকের কিউতে যোগ করুন
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Navigation Sub-Tabs & Language Filter Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs">
-        {/* 3 Sub-Tabs */}
-        <div className="flex items-center gap-1">
+        {/* 4 Sub-Tabs */}
+        <div className="flex flex-wrap items-center gap-1">
+          <button
+            onClick={() => setActiveSubTab('matrix')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeSubTab === 'matrix'
+                ? 'bg-purple-600 text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }`}
+          >
+            <ArrowLeftRight className="h-4 w-4" />
+            <span>কালকে vs আজ vs কালকের কিউ</span>
+          </button>
+
           <button
             onClick={() => setActiveSubTab('today')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -515,6 +734,276 @@ export const StudyBacktrackSection: React.FC<StudyBacktrackSectionProps> = ({
           ))}
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* TAB 0: YESTERDAY VS TODAY VS TOMORROW COMPARISON MATRIX */}
+      {/* ========================================================================= */}
+      {activeSubTab === 'matrix' && (
+        <div className="space-y-5 animate-in fade-in duration-200">
+          {/* Informational Assurance Banner */}
+          <div className="rounded-3xl border border-purple-200 bg-gradient-to-r from-purple-50/90 via-indigo-50/50 to-white p-5 sm:p-6 dark:border-purple-900/60 dark:from-slate-900 dark:via-purple-950/30 dark:to-slate-900">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-purple-100 px-2.5 py-0.5 text-[11px] font-bold text-purple-800 dark:bg-purple-950 dark:text-purple-300">
+                  <ArrowLeftRight className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                  <span>দৈনিক ব্যাকট্র্যাক ও তুলনামূলক স্টাডি বোর্ড</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                  কালকে কী পড়েছেন vs আজকে কী পড়বেন vs পরবর্তীতে কী পড়তে চান
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 max-w-2xl">
+                  এই ব্যাকট্র্যাক বোর্ড নিশ্চিত করে যে গতকাল যে শব্দগুলো পড়েছেন তা রেকর্ড হিসেবে সংরক্ষিত আছে, সুতরাং আজকে আপনি পুনরাবৃত্তি ছাড়াই সম্পূর্ণ নতুন শব্দ ও প্রফেশনাল বাক্য শিখবেন।
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={handleSmartAutoQueue}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>স্মার্ট নতুন কিউ সাজান</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 3-Column Comparative Board */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+            {/* COLUMN 1: YESTERDAY'S STUDIED RECORD */}
+            <div className="rounded-2xl border border-amber-200/90 bg-amber-50/20 dark:border-amber-900/40 dark:bg-slate-900/80 p-4 space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-amber-200/60 dark:border-amber-900/40">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">
+                    <Calendar className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white">
+                      কালকে যা পড়েছেন
+                    </h4>
+                    <span className="text-[10px] text-slate-400">
+                      গতকালকের রেকর্ড ({historyLogs[0]?.items.length || 0}টি)
+                    </span>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
+                  আগে পড়া শব্দ
+                </span>
+              </div>
+
+              {/* Items list */}
+              <div className="space-y-2.5">
+                {(historyLogs[0]?.items || []).map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-1.5 py-0.2 rounded">
+                        ✓ কালকে সম্পন্ন
+                      </span>
+                      <span className="text-slate-400 font-mono">{item.timeString || 'গতকাল'}</span>
+                    </div>
+
+                    <div className="flex items-start justify-between gap-1.5">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                        {item.title}
+                      </span>
+                      <button
+                        onClick={() => handlePlayVoice(item.title, item.language)}
+                        className="p-1 rounded text-slate-400 hover:text-indigo-600 shrink-0"
+                        title="উচ্চারণ শুনুন"
+                      >
+                        <Volume2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+
+                    {item.subtitle && (
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-1.5 rounded-lg">
+                        {item.subtitle}
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                {(historyLogs[0]?.items || []).length === 0 && (
+                  <p className="text-xs text-slate-400 italic text-center py-4">
+                    গতকালের কোনো রেকর্ড পাওয়া যায়নি
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* COLUMN 2: TODAY'S STUDIED RECORD */}
+            <div className="rounded-2xl border border-indigo-200/90 bg-indigo-50/20 dark:border-indigo-900/40 dark:bg-slate-900/80 p-4 space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-indigo-200/60 dark:border-indigo-900/40">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white">
+                      আজকে যা পড়েছেন
+                    </h4>
+                    <span className="text-[10px] text-slate-400">
+                      আজকের নতুন পড়া ({todayLog.items.length}টি)
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setAddTodayOpen(true)}
+                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+                >
+                  + যোগ করুন
+                </button>
+              </div>
+
+              {/* Items list */}
+              <div className="space-y-2.5">
+                {todayLog.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="font-bold text-indigo-800 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.2 rounded">
+                        ★ আজকের নতুন পড়া
+                      </span>
+                      <span className="text-slate-400 font-mono">{item.timeString || 'আজ'}</span>
+                    </div>
+
+                    <div className="flex items-start justify-between gap-1.5">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                        {item.title}
+                      </span>
+                      <button
+                        onClick={() => handlePlayVoice(item.title, item.language)}
+                        className="p-1 rounded text-slate-400 hover:text-indigo-600 shrink-0"
+                        title="উচ্চারণ শুনুন"
+                      >
+                        <Volume2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+
+                    {item.subtitle && (
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-1.5 rounded-lg">
+                        {item.subtitle}
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                {todayLog.items.length === 0 && (
+                  <div className="text-center py-6">
+                    <p className="text-xs text-slate-400 mb-2">আজকের তালিকায় কোনো শব্দ যুক্ত করা হয়নি</p>
+                    <button
+                      onClick={() => setAddTodayOpen(true)}
+                      className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 text-xs font-bold"
+                    >
+                      + নতুন পড়া যুক্ত করুন
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* COLUMN 3: TOMORROW'S QUEUE */}
+            <div className="rounded-2xl border border-emerald-200/90 bg-emerald-50/20 dark:border-emerald-900/40 dark:bg-slate-900/80 p-4 space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-emerald-200/60 dark:border-emerald-900/40">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                    <ListTodo className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white">
+                      পরবর্তীতে যা পড়বেন
+                    </h4>
+                    <span className="text-[10px] text-slate-400">
+                      আগামীকালের কিউ ({nextQueue.length}টি)
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setAddQueueOpen(true)}
+                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+                >
+                  + কিউতে যোগ
+                </button>
+              </div>
+
+              {/* Items list */}
+              <div className="space-y-2.5">
+                {nextQueue.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span
+                        className={`font-bold px-1.5 py-0.2 rounded ${
+                          item.priority === 'high'
+                            ? 'text-rose-700 bg-rose-50 dark:bg-rose-950/60'
+                            : 'text-slate-600 bg-slate-100 dark:bg-slate-700'
+                        }`}
+                      >
+                        {item.priority === 'high' ? '🔥 High' : 'Normal'} • {item.type}
+                      </span>
+                      <button
+                        onClick={() => handleDeleteQueueItem(item.id)}
+                        className="text-slate-400 hover:text-rose-500"
+                        title="কিউ থেকে মুছুন"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+
+                    <div className="flex items-start justify-between gap-1.5">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                        {item.title}
+                      </span>
+                      <button
+                        onClick={() => handlePlayVoice(item.title, item.language)}
+                        className="p-1 rounded text-slate-400 hover:text-indigo-600 shrink-0"
+                        title="উচ্চারণ শুনুন"
+                      >
+                        <Volume2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+
+                    {item.subtitle && (
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-1.5 rounded-lg">
+                        {item.subtitle}
+                      </p>
+                    )}
+
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+                      <button
+                        onClick={() => handleMoveQueueToToday(item)}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:hover:bg-emerald-900 dark:text-emerald-300 text-[11px] font-bold transition-all cursor-pointer"
+                      >
+                        <Check className="h-3 w-3 stroke-[2.5]" />
+                        <span>আজকে পড়া হয়েছে</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {nextQueue.length === 0 && (
+                  <div className="text-center py-6">
+                    <p className="text-xs text-slate-400 mb-2">আগামীকালের কিউ বর্তমানে খালি</p>
+                    <button
+                      onClick={handleSmartAutoQueue}
+                      className="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 text-xs font-bold"
+                    >
+                      ✨ স্মার্ট কিউ সাজান
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* TAB 1: TODAY'S STUDIED BACKTRACK */}
@@ -1025,7 +1514,7 @@ export const StudyBacktrackSection: React.FC<StudyBacktrackSectionProps> = ({
                 <input
                   type="text"
                   value={queueSubtitle}
-                  onChange={(e) => setNewSubtitle(e.target.value)}
+                  onChange={(e) => setQueueSubtitle(e.target.value)}
                   placeholder="যেমন: আদর্শ মানদণ্ড বা সর্বোচ্চ মান"
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />

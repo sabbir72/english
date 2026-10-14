@@ -19,6 +19,7 @@ import { LanguageHubSection } from './components/LanguageHubSection';
 import { SpokenBookSection } from './components/book/SpokenBookSection';
 import { DailyHabitSection } from './components/DailyHabitSection';
 import { StudyBacktrackSection } from './components/StudyBacktrackSection';
+import { logStudiedItem } from './utils/backtrackStorage';
 import { Sidebar } from './components/Sidebar';
 
 import {
@@ -207,8 +208,11 @@ export function App() {
   // Toggle Vocab Learned
   const handleToggleLearnedVocab = (id: string) => {
     setVocabulary((prev) => {
+      const targetItem = prev.find((v) => v.id === id);
+      const isNowLearned = targetItem ? !targetItem.isLearned : false;
+
       const updated = prev.map((v) =>
-        v.id === id ? { ...v, isLearned: !v.isLearned } : v
+        v.id === id ? { ...v, isLearned: isNowLearned } : v
       );
       const learnedCount = updated.filter((v) => v.isLearned).length;
 
@@ -220,6 +224,18 @@ export function App() {
           wordsDone: Math.min(prog.dailyGoal.wordsTarget, prog.dailyGoal.wordsDone + 1),
         },
       }));
+
+      // Automatically log to today's study backtrack record
+      if (isNowLearned && targetItem) {
+        logStudiedItem({
+          type: 'word',
+          title: targetItem.word,
+          subtitle: `${targetItem.ipa ? targetItem.ipa + ' • ' : ''}${targetItem.banglaMeaning}`,
+          language: 'english',
+          category: targetItem.category || 'Vocabulary',
+          notes: targetItem.example ? `Example: ${targetItem.example}` : undefined,
+        });
+      }
 
       return updated;
     });
@@ -248,14 +264,28 @@ export function App() {
         ),
       },
     }));
+
+    // Automatically log practiced sentence to today's study backtrack record
+    logStudiedItem({
+      type: 'sentence',
+      title: sentence.english,
+      subtitle: sentence.bangla,
+      language: 'english',
+      category: sentence.category || 'Professional Sentences',
+      notes: sentence.structure ? `Structure: ${sentence.structure}` : undefined,
+    });
+
     handleAwardXP(10);
   };
 
   // Toggle Complete Grammar Lesson
   const handleToggleCompleteLesson = (id: string) => {
     setGrammar((prev) => {
+      const lesson = prev.find((g) => g.id === id);
+      const isNowCompleted = lesson ? !lesson.isCompleted : false;
+
       const updated = prev.map((g) =>
-        g.id === id ? { ...g, isCompleted: !g.isCompleted } : g
+        g.id === id ? { ...g, isCompleted: isNowCompleted } : g
       );
       const completedCount = updated.filter((g) => g.isCompleted).length;
 
@@ -270,6 +300,16 @@ export function App() {
           ),
         },
       }));
+
+      if (isNowCompleted && lesson) {
+        logStudiedItem({
+          type: 'grammar',
+          title: lesson.title,
+          subtitle: lesson.explanationBangla || lesson.description,
+          language: 'english',
+          category: 'Grammar',
+        });
+      }
 
       return updated;
     });

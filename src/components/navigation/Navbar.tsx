@@ -20,6 +20,7 @@ import {
   SpellCheck,
   BookMarked,
   Globe2,
+  History,
 } from 'lucide-react';
 import { NavigationTab, LearnSubTab, UserProfile, LanguageMode, AppLanguage } from '../../types';
 
@@ -197,6 +198,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           section: 'Settings',
           page: 'Habits & Goals',
           pageBn: 'দৈনিক লক্ষ্য ও অভ্যাস',
+        };
+      case 'backtrack':
+        return {
+          icon: <History className="h-4 w-4 text-amber-500" />,
+          section: 'Backtrack',
+          page: 'Study Backtrack & Queue',
+          pageBn: 'পড়ার ব্যাকট্র্যাক ও কালকের কিউ',
         };
       case 'japanese':
         return {

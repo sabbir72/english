@@ -252,6 +252,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       labelBn: 'অগ্রগতি ট্র্যাকার',
       icon: <BarChart3 className="h-4 w-4 text-emerald-500" />,
     },
+    {
+      id: 'backtrack',
+      label: 'Study Backtrack & Queue',
+      labelBn: 'পড়ার ব্যাকট্র্যাক ও কিউ',
+      icon: <History className="h-4 w-4 text-amber-500" />,
+      badge: 'নতুন',
+    },
   ];
 
   const japaneseNavItems: NavItemConfig[] = [
@@ -356,6 +363,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Progress Tracker',
       labelBn: 'অগ্রগতি ট্র্যাকার',
       icon: <BarChart3 className="h-4 w-4 text-emerald-500" />,
+    },
+    {
+      id: 'backtrack',
+      label: 'Study Backtrack & Queue',
+      labelBn: 'পড়ার ব্যাকট্র্যাক ও কিউ',
+      icon: <History className="h-4 w-4 text-amber-500" />,
+      badge: 'নতুন',
     },
   ];
 
